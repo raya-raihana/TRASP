@@ -16,7 +16,7 @@ import {
   FileText,
   CheckCheck,
   AlertCircle,
-  Info,
+  Sparkles,
   ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,12 +71,13 @@ export function LearnSandbox({
   const [isFinished, setIsFinished] = useState(false);
   const [mobileTab, setMobileTab] = useState<"chat" | "telemetry">("chat");
 
-  // Interactive Live Chat enhancements
+  // Interactive Live Chat with Gemini AI Engine
   const [customInput, setCustomInput] = useState("");
   const [isScammerTyping, setIsScammerTyping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hasNewTelemetry, setHasNewTelemetry] = useState(false);
   const [selectedAttachmentModal, setSelectedAttachmentModal] = useState<string | null>(null);
+  const [lastSource, setLastSource] = useState<string>("gemini-ai");
 
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,7 +96,7 @@ export function LearnSandbox({
     }
   }, [initialScenarioId]);
 
-  // Subtle web audio pop feedback (0 external dependencies, 100% reliable)
+  // Web audio pop feedback
   const playChime = (isScammer = false) => {
     if (!soundEnabled || typeof window === "undefined") return;
     try {
@@ -115,7 +116,7 @@ export function LearnSandbox({
       osc.start();
       osc.stop(ctx.currentTime + 0.07);
     } catch {
-      // AudioContext not allowed or muted
+      // AudioContext muted/unsupported
     }
   };
 
@@ -140,25 +141,86 @@ export function LearnSandbox({
     setSelectedAttachmentModal(null);
   };
 
-  const executeChoiceResponse = (choice: DialogueChoice) => {
-    if (isScammerTyping || isFinished) return;
+  const handleSendMessage = async (userText: string, staticChoice?: DialogueChoice) => {
+    if (isScammerTyping || isFinished || !userText.trim()) return;
 
     const userTime = new Date().toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit"
     });
 
-    // 1. Add user reply immediately
-    setChatHistory((prev) => [
-      ...prev,
-      { sender: "user", text: choice.text, time: userTime }
-    ]);
+    // 1. Add user reply immediately to UI
+    const updatedHistory = [
+      ...chatHistory,
+      { sender: "user" as const, text: userText, time: userTime }
+    ];
+    setChatHistory(updatedHistory);
     playChime(false);
     setCustomInput("");
-
-    // 2. Show scammer typing state for realistic interaction
     setIsScammerTyping(true);
 
+    let responseData: {
+      scammerResponse: string;
+      activeTactic: string;
+      scammerMood: "CONFIDENT" | "PUSHING" | "DEFLECTING" | "PANICKED" | "BUSTED";
+      internalThought: string;
+      vulnerabilityDelta: number;
+      source: string;
+    };
+
+    try {
+      // Call Gemini 3.8 Flash API route
+      const res = await fetch("/api/trasp/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioId: selectedScenarioKey,
+          userMessage: userText,
+          chatHistory: updatedHistory,
+          currentVulnerability: vulnerability
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        responseData = {
+          scammerResponse: data.scammerResponse,
+          activeTactic: data.activeTactic,
+          scammerMood: data.scammerMood,
+          internalThought: data.internalThought,
+          vulnerabilityDelta: data.vulnerabilityDelta,
+          source: data.source || "gemini-ai"
+        };
+      } else {
+        throw new Error("API offline");
+      }
+    } catch {
+      // Deterministic Offline Fallback (Kepatuhan Juknis: Zero Crash)
+      if (staticChoice) {
+        responseData = {
+          scammerResponse: staticChoice.scammerResponse,
+          activeTactic: staticChoice.nextTelemetry.activeTactic,
+          scammerMood: staticChoice.nextTelemetry.scammerMood,
+          internalThought: staticChoice.nextTelemetry.internalThought,
+          vulnerabilityDelta: staticChoice.vulnerabilityDelta,
+          source: "fallback-preset"
+        };
+      } else {
+        const fb = matchCustomUserReply(userText, selectedScenarioKey, currentStepIndex);
+        responseData = {
+          scammerResponse: fb.scammerResponse,
+          activeTactic: fb.nextTelemetry.activeTactic,
+          scammerMood: fb.nextTelemetry.scammerMood,
+          internalThought: fb.nextTelemetry.internalThought,
+          vulnerabilityDelta: fb.vulnerabilityDelta,
+          source: "fallback-heuristic"
+        };
+      }
+    }
+
+    setLastSource(responseData.source);
+
+    // Realistic typing delay (800ms)
     setTimeout(() => {
       setIsScammerTyping(false);
       const scammerTime = new Date().toLocaleTimeString("id-ID", {
@@ -166,47 +228,30 @@ export function LearnSandbox({
         minute: "2-digit"
       });
 
-      // 3. Add scammer reply to chat
       setChatHistory((prev) => [
         ...prev,
-        { sender: "scammer", text: choice.scammerResponse, time: scammerTime }
+        { sender: "scammer", text: responseData.scammerResponse, time: scammerTime }
       ]);
       playChime(true);
 
-      // 4. Update vulnerability & telemetry
       const newVuln = Math.min(
         100,
-        Math.max(5, vulnerability + choice.vulnerabilityDelta)
+        Math.max(5, vulnerability + responseData.vulnerabilityDelta)
       );
       setVulnerability(newVuln);
-      setTelemetry(choice.nextTelemetry);
+      setTelemetry({
+        activeTactic: responseData.activeTactic,
+        scammerMood: responseData.scammerMood,
+        internalThought: responseData.internalThought
+      });
       setHasNewTelemetry(true);
 
-      // 5. Check next step or finish
-      const nextStep = currentStepIndex + 1;
-      if (
-        nextStep < scenario.steps.length &&
-        choice.nextTelemetry.scammerMood !== "BUSTED"
-      ) {
-        setCurrentStepIndex(nextStep);
-      } else {
+      if (responseData.scammerMood === "BUSTED" || currentStepIndex >= 4) {
         setIsFinished(true);
+      } else {
+        setCurrentStepIndex((prev) => prev + 1);
       }
-    }, 900);
-  };
-
-  const handleCustomSend = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const text = customInput.trim();
-    if (!text || isScammerTyping || isFinished) return;
-
-    // Use our semantic classifier
-    const matchedChoice = matchCustomUserReply(
-      text,
-      selectedScenarioKey,
-      currentStepIndex
-    );
-    executeChoiceResponse(matchedChoice);
+    }, 850);
   };
 
   const getMoodBadge = (mood: string) => {
@@ -265,7 +310,7 @@ export function LearnSandbox({
     }
   };
 
-  const currentStep = scenario.steps[currentStepIndex];
+  const currentStep = scenario.steps[currentStepIndex % scenario.steps.length];
 
   return (
     <div className="space-y-4">
@@ -286,6 +331,14 @@ export function LearnSandbox({
         </div>
 
         <div className="flex items-center gap-2">
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-emerald-500/30 text-emerald-400 bg-emerald-950/20 hidden sm:flex items-center gap-1"
+          >
+            <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
+            Gemini 3.8 AI Active
+          </Badge>
+
           <Button
             variant="ghost"
             size="sm"
@@ -466,7 +519,7 @@ export function LearnSandbox({
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
                 <span className="text-[10px] text-slate-400 font-mono ml-1">
-                  penipu sedang mengetik balasan...
+                  penipu sedang merancang balasan...
                 </span>
               </div>
             )}
@@ -481,10 +534,10 @@ export function LearnSandbox({
                   <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between">
                     <span className="flex items-center gap-1">
                       <Activity className="w-3 h-3 text-primary" />
-                      Saran Pilihan Respon Kritis:
+                      Saran Pilihan Cepat:
                     </span>
                     <span className="text-[9px] text-slate-500">
-                      (Klik untuk kirim instan)
+                      (Bisa klik saran atau ketik bebas)
                     </span>
                   </div>
 
@@ -494,7 +547,7 @@ export function LearnSandbox({
                         key={i}
                         type="button"
                         disabled={isScammerTyping}
-                        onClick={() => executeChoiceResponse(choice)}
+                        onClick={() => handleSendMessage(choice.text, choice)}
                         className={`w-full text-left p-2 border text-xs transition-colors cursor-pointer flex items-start gap-2 ${
                           choice.type === "CRITICAL"
                             ? "bg-slate-950/70 border-slate-800 hover:border-emerald-500/80 text-slate-200 hover:bg-slate-800/80"
@@ -526,9 +579,12 @@ export function LearnSandbox({
                   </div>
                 </div>
 
-                {/* Free-form Custom Typing Input */}
+                {/* Free-form Custom Typing Input with Gemini AI */}
                 <form
-                  onSubmit={handleCustomSend}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendMessage(customInput);
+                  }}
                   className="flex items-center gap-1.5 pt-1 border-t border-slate-800"
                 >
                   <input
@@ -537,8 +593,8 @@ export function LearnSandbox({
                     value={customInput}
                     disabled={isScammerTyping}
                     onChange={(e) => setCustomInput(e.target.value)}
-                    placeholder="Atau ketik balasan bebas Anda ke penipu di sini..."
-                    className="flex-1 bg-slate-950 border border-slate-700 px-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary disabled:opacity-50"
+                    placeholder="Ketik balasan bebas Anda ke penipu di sini (didukung AI)..."
+                    className="flex-1 bg-slate-950 border border-slate-700 px-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary disabled:opacity-50 font-sans"
                   />
                   <Button
                     type="submit"
@@ -564,7 +620,7 @@ export function LearnSandbox({
                   onClick={() => resetSimulation(selectedScenarioKey)}
                   className="text-xs h-7 text-slate-200 border-slate-700 cursor-pointer"
                 >
-                  Ulangi Skenario
+                  Ulangi Skenario Ini
                 </Button>
               </div>
             )}
@@ -620,7 +676,7 @@ export function LearnSandbox({
             <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold flex items-center justify-between">
               <span>Taktik Manipulasi Aktif:</span>
               <Badge variant="outline" className="text-[9px] text-slate-400 border-slate-700">
-                Langkah {currentStepIndex + 1}/{scenario.steps.length}
+                Putaran {currentStepIndex + 1}
               </Badge>
             </div>
             <div className="text-xs font-bold text-foreground flex items-center gap-1.5 text-primary">
@@ -631,9 +687,14 @@ export function LearnSandbox({
 
           {/* Live Scammer Inner Monologue */}
           <div className="space-y-1.5 bg-muted/20 border border-border p-3.5 text-slate-200">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              Monolog Batin Pelaku (Isi Kepala Sindikat):
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-rose-400 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5" />
+                Monolog Batin Pelaku (Isi Kepala Sindikat):
+              </span>
+              <span className="text-[9px] font-mono text-slate-500">
+                {lastSource === "gemini-ai" ? "Gemini AI" : "Heuristic"}
+              </span>
             </div>
             <p className="text-xs leading-relaxed italic bg-black/60 p-3 border border-border text-slate-300">
               &quot;{telemetry.internalThought}&quot;
