@@ -188,6 +188,14 @@ export function AppSidebar({
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild className="text-xs">
+                  <Link href="/mobile">
+                    <IconDeviceMobile className="h-4 w-4" />
+                    <span>Mode Tampilan Mobile (/mobile)</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <TeamInfoDialog
                   trigger={
                     <SidebarMenuButton className="cursor-pointer text-xs">

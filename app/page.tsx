@@ -8,6 +8,7 @@ import {
   IconUserX,
   IconShieldCheck,
   IconBrandGithub,
+  IconDeviceMobile,
 } from "@tabler/icons-react";
 import {
   SidebarProvider,
@@ -36,6 +37,18 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      const isMobile =
+        window.innerWidth < 768 ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const forceDesktop = params.get("desktop") === "true";
+
+      // Otomatis mengarahkan ke link /mobile jika diakses dari perangkat mobile
+      if (isMobile && !forceDesktop) {
+        const targetSearch = window.location.search ? window.location.search : `?tool=${activeTool}`;
+        window.location.replace(`/mobile${targetSearch}`);
+        return;
+      }
+
       const toolParam = params.get("tool");
       const presetParam = params.get("preset");
       if (toolParam && TOOL_TITLES[toolParam]) {

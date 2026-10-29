@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { IconBrandGithub, IconShieldCheck } from "@tabler/icons-react"
+import { IconBrandGithub, IconShieldCheck, IconDeviceMobile } from "@tabler/icons-react"
 
 interface SiteHeaderProps {
   activeToolName?: string
@@ -24,6 +24,14 @@ export function SiteHeader({ activeToolName = "Recognize Engine" }: SiteHeaderPr
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <a
+          href="/mobile"
+          className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-1 border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
+          title="Buka Antarmuka Khusus Mobile (/mobile)"
+        >
+          <IconDeviceMobile className="h-3.5 w-3.5" />
+          <span>/mobile</span>
+        </a>
         <Badge
           variant="outline"
           className="hidden md:inline-flex text-[10px] border-border text-muted-foreground font-mono items-center gap-1"
