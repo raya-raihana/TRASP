@@ -1,27 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Smartphone,
   Terminal,
   Activity,
-  AlertTriangle,
   RotateCcw,
   CheckCircle,
-  XCircle,
-  HelpCircle,
   Send,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Volume2,
+  VolumeX,
+  FileCode,
+  FileText,
+  CheckCheck,
+  AlertCircle,
+  Info,
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   SANDBOX_SCENARIOS,
   SandboxScenario,
-  DialogueChoice
+  DialogueChoice,
+  matchCustomUserReply
 } from "@/lib/trasp/sandbox-data";
 
 interface LearnSandboxProps {
@@ -29,25 +34,90 @@ interface LearnSandboxProps {
   onSwitchToAct?: () => void;
 }
 
-export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }: LearnSandboxProps) {
+export function LearnSandbox({
+  initialScenarioId = "apk-kurir",
+  onSwitchToAct
+}: LearnSandboxProps) {
   const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>(
     SANDBOX_SCENARIOS[initialScenarioId] ? initialScenarioId : "apk-kurir"
   );
-  const scenario = SANDBOX_SCENARIOS[selectedScenarioKey] || SANDBOX_SCENARIOS["apk-kurir"];
+  const scenario =
+    SANDBOX_SCENARIOS[selectedScenarioKey] || SANDBOX_SCENARIOS["apk-kurir"];
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [chatHistory, setChatHistory] = useState<Array<{ sender: "scammer" | "user"; text: string; time: string }>>([
+  const [chatHistory, setChatHistory] = useState<
+    Array<{
+      sender: "scammer" | "user";
+      text: string;
+      time: string;
+      attachment?: {
+        type: "apk" | "link" | "receipt" | "document";
+        name: string;
+        size?: string;
+        meta?: string;
+      };
+    }>
+  >([
     {
       sender: "scammer",
       text: scenario.steps[0].scammerMessage,
-      time: scenario.steps[0].timestamp
+      time: scenario.steps[0].timestamp,
+      attachment: scenario.steps[0].attachment
     }
   ]);
+
   const [vulnerability, setVulnerability] = useState(scenario.initialVulnerability);
   const [telemetry, setTelemetry] = useState(scenario.steps[0].scammerTelemetry);
   const [isFinished, setIsFinished] = useState(false);
-  const [lastChoiceType, setLastChoiceType] = useState<"VULNERABLE" | "NEUTRAL" | "CRITICAL" | null>(null);
   const [mobileTab, setMobileTab] = useState<"chat" | "telemetry">("chat");
+
+  // Interactive Live Chat enhancements
+  const [customInput, setCustomInput] = useState("");
+  const [isScammerTyping, setIsScammerTyping] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hasNewTelemetry, setHasNewTelemetry] = useState(false);
+  const [selectedAttachmentModal, setSelectedAttachmentModal] = useState<string | null>(null);
+
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [chatHistory, isScammerTyping]);
+
+  // Sync when initialScenarioId prop changes
+  useEffect(() => {
+    if (initialScenarioId && SANDBOX_SCENARIOS[initialScenarioId]) {
+      resetSimulation(initialScenarioId);
+    }
+  }, [initialScenarioId]);
+
+  // Subtle web audio pop feedback (0 external dependencies, 100% reliable)
+  const playChime = (isScammer = false) => {
+    if (!soundEnabled || typeof window === "undefined") return;
+    try {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(isScammer ? 440 : 640, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(isScammer ? 660 : 840, ctx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.07);
+    } catch {
+      // AudioContext not allowed or muted
+    }
+  };
 
   const resetSimulation = (scenarioKey: string) => {
     const sc = SANDBOX_SCENARIOS[scenarioKey] || SANDBOX_SCENARIOS["apk-kurir"];
@@ -57,212 +127,444 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
       {
         sender: "scammer",
         text: sc.steps[0].scammerMessage,
-        time: sc.steps[0].timestamp
+        time: sc.steps[0].timestamp,
+        attachment: sc.steps[0].attachment
       }
     ]);
     setVulnerability(sc.initialVulnerability);
     setTelemetry(sc.steps[0].scammerTelemetry);
     setIsFinished(false);
-    setLastChoiceType(null);
+    setCustomInput("");
+    setIsScammerTyping(false);
+    setHasNewTelemetry(false);
+    setSelectedAttachmentModal(null);
   };
 
-  const handleUserChoice = (choice: DialogueChoice) => {
-    // 1. Add user reply to chat history
-    const userTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-    const newHistory = [
-      ...chatHistory,
-      { sender: "user" as const, text: choice.text, time: userTime },
-      { sender: "scammer" as const, text: choice.scammerResponse, time: userTime }
-    ];
-    setChatHistory(newHistory);
+  const executeChoiceResponse = (choice: DialogueChoice) => {
+    if (isScammerTyping || isFinished) return;
 
-    // 2. Update vulnerability meter
-    const newVuln = Math.min(100, Math.max(5, vulnerability + choice.vulnerabilityDelta));
-    setVulnerability(newVuln);
-    setTelemetry(choice.nextTelemetry);
-    setLastChoiceType(choice.type);
+    const userTime = new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
-    // 3. Check next step or finish
-    const nextStep = currentStepIndex + 1;
-    if (nextStep < scenario.steps.length && choice.nextTelemetry.scammerMood !== "BUSTED") {
-      setCurrentStepIndex(nextStep);
-    } else {
-      setIsFinished(true);
-    }
+    // 1. Add user reply immediately
+    setChatHistory((prev) => [
+      ...prev,
+      { sender: "user", text: choice.text, time: userTime }
+    ]);
+    playChime(false);
+    setCustomInput("");
+
+    // 2. Show scammer typing state for realistic interaction
+    setIsScammerTyping(true);
+
+    setTimeout(() => {
+      setIsScammerTyping(false);
+      const scammerTime = new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      // 3. Add scammer reply to chat
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "scammer", text: choice.scammerResponse, time: scammerTime }
+      ]);
+      playChime(true);
+
+      // 4. Update vulnerability & telemetry
+      const newVuln = Math.min(
+        100,
+        Math.max(5, vulnerability + choice.vulnerabilityDelta)
+      );
+      setVulnerability(newVuln);
+      setTelemetry(choice.nextTelemetry);
+      setHasNewTelemetry(true);
+
+      // 5. Check next step or finish
+      const nextStep = currentStepIndex + 1;
+      if (
+        nextStep < scenario.steps.length &&
+        choice.nextTelemetry.scammerMood !== "BUSTED"
+      ) {
+        setCurrentStepIndex(nextStep);
+      } else {
+        setIsFinished(true);
+      }
+    }, 900);
+  };
+
+  const handleCustomSend = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const text = customInput.trim();
+    if (!text || isScammerTyping || isFinished) return;
+
+    // Use our semantic classifier
+    const matchedChoice = matchCustomUserReply(
+      text,
+      selectedScenarioKey,
+      currentStepIndex
+    );
+    executeChoiceResponse(matchedChoice);
   };
 
   const getMoodBadge = (mood: string) => {
     switch (mood) {
       case "CONFIDENT":
-        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Percaya Diri</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-amber-500/40 text-amber-500 bg-amber-500/10"
+          >
+            ● Percaya Diri (Agresif)
+          </Badge>
+        );
       case "PUSHING":
-        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Agresif</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-rose-500/40 text-rose-500 bg-rose-500/10"
+          >
+            ▲ Menekan Batas Waktu
+          </Badge>
+        );
       case "DEFLECTING":
-        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Defensif</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-yellow-500/40 text-yellow-500 bg-yellow-500/10"
+          >
+            ◆ Defensif / Mengalihkan
+          </Badge>
+        );
       case "PANICKED":
-        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Gugup</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-purple-500/40 text-purple-400 bg-purple-500/10"
+          >
+            ⚡ Panik Terdesak
+          </Badge>
+        );
       case "BUSTED":
-        return <Badge variant="outline" className="text-[10px] font-mono border-border text-emerald-600 dark:text-emerald-400">Tertangkap</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="text-[10px] font-mono border-emerald-500/40 text-emerald-400 bg-emerald-500/10 font-bold"
+          >
+            ✓ Terbongkar (Busted)
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-[10px] font-mono border-border">{mood}</Badge>;
+        return (
+          <Badge variant="outline" className="text-[10px] font-mono border-border">
+            {mood}
+          </Badge>
+        );
     }
   };
 
   const currentStep = scenario.steps[currentStepIndex];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Sleek Toolbar */}
-      <div className="flex items-center justify-between gap-3 bg-muted/40 border border-border px-3.5 py-2 rounded-none text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-muted/40 border border-border px-3.5 py-2 text-xs">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-foreground">Skenario:</span>
+          <span className="font-semibold text-foreground">Skenario Aktif:</span>
           <select
             value={selectedScenarioKey}
             onChange={(e) => resetSimulation(e.target.value)}
-            className="text-xs bg-background border border-border rounded-none px-2.5 py-1 font-medium text-foreground cursor-pointer"
+            className="text-xs bg-background border border-border px-2.5 py-1 font-medium text-foreground cursor-pointer focus:outline-none"
           >
-            <option value="apk-kurir">Undangan / Resi .APK</option>
-            <option value="loker-bumn">Loker BUMN (Task Fraud)</option>
+            <option value="apk-kurir">1. Resi Kurir &amp; Undangan .APK (Trojan)</option>
+            <option value="loker-bumn">2. Loker Freelance BUMN (Task Fraud)</option>
+            <option value="phishing-pajak">3. Tagihan Pajak DJP (Phishing)</option>
+            <option value="m-banking-palsu">4. Salah Transfer &amp; Struk Editan</option>
           </select>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => resetSimulation(selectedScenarioKey)}
-          className="text-xs h-7 px-2.5 cursor-pointer rounded-none"
-        >
-          <RotateCcw className="w-3 h-3 mr-1" />
-          Reset Chat
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground cursor-pointer"
+            title={soundEnabled ? "Nonaktifkan Suara" : "Aktifkan Suara"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="w-3.5 h-3.5 mr-1" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 mr-1 text-muted-foreground" />
+            )}
+            <span className="hidden sm:inline">{soundEnabled ? "Audio On" : "Mute"}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => resetSimulation(selectedScenarioKey)}
+            className="text-xs h-7 px-2.5 cursor-pointer"
+          >
+            <RotateCcw className="w-3 h-3 mr-1" />
+            Mulai Ulang
+          </Button>
+        </div>
       </div>
 
-      {/* Mobile-Friendly Switcher (only on mobile < lg) */}
-      <div className="flex lg:hidden bg-muted/50 p-1 rounded-none border border-border">
+      {/* Mobile-Friendly Switcher */}
+      <div className="flex lg:hidden bg-muted/50 p-1 border border-border">
         <button
           type="button"
-          onClick={() => setMobileTab("chat")}
-          className={`flex-1 py-1.5 text-xs font-medium rounded-none transition-colors flex items-center justify-center gap-1.5 ${
+          onClick={() => {
+            setMobileTab("chat");
+            setHasNewTelemetry(false);
+          }}
+          className={`flex-1 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
             mobileTab === "chat"
-              ? "bg-background text-foreground shadow-none font-semibold border border-border"
+              ? "bg-background text-foreground font-semibold border border-border"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Smartphone className="w-3.5 h-3.5" />
           Chat Simulasi
         </button>
+
         <button
           type="button"
-          onClick={() => setMobileTab("telemetry")}
-          className={`flex-1 py-1.5 text-xs font-medium rounded-none transition-colors flex items-center justify-center gap-1.5 ${
+          onClick={() => {
+            setMobileTab("telemetry");
+            setHasNewTelemetry(false);
+          }}
+          className={`flex-1 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 relative ${
             mobileTab === "telemetry"
-              ? "bg-background text-foreground shadow-none font-semibold border border-border"
+              ? "bg-background text-foreground font-semibold border border-border"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Terminal className="w-3.5 h-3.5" />
-          Telemetri Pelaku
+          <Terminal className="w-3.5 h-3.5 text-primary" />
+          Telemetri Pelaku (X-Ray)
+          {hasNewTelemetry && (
+            <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-3 animate-ping" />
+          )}
         </button>
       </div>
 
       {/* Split-Screen Main Arena */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left Screen: Victim WhatsApp Chat Phone (6 Cols) */}
-        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-900 border border-border rounded-none overflow-hidden shadow-none ${
-          mobileTab === "chat" ? "flex" : "hidden lg:flex"
-        }`}>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Left Screen: Mock Phone / Chat Simulator (6 Cols) */}
+        <div
+          className={`lg:col-span-6 flex flex-col h-[560px] sm:h-[620px] bg-slate-950 border border-border overflow-hidden shadow-none ${
+            mobileTab === "chat" ? "flex" : "hidden lg:flex"
+          }`}
+        >
           {/* Mock Phone Header */}
-          <div className="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-none bg-emerald-600/30 border border-emerald-500/50 flex items-center justify-center text-lg">
+          <div className="bg-slate-900 px-3.5 py-2.5 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-xs font-bold text-emerald-400 font-mono">
                 {scenario.scammerAvatar}
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-100 flex items-center gap-1.5 font-serif">
+                <h4 className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
                   {scenario.scammerName}
                 </h4>
-                <p className="text-[10px] text-emerald-400 font-mono">
-                  Online {scenario.scammerNumber}
-                </p>
+                <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                  {isScammerTyping ? (
+                    <span className="italic text-emerald-300 animate-pulse">
+                      sedang mengetik...
+                    </span>
+                  ) : (
+                    <>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      Online ({scenario.scammerNumber})
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-            <Badge variant="outline" className="text-[10px] text-slate-300 border-slate-600 bg-slate-900/40 rounded-none">
+
+            <Badge
+              variant="outline"
+              className="text-[10px] text-slate-300 border-slate-700 bg-slate-800/80"
+            >
               Simulasi WhatsApp
             </Badge>
           </div>
 
-          {/* Chat Messages Scrollable Body */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
+          {/* Chat Messages Body */}
+          <div
+            ref={chatScrollRef}
+            className="flex-1 p-3.5 overflow-y-auto space-y-3 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]"
+          >
             {chatHistory.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+                className={`flex flex-col ${
+                  msg.sender === "user" ? "items-end" : "items-start"
+                }`}
               >
                 <div
-                  className={`max-w-[85%] rounded-none px-3.5 py-2.5 text-xs shadow-none border ${
+                  className={`max-w-[88%] px-3.5 py-2.5 text-xs border ${
                     msg.sender === "user"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-slate-800 text-slate-100 border-slate-700"
+                      ? "bg-emerald-800 text-slate-50 border-emerald-700 rounded-tl-lg rounded-tr-none rounded-br-lg rounded-bl-lg"
+                      : "bg-slate-900 text-slate-100 border-slate-800 rounded-tl-none rounded-tr-lg rounded-br-lg rounded-bl-lg"
                   }`}
                 >
-                  <p className="leading-relaxed">{msg.text}</p>
+                  <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>
+
+                  {/* Simulated Dangerous Attachment Card */}
+                  {msg.attachment && (
+                    <div
+                      onClick={() =>
+                        setSelectedAttachmentModal(
+                          msg.attachment ? msg.attachment.meta || msg.attachment.name : null
+                        )
+                      }
+                      className="mt-2.5 p-2 bg-slate-950/80 border border-rose-500/40 hover:border-rose-400 transition-colors cursor-pointer flex items-center justify-between gap-2 text-[11px]"
+                    >
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        {msg.attachment.type === "apk" ? (
+                          <FileCode className="w-4 h-4 text-rose-400 shrink-0" />
+                        ) : (
+                          <FileText className="w-4 h-4 text-amber-400 shrink-0" />
+                        )}
+                        <div className="truncate">
+                          <div className="font-mono font-bold text-slate-200 truncate">
+                            {msg.attachment.name}
+                          </div>
+                          <div className="text-[9px] text-rose-400 font-mono">
+                            {msg.attachment.size ? `${msg.attachment.size} • ` : ""}
+                            [Peringatan: Berbahaya]
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] text-primary underline shrink-0">
+                        Detail
+                      </span>
+                    </div>
+                  )}
+
                   <div
-                    className={`text-[9px] mt-1 text-right ${
-                      msg.sender === "user" ? "text-primary-foreground/70" : "text-slate-400"
+                    className={`text-[9px] mt-1 flex items-center justify-end gap-1 ${
+                      msg.sender === "user" ? "text-emerald-200" : "text-slate-500"
                     }`}
                   >
-                    {msg.time}
+                    <span>{msg.time}</span>
+                    {msg.sender === "user" && (
+                      <CheckCheck className="w-3 h-3 text-emerald-300 inline" />
+                    )}
                   </div>
                 </div>
               </div>
             ))}
+
+            {/* Typing Indicator */}
+            {isScammerTyping && (
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-slate-900 border border-slate-800 w-fit rounded-lg">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" />
+                <span className="text-[10px] text-slate-400 font-mono ml-1">
+                  penipu sedang mengetik balasan...
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* User Response Options Footer */}
-          <div className="p-3 bg-slate-800/95 border-t border-slate-700 shrink-0 space-y-2">
+          {/* Quick Reply & Typing Input Footer */}
+          <div className="p-3 bg-slate-900/95 border-t border-slate-800 shrink-0 space-y-2.5">
             {!isFinished && currentStep && (
               <>
-                <div className="text-[11px] font-semibold text-slate-300 flex items-center gap-1.5 font-serif">
-                  <Activity className="w-3.5 h-3.5 text-primary" />
-                  Pilih Balasan Anda untuk Menguji Penipu:
-                </div>
+                {/* Smart Suggestion Chips */}
                 <div className="space-y-1.5">
-                  {currentStep.userChoices.map((choice, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleUserChoice(choice)}
-                      className="w-full text-left p-2.5 rounded-none border border-slate-700 bg-slate-900/80 hover:bg-slate-700 hover:border-primary text-slate-200 text-xs transition-colors cursor-pointer"
-                    >
-                      <span className="font-bold mr-1.5 text-primary">[{i + 1}]</span>
-                      {choice.text}
-                    </button>
-                  ))}
+                  <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                    <span className="flex items-center gap-1">
+                      <Activity className="w-3 h-3 text-primary" />
+                      Saran Pilihan Respon Kritis:
+                    </span>
+                    <span className="text-[9px] text-slate-500">
+                      (Klik untuk kirim instan)
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    {currentStep.userChoices.map((choice, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        disabled={isScammerTyping}
+                        onClick={() => executeChoiceResponse(choice)}
+                        className={`w-full text-left p-2 border text-xs transition-colors cursor-pointer flex items-start gap-2 ${
+                          choice.type === "CRITICAL"
+                            ? "bg-slate-950/70 border-slate-800 hover:border-emerald-500/80 text-slate-200 hover:bg-slate-800/80"
+                            : choice.type === "VULNERABLE"
+                            ? "bg-slate-950/70 border-slate-800 hover:border-rose-500/80 text-slate-300 hover:bg-slate-800/80"
+                            : "bg-slate-950/70 border-slate-800 hover:border-slate-600 text-slate-300 hover:bg-slate-800/80"
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        <span
+                          className={`font-mono font-bold text-[10px] mt-0.5 px-1 py-0.2 border ${
+                            choice.type === "CRITICAL"
+                              ? "text-emerald-400 border-emerald-500/30 bg-emerald-950/20"
+                              : choice.type === "VULNERABLE"
+                              ? "text-rose-400 border-rose-500/30 bg-rose-950/20"
+                              : "text-slate-400 border-slate-700 bg-slate-900"
+                          }`}
+                        >
+                          {choice.type === "CRITICAL"
+                            ? "KRITIS"
+                            : choice.type === "VULNERABLE"
+                            ? "RENTAN"
+                            : "NETRAL"}
+                        </span>
+                        <span className="leading-snug flex-1 text-[11px]">
+                          {choice.text}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {lastChoiceType && (
-                  <button
-                    type="button"
-                    onClick={() => setMobileTab("telemetry")}
-                    className="lg:hidden w-full text-center py-1.5 px-3 bg-muted text-foreground border border-border rounded-none text-xs font-medium transition-colors mt-2"
+                {/* Free-form Custom Typing Input */}
+                <form
+                  onSubmit={handleCustomSend}
+                  className="flex items-center gap-1.5 pt-1 border-t border-slate-800"
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={customInput}
+                    disabled={isScammerTyping}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    placeholder="Atau ketik balasan bebas Anda ke penipu di sini..."
+                    className="flex-1 bg-slate-950 border border-slate-700 px-3 py-1.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-primary disabled:opacity-50"
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={!customInput.trim() || isScammerTyping}
+                    className="h-8 px-3 text-xs bg-emerald-700 hover:bg-emerald-600 text-white cursor-pointer disabled:opacity-50 shrink-0"
                   >
-                    Buka Panel Telemetri Pelaku
-                  </button>
-                )}
+                    <Send className="w-3.5 h-3.5 mr-1" />
+                    Kirim
+                  </Button>
+                </form>
               </>
             )}
 
             {isFinished && (
-              <div className="text-center py-2 space-y-2">
-                <p className="text-xs text-muted-foreground font-medium">
-                  Simulasi selesai. Lihat ringkasan evaluasi pada panel kanan.
+              <div className="text-center py-2 space-y-2 bg-slate-950 p-3 border border-slate-800">
+                <p className="text-xs text-slate-300 font-medium">
+                  Skenario berakhir. Buka panel kanan untuk melihat evaluasi psikologis &amp; rekomendasi mitigasi.
                 </p>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => resetSimulation(selectedScenarioKey)}
-                  className="text-xs h-7 text-slate-200 border-slate-600 rounded-none"
+                  className="text-xs h-7 text-slate-200 border-slate-700 cursor-pointer"
                 >
-                  Mulai Ulang Skenario Ini
+                  Ulangi Skenario
                 </Button>
               </div>
             )}
@@ -270,75 +572,92 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
         </div>
 
         {/* Right Screen: Live Scammer Telemetry Terminal (6 Cols) */}
-        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-950 border border-primary/30 rounded-none p-4 sm:p-5 shadow-none font-mono text-xs text-slate-200 overflow-y-auto space-y-4 sm:space-y-5 ${
-          mobileTab === "telemetry" ? "flex" : "hidden lg:flex"
-        }`}>
+        <div
+          className={`lg:col-span-6 flex flex-col h-[560px] sm:h-[620px] bg-slate-950 border border-primary/40 p-4 sm:p-5 font-mono text-xs text-slate-200 overflow-y-auto space-y-4 ${
+            mobileTab === "telemetry" ? "flex" : "hidden lg:flex"
+          }`}
+        >
           {/* Telemetry Header */}
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
-            <div className="flex items-center gap-2 text-primary font-bold text-xs font-serif tracking-wide">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>TELEMETRI PSIKOLOGIS PELAKU</span>
+            <div className="flex items-center gap-2 text-primary font-bold text-xs tracking-wide">
+              <Terminal className="w-4 h-4" />
+              <span>LIVE SCAMMER TELEMETRY X-RAY</span>
             </div>
             {getMoodBadge(telemetry.scammerMood)}
           </div>
 
           {/* Victim Vulnerability Gauge */}
-          <div className="space-y-1.5 bg-slate-900/80 p-3 rounded-none border border-slate-800">
+          <div className="space-y-1.5 bg-slate-900/90 p-3.5 border border-slate-800">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-400">Kerentanan Target:</span>
+              <span className="text-slate-400">Kerentanan Target Saat Ini:</span>
               <span
-                className={`font-mono font-bold ${
+                className={`font-mono font-bold text-xs ${
                   vulnerability >= 70
-                    ? "text-accent"
+                    ? "text-rose-400"
                     : vulnerability >= 40
-                    ? "text-primary"
+                    ? "text-amber-400"
                     : "text-emerald-400"
                 }`}
               >
-                {vulnerability}% ({vulnerability >= 70 ? "BAHAYA" : vulnerability >= 40 ? "WASPADALAH" : "KEBAL"})
+                {vulnerability}% —{" "}
+                {vulnerability >= 70
+                  ? "BAHAYA TINGGI (Terjerat)"
+                  : vulnerability >= 40
+                  ? "WASPADALAH (Ragu-ragu)"
+                  : "KEBAL (Paham Modus)"}
               </span>
             </div>
-            <Progress
-              value={vulnerability}
-              className="h-2 rounded-none"
-            />
+            <Progress value={vulnerability} className="h-2 rounded-none" />
+            <div className="flex justify-between text-[9px] text-slate-500 pt-0.5">
+              <span>0% Terlindungi</span>
+              <span>50% Titik Kritis</span>
+              <span>100% Saldo Dikuras</span>
+            </div>
           </div>
 
-          {/* Active Psychological Vector */}
-          <div className="space-y-1 bg-slate-900/80 p-3 rounded-none border border-slate-800">
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              Taktik Manipulasi Aktif:
+          {/* Active Psychological Tactic */}
+          <div className="space-y-1 bg-slate-900/90 p-3.5 border border-slate-800">
+            <div className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold flex items-center justify-between">
+              <span>Taktik Manipulasi Aktif:</span>
+              <Badge variant="outline" className="text-[9px] text-slate-400 border-slate-700">
+                Langkah {currentStepIndex + 1}/{scenario.steps.length}
+              </Badge>
             </div>
-            <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <div className="text-xs font-bold text-foreground flex items-center gap-1.5 text-primary">
               <Activity className="w-3.5 h-3.5 text-primary shrink-0" />
               {telemetry.activeTactic}
             </div>
           </div>
 
           {/* Live Scammer Inner Monologue */}
-          <div className="space-y-1.5 bg-muted/20 border border-border p-3 rounded-none text-slate-200">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5">
+          <div className="space-y-1.5 bg-muted/20 border border-border p-3.5 text-slate-200">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5" />
-              Monolog Batin Pelaku:
+              Monolog Batin Pelaku (Isi Kepala Sindikat):
             </div>
-            <p className="text-xs leading-relaxed italic bg-black/40 p-2.5 rounded-none border border-border">
-              "{telemetry.internalThought}"
+            <p className="text-xs leading-relaxed italic bg-black/60 p-3 border border-border text-slate-300">
+              &quot;{telemetry.internalThought}&quot;
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileTab("chat")}
-            className="lg:hidden w-full text-center py-2 px-3 bg-muted text-foreground border border-border rounded-none text-xs font-medium transition-colors"
-          >
-            Kembali ke Chat
-          </button>
+          {/* Forensic Advice Countermeasure */}
+          <div className="p-3 bg-emerald-950/30 border border-emerald-700/40 text-[11px] space-y-1 text-emerald-200">
+            <div className="font-bold flex items-center gap-1.5 text-emerald-400">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Panduan Tangkal Forensik:
+            </div>
+            <p className="leading-relaxed text-[11px] text-slate-300">
+              {vulnerability >= 60
+                ? "Pelaku mendeteksi keraguan Anda. Jangan lakukan tindakan apa pun (jangan klik, jangan transfer). Verifikasi ke kanal resmi sekarang."
+                : "Pertahankan ketegasan. Tuntut identitas legal, nomor resi terdaftar, atau kontak hotline resmi untuk mematahkan gertakan pelaku."}
+            </p>
+          </div>
 
           {/* Post-Mortem Card (when scenario is finished) */}
           {isFinished && (
-            <div className="p-3.5 rounded-none bg-slate-900 border border-slate-700 space-y-2.5">
+            <div className="p-4 bg-slate-900 border border-primary/50 space-y-3 mt-auto">
               <div className="flex items-center gap-2 text-foreground font-serif font-bold text-xs">
-                <CheckCircle className="w-4 h-4 text-primary" />
+                <CheckCircle className="w-4 h-4 text-emerald-400" />
                 {scenario.postMortem.title}
               </div>
 
@@ -348,25 +667,73 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                   : scenario.postMortem.vulnerableConclusion}
               </p>
 
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-300">
-                <span className="font-semibold text-foreground">Pelajaran Kunci:</span> {scenario.postMortem.coreLesson}
+              <div className="p-2.5 bg-slate-950 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+                <span className="font-semibold text-primary">Pelajaran Kunci:</span>
+                <p>{scenario.postMortem.coreLesson}</p>
+              </div>
+
+              <div className="space-y-1 pt-1">
+                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+                  Ceklis Tindakan Preventif:
+                </span>
+                <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+                  {scenario.postMortem.recommendedActions.map((action, i) => (
+                    <li key={i}>{action}</li>
+                  ))}
+                </ul>
               </div>
 
               {onSwitchToAct && (
                 <Button
-                  variant="outline"
                   size="sm"
                   onClick={onSwitchToAct}
-                  className="w-full text-xs h-8 cursor-pointer mt-1 rounded-none border-border"
+                  className="w-full text-xs h-8 cursor-pointer mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
                 >
-                  Buka Panduan Mitigasi (Act)
+                  Buka Protokol Mitigasi 15 Menit (Act)
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
               )}
             </div>
           )}
+
+          {/* Mobile Back Button */}
+          <button
+            type="button"
+            onClick={() => setMobileTab("chat")}
+            className="lg:hidden w-full text-center py-2 px-3 bg-muted text-foreground border border-border text-xs font-medium transition-colors mt-auto"
+          >
+            ← Kembali ke Chat WhatsApp
+          </button>
         </div>
       </div>
+
+      {/* Attachment Warning Modal */}
+      {selectedAttachmentModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-rose-500 max-w-md w-full p-5 space-y-4 text-slate-200">
+            <div className="flex items-center gap-2 text-rose-400 font-bold text-sm">
+              <AlertCircle className="w-5 h-5 text-rose-500" />
+              Peringatan Forensik: Berkas Berbahaya
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Berkas ini merupakan representasi simulasi dari payload malware/phishing yang dikirim oleh penipu.
+            </p>
+            <div className="p-3 bg-slate-950 border border-slate-800 text-[11px] text-rose-300 font-mono">
+              Status Berkas: {selectedAttachmentModal}
+            </div>
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSelectedAttachmentModal(null)}
+                className="text-xs h-7 border-slate-700 text-slate-200"
+              >
+                Tutup Peringatan
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
