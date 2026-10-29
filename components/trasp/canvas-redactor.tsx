@@ -65,6 +65,46 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
     drawSampleMockup();
   }, []);
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!hasImage || e.touches.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+    setIsDrawing(true);
+    setStartPos({ x, y });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || !startPos || e.changedTouches.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.changedTouches[0];
+    const currentX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+    const currentY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+
+    const width = currentX - startPos.x;
+    const height = currentY - startPos.y;
+
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(startPos.x, startPos.y, width, height);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.font = "bold 10px monospace";
+    ctx.fillText("[DISENSOR LOKAL]", startPos.x + 4, startPos.y + 12);
+
+    setIsDrawing(false);
+    setStartPos(null);
+    setRedactedCount((prev) => prev + 1);
+
+    if (onImageReady) onImageReady(canvas.toDataURL());
+  };
+
   const handleMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
     if (!hasImage) return;
     const canvas = canvasRef.current;
@@ -163,7 +203,9 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
           ref={canvasRef}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
-          className="max-w-full h-auto rounded-lg cursor-crosshair shadow-lg"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="max-w-full h-auto rounded-lg cursor-crosshair shadow-lg touch-none"
           style={{ maxHeight: "360px" }}
         />
         <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-xs text-xs px-2.5 py-1 rounded-md text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">

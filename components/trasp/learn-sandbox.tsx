@@ -48,6 +48,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
   const [telemetry, setTelemetry] = useState(scenario.steps[0].scammerTelemetry);
   const [isFinished, setIsFinished] = useState(false);
   const [lastChoiceType, setLastChoiceType] = useState<"VULNERABLE" | "NEUTRAL" | "CRITICAL" | null>(null);
+  const [mobileTab, setMobileTab] = useState<"chat" | "telemetry">("chat");
 
   const resetSimulation = (scenarioKey: string) => {
     const sc = SANDBOX_SCENARIOS[scenarioKey] || SANDBOX_SCENARIOS["apk-kurir"];
@@ -149,10 +150,41 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
         </div>
       </div>
 
+      {/* Mobile-Friendly Switcher (only on mobile < lg) */}
+      <div className="flex lg:hidden bg-muted/70 p-1 rounded-xl border border-border">
+        <button
+          type="button"
+          onClick={() => setMobileTab("chat")}
+          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === "chat"
+              ? "bg-emerald-600 text-white shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Smartphone className="w-3.5 h-3.5" />
+          📱 Chat HP Simulasi
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("telemetry")}
+          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+            mobileTab === "telemetry"
+              ? "bg-slate-900 text-emerald-400 border border-emerald-500/40 shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5" />
+          ⚡ X-Ray Otak Penipu
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+        </button>
+      </div>
+
       {/* Split-Screen Main Arena */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* Left Screen: Victim WhatsApp Chat Phone (6 Cols) */}
-        <div className="lg:col-span-6 flex flex-col h-[580px] bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-xl">
+        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-xl ${
+          mobileTab === "chat" ? "flex" : "hidden lg:flex"
+        }`}>
           {/* Mock Phone Header */}
           <div className="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
@@ -220,6 +252,16 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                     </button>
                   ))}
                 </div>
+
+                {lastChoiceType && (
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("telemetry")}
+                    className="lg:hidden w-full text-center py-1.5 px-3 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-bold transition-colors mt-2"
+                  >
+                    ⚡ Intip Reaksi Isi Kepala Penipu di X-Ray 👉
+                  </button>
+                )}
               </>
             )}
 
@@ -242,7 +284,9 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
         </div>
 
         {/* Right Screen: Live Scammer Telemetry Terminal (6 Cols) */}
-        <div className="lg:col-span-6 flex flex-col h-[580px] bg-slate-950 border-2 border-emerald-900/50 rounded-2xl p-5 shadow-xl font-mono text-xs text-slate-200 overflow-y-auto space-y-5">
+        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-950 border-2 border-emerald-900/50 rounded-2xl p-4 sm:p-5 shadow-xl font-mono text-xs text-slate-200 overflow-y-auto space-y-4 sm:space-y-5 ${
+          mobileTab === "telemetry" ? "flex" : "hidden lg:flex"
+        }`}>
           {/* Telemetry Header */}
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div className="flex items-center gap-2 text-emerald-400 font-bold">
@@ -308,6 +352,14 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
               "{telemetry.internalThought}"
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileTab("chat")}
+            className="lg:hidden w-full text-center py-2 px-3 bg-slate-900 text-slate-200 border border-slate-700 hover:border-emerald-500/40 rounded-lg text-xs font-bold transition-colors"
+          >
+            👈 Balas Chat Lagi di WhatsApp Simulasi
+          </button>
 
           {/* Post-Mortem Card (when scenario is finished) */}
           {isFinished && (
