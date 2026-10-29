@@ -85,12 +85,12 @@ export default function Home() {
           <EducationalDisclaimer />
 
           {/* Compact Mobile-Only Tool Switcher (Hidden on Desktop because Sidebar is visible) */}
-          <div className="grid grid-cols-4 gap-1 p-1 rounded-md bg-muted/40 border border-border md:hidden text-xs">
+          <div className="grid grid-cols-4 gap-1 p-1 rounded-none bg-muted/40 border border-border md:hidden text-xs">
             <button
               onClick={() => setActiveTool("recognize")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-none font-medium transition-colors ${
                 activeTool === "recognize"
-                  ? "bg-background text-foreground shadow-xs font-semibold"
+                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -100,9 +100,9 @@ export default function Home() {
 
             <button
               onClick={() => setActiveTool("learn")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-none font-medium transition-colors ${
                 activeTool === "learn"
-                  ? "bg-background text-foreground shadow-xs font-semibold"
+                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -112,9 +112,9 @@ export default function Home() {
 
             <button
               onClick={() => setActiveTool("act")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-none font-medium transition-colors ${
                 activeTool === "act"
-                  ? "bg-background text-foreground shadow-xs font-semibold"
+                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -124,9 +124,9 @@ export default function Home() {
 
             <button
               onClick={() => setActiveTool("redteam")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-none font-medium transition-colors ${
                 activeTool === "redteam"
-                  ? "bg-background text-foreground shadow-xs font-semibold"
+                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >

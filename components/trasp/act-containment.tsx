@@ -100,8 +100,8 @@ export function ActContainment() {
           <Card className="border-border shadow-xs">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-rose-500" />
+                <CardTitle className="text-sm font-serif font-bold flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-destructive" />
                   {playbook.title}
                 </CardTitle>
                 <Badge className="bg-rose-500/15 text-rose-500 border-rose-500/30 text-[10px]">

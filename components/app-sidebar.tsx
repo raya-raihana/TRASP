@@ -118,11 +118,11 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2.5 px-2 py-1.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                <IconShieldCheck className="h-5 w-5" />
+              <div className="flex h-8 w-8 items-center justify-center bg-primary text-primary-foreground border border-border">
+                <IconShieldCheck className="h-4 w-4" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
+                <span className="text-sm font-serif font-bold tracking-tight text-sidebar-foreground">
                   TRASP Workbench
                 </span>
                 <span className="text-[10px] text-muted-foreground font-mono">

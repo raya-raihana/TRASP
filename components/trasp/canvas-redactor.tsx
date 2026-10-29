@@ -172,9 +172,9 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-muted/40 p-3 rounded-lg border border-border">
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-muted/40 p-3 rounded-none border border-border">
         <div className="flex items-center gap-2">
-          <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
+          <Shield className="w-4 h-4 text-primary shrink-0" />
           <span className="text-xs font-semibold text-foreground">
             On-Device Privacy Scrubber: Tarik kotak hitam di atas nama/nomor HP untuk menyensor data sebelum analisis.
           </span>
@@ -185,12 +185,12 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
             variant="outline"
             size="sm"
             onClick={drawSampleMockup}
-            className="text-xs h-8"
+            className="text-xs h-8 rounded-none"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Reset Sampel
           </Button>
-          <label className="cursor-pointer inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent px-3 h-8 transition-colors">
+          <label className="cursor-pointer inline-flex items-center justify-center rounded-none text-xs font-medium border border-input bg-background hover:bg-accent px-3 h-8 transition-colors">
             <ImageIcon className="w-3.5 h-3.5 mr-1.5" />
             Upload Tangkapan Layar
             <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
@@ -198,18 +198,18 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
         </div>
       </div>
 
-      <div className="relative border-2 border-dashed border-border rounded-lg p-2 bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative border border-dashed border-border rounded-none p-2 bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
         <canvas
           ref={canvasRef}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className="max-w-full h-auto rounded-md cursor-crosshair shadow-xs touch-none"
+          className="max-w-full h-auto rounded-none cursor-crosshair shadow-none touch-none"
           style={{ maxHeight: "360px" }}
         />
-        <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-xs text-xs px-2.5 py-1 rounded-md text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-          <CheckCircle className="w-3.5 h-3.5" />
+        <div className="absolute bottom-4 right-4 bg-background/90 text-xs px-2.5 py-1 rounded-none text-foreground border border-border flex items-center gap-1.5">
+          <CheckCircle className="w-3.5 h-3.5 text-primary" />
           {redactedCount > 0 ? `${redactedCount} Bagian Disensor` : "Siap Sensor: Seret Mouse / Sentuh"}
         </div>
       </div>

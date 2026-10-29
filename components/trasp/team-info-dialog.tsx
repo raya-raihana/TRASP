@@ -31,7 +31,7 @@ export function TeamInfoDialog({ trigger, open, onOpenChange }: TeamInfoDialogPr
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-md p-6">
         <DialogHeader className="pb-2">
-          <DialogTitle className="text-base font-semibold flex items-center gap-2">
+          <DialogTitle className="text-base font-serif font-bold flex items-center gap-2">
             <IconUsers className="h-4 w-4 text-muted-foreground" />
             Informasi Tim
           </DialogTitle>
@@ -41,7 +41,7 @@ export function TeamInfoDialog({ trigger, open, onOpenChange }: TeamInfoDialogPr
           {/* Kode Tim Box */}
           <div className="space-y-1.5">
             <label className="text-muted-foreground font-medium">Kode Tim:</label>
-            <div className="flex items-center justify-between p-3 rounded-md bg-muted/40 border border-border">
+            <div className="flex items-center justify-between p-3 bg-muted/40 border border-border">
               <span className="font-mono text-base font-bold tracking-wider text-foreground">
                 MIT-010
               </span>

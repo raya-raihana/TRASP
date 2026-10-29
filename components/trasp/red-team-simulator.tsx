@@ -57,12 +57,12 @@ export function RedTeamSimulator() {
   };
 
   return (
-    <Card className="border-border shadow-xs">
+    <Card className="border-border shadow-none rounded-none">
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <UserX className="w-4 h-4 text-purple-500" />
+            <CardTitle className="text-base font-serif font-bold tracking-tight flex items-center gap-2">
+              <UserX className="w-4 h-4 text-primary" />
               Simulasi Red Team (Pola Pikir Pelaku)
             </CardTitle>
             <CardDescription className="text-xs mt-0.5">
@@ -70,7 +70,7 @@ export function RedTeamSimulator() {
             </CardDescription>
           </div>
 
-          <Button variant="outline" size="sm" onClick={handleReset} className="text-xs h-8">
+          <Button variant="outline" size="sm" onClick={handleReset} className="text-xs h-8 rounded-none">
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Reset Uji Coba
           </Button>
@@ -79,22 +79,16 @@ export function RedTeamSimulator() {
 
       <CardContent className="space-y-6">
         {/* Victim Defense Meter */}
-        <div className="bg-muted/30 border border-border p-4 rounded-lg space-y-2">
+        <div className="bg-muted/30 border border-border p-4 rounded-none space-y-2">
           <div className="flex items-center justify-between text-xs font-semibold">
             <span>Tingkat Skeptisisme Target:</span>
-            <span className="font-mono text-purple-600 dark:text-purple-400">
+            <span className="font-mono text-primary font-bold">
               {targetResistance}% {targetResistance === 0 ? "JEBOL" : "BERTAHAN"}
             </span>
           </div>
           <Progress
             value={targetResistance}
-            className={`h-2.5 ${
-              targetResistance <= 30
-                ? "[&>div]:bg-rose-500"
-                : targetResistance <= 70
-                ? "[&>div]:bg-amber-500"
-                : "[&>div]:bg-emerald-500"
-            }`}
+            className="h-2 rounded-none"
           />
           <p className="text-[11px] text-muted-foreground">
             {targetResistance > 50
@@ -116,11 +110,11 @@ export function RedTeamSimulator() {
                 <button
                   key={idx}
                   onClick={() => handleApplyTactic(tactic)}
-                  className="p-3.5 rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-purple-500/50 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2"
+                  className="p-3.5 rounded-none border border-border bg-card hover:bg-muted/50 hover:border-primary text-left transition-all cursor-pointer flex flex-col justify-between space-y-2"
                 >
                   <div>
-                    <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-muted-foreground" />
+                    <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5 font-serif">
+                      <Zap className="w-3.5 h-3.5 text-primary" />
                       {tactic.name}
                     </h5>
                     <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
@@ -135,15 +129,15 @@ export function RedTeamSimulator() {
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-md bg-muted/30 border border-border space-y-2.5 text-center">
-            <h4 className="text-sm font-semibold text-foreground">
+          <div className="p-4 rounded-none bg-muted/30 border border-border space-y-2.5 text-center">
+            <h4 className="text-sm font-serif font-bold text-foreground">
               Evaluasi Red Team Selesai
             </h4>
             <p className="text-xs text-muted-foreground max-w-xl mx-auto leading-relaxed">
               Eksperimen membuktikan bahwa manipulasi siber berfokus pada kerentanan psikologis manusia (urgensi palsu, ketakutan, iming-iming instan), bukan kelemahan teknis perangkat.
             </p>
             <div className="pt-1">
-              <span className="inline-block bg-background px-3 py-1 rounded border border-border text-[11px] font-medium text-foreground">
+              <span className="inline-block bg-background px-3 py-1 rounded-none border border-border text-[11px] font-medium text-foreground">
                 Kesimpulan: Hindari mengambil keputusan saat berada dalam tekanan emosi atau kepanikan.
               </span>
             </div>
@@ -158,9 +152,9 @@ export function RedTeamSimulator() {
             </h5>
             <div className="space-y-1.5">
               {history.map((h, i) => (
-                <div key={i} className="text-xs p-2 rounded-lg bg-muted/40 flex items-center justify-between">
+                <div key={i} className="text-xs p-2 rounded-none bg-muted/40 flex items-center justify-between border border-border">
                   <span><strong>{h.tactic}:</strong> {h.result}</span>
-                  <span className="font-mono text-rose-500 font-bold shrink-0 ml-2">{h.resistanceChange}%</span>
+                  <span className="font-mono text-accent font-bold shrink-0 ml-2">{h.resistanceChange}%</span>
                 </div>
               ))}
             </div>

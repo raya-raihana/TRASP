@@ -109,8 +109,8 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
           <Card className="border-border">
             <CardHeader className="py-3 px-4 border-b border-border">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Search className="w-4 h-4 text-emerald-500" />
+                <CardTitle className="text-sm font-serif font-bold flex items-center gap-2">
+                  <Search className="w-4 h-4 text-primary" />
                   Input Pesan &amp; Tautan
                 </CardTitle>
                 <span className="text-[10px] font-mono text-muted-foreground">Lokal (On-Device)</span>
@@ -176,7 +176,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
             <div className={`p-3.5 border-b flex items-center justify-between gap-3 ${getRiskColor(analysisResult.riskLevel)}`}>
               <div className="flex items-center gap-2">
                 <AlertOctagon className="w-4 h-4 shrink-0" />
-                <span className="font-bold text-sm">
+                <span className="font-serif font-bold text-sm">
                   {analysisResult.statusLabel}
                 </span>
               </div>
