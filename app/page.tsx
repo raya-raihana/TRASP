@@ -20,6 +20,7 @@ import { RecognizeEngine } from "@/components/trasp/recognize-engine";
 import { LearnSandbox } from "@/components/trasp/learn-sandbox";
 import { ActContainment } from "@/components/trasp/act-containment";
 import { RedTeamSimulator } from "@/components/trasp/red-team-simulator";
+import { TeamInfoDialog } from "@/components/trasp/team-info-dialog";
 
 const TOOL_TITLES: Record<string, string> = {
   recognize: "Forensic Inspector",
@@ -160,8 +161,18 @@ export default function Home() {
           </div>
 
           {/* Minimal Clean Footer */}
-          <footer className="mt-auto pt-6 pb-2 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-            <span className="font-mono">TRASP &middot; MIT-WEEK 2026 UNMUL</span>
+          <footer className="mt-auto pt-6 pb-2 border-t border-border flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 font-mono">
+              <span>TRASP &middot; MIT-WEEK 2026 UNMUL</span>
+              <span>&middot;</span>
+              <TeamInfoDialog
+                trigger={
+                  <button className="underline hover:text-foreground cursor-pointer transition-colors">
+                    Tim Tiga Trio (MIT-010)
+                  </button>
+                }
+              />
+            </div>
             <div className="flex items-center gap-3">
               <a
                 href="https://github.com/raya-raihana/TRASP"

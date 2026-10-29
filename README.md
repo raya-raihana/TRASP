@@ -11,6 +11,18 @@
 
 ---
 
+### 👥 Identitas Tim Pengembang
+- **Kode Tim:** `MIT-010`
+- **Nama Tim:** Tiga Trio
+- **Institusi:** SMK Negeri 6 Balikpapan
+- **Ketua Tim:** Raya Raihana Yasmin
+- **Anggota:**
+  1. Raya Raihana Yasmin (Ketua)
+  2. Andi Rivelani Aurellah (Anggota)
+  3. Yelena Amanda (Anggota)
+
+---
+
 ## 📌 Latar Belakang & Visi Produk
 
 Setiap hari, generasi muda dan masyarakat Indonesia berhadapan langsung dengan manipulasi digital yang semakin licik: mulai dari modus lowongan kerja fiktif bersyarat deposit (*task fraud*), undangan pernikahan atau resi kurir palsu berformat `.APK` pencuri OTP/SMS perbankan, hingga penipuan berkedok akun resmi institusi publik.

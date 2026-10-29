@@ -13,7 +13,9 @@ import {
   IconShieldCheck,
   IconTerminal2,
   IconUserX,
+  IconUsers,
 } from "@tabler/icons-react"
+import { TeamInfoDialog } from "@/components/trasp/team-info-dialog"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -185,6 +187,16 @@ export function AppSidebar({
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <TeamInfoDialog
+                  trigger={
+                    <SidebarMenuButton className="cursor-pointer text-xs">
+                      <IconUsers className="h-4 w-4" />
+                      <span>Informasi Tim (MIT-010)</span>
+                    </SidebarMenuButton>
+                  }
+                />
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="text-xs">
                   <a
