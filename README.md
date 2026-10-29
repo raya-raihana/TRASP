@@ -1,331 +1,143 @@
-# Codeguide Starter Fullstack
+# TRASP — Trust & Scam Protection Workbench
+> **Guardians of the Digital Space: Navigating Digital Deception**  
+> *Karya Web Development Competition — MIT-WEEK 2026 Universitas Mulawarman*
 
-A modern web application starter template built with Next.js 15, featuring authentication, database integration, and dark mode support.
+[![Live Deployment](https://img.shields.io/badge/Demo-Live%20Deployment-emerald?style=flat-square&logo=vercel)](https://github.com/raya-raihana/TRASP)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.1-blue?style=flat-square&logo=react)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Database](https://img.shields.io/badge/Neon-PostgreSQL%2018-00e599?style=flat-square&logo=postgresql)](https://neon.tech/)
+[![License](https://img.shields.io/badge/License-MIT-amber?style=flat-square)](LICENSE)
 
-## Tech Stack
+---
 
-- **Framework:** [Next.js 15](https://nextjs.org/) (App Router with Turbopack)
-- **Language:** TypeScript
-- **Authentication:** [Better Auth](https://better-auth.com/)
-- **Database:** [Drizzle ORM](https://orm.drizzle.team/) with PostgreSQL
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **UI Components:** [shadcn/ui](https://ui.shadcn.com/) (New York style)
-- **Theme System:** [next-themes](https://github.com/pacocoursey/next-themes)
-- **Icons:** [Lucide React](https://lucide.dev/)
+## 📌 Latar Belakang & Visi Produk
 
-## Prerequisites
+Setiap hari, generasi muda dan masyarakat Indonesia berhadapan langsung dengan manipulasi digital yang semakin licik: mulai dari modus lowongan kerja fiktif bersyarat deposit (*task fraud*), undangan pernikahan atau resi kurir palsu berformat `.APK` pencuri OTP/SMS perbankan, hingga penipuan berkedok akun resmi institusi publik.
 
-Before you begin, ensure you have the following:
-- Node.js 18+ installed
-- Docker and Docker Compose (for database setup)
-- Generated project documents from [CodeGuide](https://codeguide.dev/) for best development experience
+**TRASP** (*Trust & Scam Protection Workbench*) hadir sebagai platform interaktif berbasis web yang memberdayakan masyarakat agar tidak lagi menjadi korban pasif, melainkan menjadi **Digital Guardians** yang berdaya. Dibangun dengan memegang teguh prinsip **"Kedalaman dan Efektivitas Solusi > Kuantitas Fitur"**, TRASP mengintegrasikan tiga tahapan proteksi dalam satu alur terpadu:
+1. **Recognize (Mengenali):** Deteksi dini manipulasi pesan dan tautan berbasis heuristik linguistik dan multi-vektor tanpa risiko lag.
+2. **Learn (Belajar) — [Hero Feature]:** Melatih ketahanan psikologis lewat simulasi obrolan layar terbelah (*Split-Screen*) dengan fitur inovatif **Live Scammer Telemetry X-Ray**.
+3. **Act (Bertindak):** Panduan darurat 15 menit pertama (*containment checklist*) dan generator laporan resmi yang siap disalin.
 
-## Getting Started
+---
 
-1. **Clone the repository**
+## ⚠️ Pernyataan Batasan & Disclaimer Edukasi (Kepatuhan Juknis No. 29)
+
+> [!IMPORTANT]
+> **Pemberitahuan Transparansi Sistem:**
+> - **TRASP** dirancang murni sebagai **media edukasi, simulasi interaktif, dan panduan mitigasi awal risiko penipuan digital**.
+> - Sistem ini **tidak memberikan jaminan 100% mutlak** atas keabsahan atau keamanan suatu entitas digital, dan tidak pernah mengeluarkan vonis pasti ("100% Aman" atau "Pasti Penipuan"). Hasil evaluasi disajikan dalam bentuk indikator kecurigaan probabilistik (*Tingkat Indikator Kecurigaan Tinggi*, *Waspada*, atau *Indikator Rendah*).
+> - Seluruh data pribadi diproses secara lokal di browser pengguna (*Zero Server Data Retention*). Pengguna sangat disarankan untuk selalu melakukan verifikasi silang langsung ke kanal resmi institusi terkait.
+
+---
+
+## 🌟 Fitur Utama (Alur Single-Pipeline)
+
+### 1. 🔍 Mesin Recognize (Linguistic Normalizer & Multi-Vector Heuristics)
+- **Normalisasi Linguistik (Anti-Evasion):** Mengurai manipulasi teks yang disengaja penipu, seperti *leetspeak* (`d4p4tk4n` $\rightarrow$ `dapatkan`), spasi jebakan (`t . e . l . e . g . r . a . m`), serta leksikon modus khas Indonesia (*cuan harian, tugas like-subscribe, deposit awal*).
+- **Multi-Vector Threat Matrix:** Penilaian berbasis irisan 3 vektor risiko:
+  - *Vektor Urgensi Waktu:* Batas waktu palsu dan ancaman pemblokiran mendesak.
+  - *Vektor Permintaan Aset:* Permintaan transfer dana, pengiriman kode OTP, atau instalasi berkas asing.
+  - *Vektor Saluran Mencurigakan:* Tautan domain tidak resmi, typosquatting, atau pemendek tautan anonim.
+- **Interactive Canvas Privacy Redactor:** Alat penyensoran data sensitif (nomor HP, nama, rekening) langsung di browser pengguna sebelum diproses.
+
+### 2. 🧠 Mesin Learn — [HERO FEATURE] Split-Screen "Inside the Scammer's Mind"
+- **Dual-View Interaktif:**
+  - *Sisi Kiri:* Simulasi antarmuka perpesanan instan tempat pengguna mencoba membalas pesan penipu dengan berbagai pilihan respons.
+  - *Sisi Kanan (Live Scammer Telemetry X-Ray):* Menyingkap isi kepala penipu secara real-time (taktik manipulasi aktif yang sedang dilancarkan, serta indikator kerentanan korban yang naik-turun berdasarkan jawaban pengguna).
+- **Post-Mortem Review:** Evaluasi mendalam di akhir sesi simulasi yang menunjukkan keputusan mana yang efektif mematahkan manipulasi penipu.
+
+### 3. 🚨 Mesin Act — 15-Minute Emergency Containment & Official Report
+- **Golden Hour Triage Checklist:** Panduan mitigasi langkah demi langkah untuk korban yang panik:
+  - Penanganan darurat file `.APK` (mode pesawat, pencabutan izin aksesibilitas, isolasi malware).
+  - Penanganan kebocoran OTP/PIN (langkah pemblokiran kartu dan direct-call bank resmi).
+- **Official Report Draft Generator:** Menghasilkan draf kronologi insiden rapi yang siap di-*copy-paste* langsung ke portal aduan resmi pemerintah dan perbankan (IASC OJK, Patroli Siber Polri, CekRekening.id).
+
+---
+
+## 🏛️ Arsitektur & Teknologi
+
+Aplikasi ini dibangun dengan arsitektur **Zero-Crash Client-First** untuk menjamin kestabilan mutlak saat dinilai juri pada live deployment:
+
+- **Frontend Framework:** Next.js 15 (App Router with Turbopack) & React 19
+- **Bahasa:** TypeScript (Strict Type Safety)
+- **Styling & UI:** Tailwind CSS v4 & Radix UI primitives
+- **Ikonografi:** Lucide React & Tabler Icons
+- **Database Backend:** Neon Serverless PostgreSQL 18 & Drizzle ORM
+- **Visualisasi & Canvas:** Recharts & HTML5 Canvas API
+- **Deployment:** Vercel Edge Network
+
+---
+
+## 🚀 Panduan Instalasi & Menjalankan Lokal
+
+### Prasyarat
+- Node.js versi 18.18 atau lebih baru
+- npm / pnpm / yarn
+- Akun Git
+
+### Langkah Instalasi
+1. **Clone Repositori:**
    ```bash
-   git clone <repository-url>
-   cd codeguide-starter-fullstack
+   git clone https://github.com/raya-raihana/TRASP.git
+   cd TRASP
    ```
 
-2. **Install dependencies**
+2. **Instalasi Dependensi:**
    ```bash
    npm install
-   # or
-   yarn install
-   # or
-   pnpm install
    ```
 
-3. **Environment Variables Setup**
-   - Copy the `.env.example` file to `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   - The default values work with Docker setup, modify as needed
+3. **Konfigurasi Environment Variables:**
+   Salin berkas `.env.example` menjadi `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Sesuaikan konfigurasi `DATABASE_URL` dengan database PostgreSQL kamu (misalnya Neon PostgreSQL).
 
-4. **Start the development server**
+4. **Migrasi Database:**
+   ```bash
+   npm run db:push
+   ```
+
+5. **Jalankan Development Server:**
    ```bash
    npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
    ```
+   Buka peramban di `http://localhost:3000`.
 
-5. **Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.**
-
-## Configuration
-
-### Option 1: Docker Setup (Recommended)
-1. **Start PostgreSQL with Docker:**
+6. **Pengujian Build Produksi:**
    ```bash
-   npm run db:up
-   ```
-   This starts PostgreSQL in a Docker container with default credentials.
-
-2. **Push database schema:**
-   ```bash
-   npm run db:push
+   npm run build
+   npm run start
    ```
 
-### Option 2: Local Database Setup
-1. Create a PostgreSQL database locally
-2. Update your environment variables in `.env`:
-   ```env
-   DATABASE_URL=postgresql://username:password@localhost:5432/database_name
-   POSTGRES_DB=your_database_name
-   POSTGRES_USER=your_username
-   POSTGRES_PASSWORD=your_password
-   ```
-3. Run database migrations:
-   ```bash
-   npm run db:push
-   ```
+---
 
-## Environment Variables
+## 🧪 Panduan Pengujian untuk Juri (Panduan 60 Detik)
 
-Create a `.env` file in the root directory with the following variables:
+Untuk mempermudah dewan juri dalam menguji fungsionalitas aplikasi tanpa perlu menyiapkan sampel penipuan sendiri:
 
-```env
-# Database Configuration (defaults work with Docker)
-DATABASE_URL=postgresql://postgres:postgres@localhost:5433/postgres
-POSTGRES_DB=postgres
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+1. **Langkah 1 (Beranda):** Buka beranda aplikasi, perhatikan *Educational Disclaimer Banner* di bagian atas.
+2. **Langkah 2 (Preset Demo):** Klik salah satu dari 4 tombol **Preset Kasus Fiktif** (misal: *Modus Undangan Pernikahan .APK* atau *Modus Loker BUMN Palsu*).
+3. **Langkah 3 (Mesin Recognize):** Amati bagaimana sistem membedah 3 vektor ancaman secara transparan dan menyensor data pribadi pada canvas visual.
+4. **Langkah 4 (Mesin Learn - Sandbox):** Klik tombol **[Uji Modus di Simulator Sandbox]**. Coba balas chat penipu di panel kiri dan saksikan respons taktik manipulasi di panel kanan (*Live X-Ray*).
+5. **Langkah 5 (Mesin Act):** Buka menu **Mode Darurat**, coba simulasi kondisi *"Telanjur Klik APK"*, lalu tekan tombol salin pada draf laporan insiden resmi.
 
-# Authentication
-BETTER_AUTH_SECRET=your_secret_key_here
-BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
-```
+---
 
-## Features
+## 📜 Lisensi & Atribusi Pustaka Pihak Ketiga
 
-- 🔐 Authentication with Better Auth (email/password)
-- 🗄️ PostgreSQL Database with Drizzle ORM
-- 🎨 40+ shadcn/ui components (New York style)
-- 🌙 Dark mode with system preference detection
-- 🚀 App Router with Server Components and Turbopack
-- 📱 Responsive design with TailwindCSS v4
-- 🎯 Type-safe database operations
-- 🔒 Modern authentication patterns
-- 🐳 Full Docker support with multi-stage builds
-- 🚀 Production-ready deployment configuration
+Proyek ini menggunakan pustaka pihak ketiga berlisensi open-source resmi:
+- **Next.js** — MIT License (© Vercel, Inc.)
+- **React** — MIT License (© Meta Platforms, Inc.)
+- **Tailwind CSS** — MIT License (© Tailwind Labs, Inc.)
+- **Radix UI** — MIT License (© WorkOS)
+- **Lucide React** — ISC License (© Lucide Contributors)
+- **Drizzle ORM** — Apache 2.0 License (© Drizzle Team)
+- **pg (node-postgres)** — MIT License (© Brianc)
+- **Recharts** — MIT License (© Recharts Group)
 
-## Project Structure
-
-```
-codeguide-starter-fullstack/
-├── app/                        # Next.js app router pages
-│   ├── globals.css            # Global styles with dark mode
-│   ├── layout.tsx             # Root layout with providers
-│   └── page.tsx               # Main page
-├── components/                # React components
-│   └── ui/                    # shadcn/ui components (40+)
-├── db/                        # Database configuration
-│   ├── index.ts              # Database connection
-│   └── schema/               # Database schemas
-├── docker/                    # Docker configuration
-│   └── postgres/             # PostgreSQL initialization
-├── hooks/                     # Custom React hooks
-├── lib/                       # Utility functions
-│   ├── auth.ts               # Better Auth configuration
-│   └── utils.ts              # General utilities
-├── auth-schema.ts            # Authentication schema
-├── docker-compose.yml        # Docker services configuration
-├── Dockerfile                # Application container definition
-├── drizzle.config.ts         # Drizzle configuration
-└── components.json           # shadcn/ui configuration
-```
-
-## Database Integration
-
-This starter includes modern database integration:
-
-- **Drizzle ORM** for type-safe database operations
-- **PostgreSQL** as the database provider
-- **Better Auth** integration with Drizzle adapter
-- **Database migrations** with Drizzle Kit
-
-## Development Commands
-
-### Application
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build for production with Turbopack
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-
-### Database
-- `npm run db:up` - Start PostgreSQL in Docker
-- `npm run db:down` - Stop PostgreSQL container
-- `npm run db:dev` - Start development PostgreSQL (port 5433)
-- `npm run db:dev-down` - Stop development PostgreSQL
-- `npm run db:push` - Push schema changes to database
-- `npm run db:generate` - Generate Drizzle migration files
-- `npm run db:studio` - Open Drizzle Studio (database GUI)
-- `npm run db:reset` - Reset database (drop all tables and recreate)
-
-### Styling with shadcn/ui
-- Pre-configured with 40+ shadcn/ui components in New York style
-- Components are fully customizable and use CSS variables for theming
-- Automatic dark mode support with next-themes integration
-- Add new components: `npx shadcn@latest add [component-name]`
-
-### Docker
-- `npm run docker:build` - Build application Docker image
-- `npm run docker:up` - Start full application stack (app + database)
-- `npm run docker:down` - Stop all containers
-- `npm run docker:logs` - View container logs
-- `npm run docker:clean` - Stop containers and clean up volumes
-
-## Docker Development
-
-### Quick Start with Docker
-```bash
-# Start the entire stack (recommended for new users)
-npm run docker:up
-
-# View logs
-npm run docker:logs
-
-# Stop everything
-npm run docker:down
-```
-
-### Development Workflow
-```bash
-# Option 1: Database only (develop app locally)
-npm run db:up          # Start PostgreSQL
-npm run dev            # Start Next.js development server
-
-# Option 2: Full Docker stack
-npm run docker:up      # Start both app and database
-```
-
-### Docker Services
-
-The `docker-compose.yml` includes:
-
-- **postgres**: Main PostgreSQL database (port 5432)
-- **postgres-dev**: Development database (port 5433) - use `--profile dev`
-- **app**: Next.js application container (port 3000)
-
-### Docker Profiles
-
-```bash
-# Start development database on port 5433
-docker-compose --profile dev up postgres-dev -d
-
-# Or use the npm script
-npm run db:dev
-```
-
-## Deployment
-
-### Production Deployment
-
-#### Option 1: Docker Compose (VPS/Server)
-
-1. **Clone and setup on your server:**
-   ```bash
-   git clone <your-repo>
-   cd codeguide-starter-fullstack
-   cp .env.example .env
-   ```
-
-2. **Configure environment variables:**
-   ```bash
-   # Edit .env with production values
-   DATABASE_URL=postgresql://postgres:your_secure_password@postgres:5432/postgres
-   POSTGRES_DB=postgres
-   POSTGRES_USER=postgres
-   POSTGRES_PASSWORD=your_secure_password
-   BETTER_AUTH_SECRET=your-very-secure-secret-key
-   BETTER_AUTH_URL=https://yourdomain.com
-   NEXT_PUBLIC_BETTER_AUTH_URL=https://yourdomain.com
-   ```
-
-3. **Deploy:**
-   ```bash
-   npm run docker:up
-   ```
-
-#### Option 2: Container Registry (AWS/GCP/Azure)
-
-1. **Build and push image:**
-   ```bash
-   # Build the image
-   docker build -t your-registry/codeguide-starter-fullstack:latest .
-   
-   # Push to registry
-   docker push your-registry/codeguide-starter-fullstack:latest
-   ```
-
-2. **Deploy using your cloud provider's container service**
-
-#### Option 3: Vercel + External Database
-
-1. **Deploy to Vercel:**
-   ```bash
-   npm i -g vercel
-   vercel
-   ```
-
-2. **Add environment variables in Vercel dashboard:**
-   - `DATABASE_URL`: Your managed PostgreSQL connection string
-   - `BETTER_AUTH_SECRET`: Generate a secure secret
-   - `BETTER_AUTH_URL`: Your Vercel deployment URL
-
-3. **Setup database:**
-   ```bash
-   # Push schema to your managed database
-   npm run db:push
-   ```
-
-### Environment Variables for Production
-
-```env
-# Required for production
-DATABASE_URL=postgresql://user:password@host:port/database
-BETTER_AUTH_SECRET=generate-a-very-secure-32-character-key
-BETTER_AUTH_URL=https://yourdomain.com
-
-# Optional optimizations
-NODE_ENV=production
-```
-
-### Production Considerations
-
-- **Database**: Use managed PostgreSQL (AWS RDS, Google Cloud SQL, etc.)
-- **Security**: Generate strong secrets, use HTTPS
-- **Performance**: Enable Next.js output: 'standalone' for smaller containers
-- **Monitoring**: Add logging and health checks
-- **Backup**: Regular database backups
-- **SSL**: Terminate SSL at load balancer or reverse proxy
-
-### Health Checks
-
-The application includes basic health checks. You can extend them:
-
-```dockerfile
-# In Dockerfile, add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
-```
-
-## AI Coding Agent Integration
-
-This starter is optimized for AI coding agents:
-
-- **Clear file structure** and naming conventions
-- **TypeScript integration** with proper type definitions
-- **Modern authentication** patterns
-- **Database schema** examples
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-# codeguide-starter-fullstack
-
-# TRASP
+---
+*Dibuat dengan dedikasi penuh untuk ekosistem siber Indonesia yang lebih aman — MIT-WEEK 2026 UNMUL.*
