@@ -61,17 +61,12 @@ export function RedTeamSimulator() {
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-purple-500 border-purple-500/40 font-mono text-[10px]">
-                ROLE-REVERSAL SANDBOX
-              </Badge>
-              <CardTitle className="text-base font-bold flex items-center gap-2">
-                <UserX className="w-4 h-4 text-purple-500" />
-                Mode Uji Empati Siber: Mainkan Peran Jadi Penipu
-              </CardTitle>
-            </div>
-            <CardDescription className="text-xs mt-1">
-              Cara terbaik mendeteksi jebakan adalah dengan memahami pola pikir si pembuat jebakan.
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <UserX className="w-4 h-4 text-purple-500" />
+              Simulasi Red Team (Pola Pikir Pelaku)
+            </CardTitle>
+            <CardDescription className="text-xs mt-0.5">
+              Eksplorasi bagaimana manipulasi emosional digunakan untuk melemahkan kewaspadaan target.
             </CardDescription>
           </div>
 
@@ -85,8 +80,8 @@ export function RedTeamSimulator() {
       <CardContent className="space-y-6">
         {/* Victim Defense Meter */}
         <div className="bg-muted/30 border border-border p-4 rounded-lg space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold">
-            <span>Benteng Pertahanan Mental Korban (Skeptisisme):</span>
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <span>Tingkat Skeptisisme Target:</span>
             <span className="font-mono text-purple-600 dark:text-purple-400">
               {targetResistance}% {targetResistance === 0 ? "JEBOL" : "BERTAHAN"}
             </span>

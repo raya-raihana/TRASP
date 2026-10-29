@@ -112,41 +112,29 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
 
   return (
     <div className="space-y-6">
-      {/* Scenario Selector & Reset Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-card border border-border p-4 rounded-lg shadow-xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-emerald-500 border-emerald-500/40 font-mono text-[10px]">
-              HERO FLAGSHIP FEATURE
-            </Badge>
-            <h2 className="text-base font-bold text-foreground">
-              Inside the Scammer's Brain Sandbox
-            </h2>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Simulator layar terbelah: Uji respons chat di kiri sambil membedah strategi otak penipu secara live di kanan.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+      {/* Sleek Toolbar */}
+      <div className="flex items-center justify-between gap-3 bg-muted/40 border border-border px-3.5 py-2 rounded-md text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-foreground">Skenario:</span>
           <select
             value={selectedScenarioKey}
             onChange={(e) => resetSimulation(e.target.value)}
-            className="text-xs bg-muted/60 border border-border rounded-lg px-3 py-1.5 font-medium text-foreground h-9"
+            className="text-xs bg-background border border-border rounded px-2.5 py-1 font-medium text-foreground cursor-pointer"
           >
-            <option value="apk-kurir">Skenario: Undangan / Paket .APK</option>
-            <option value="loker-bumn">Skenario: Loker BUMN (Task Fraud)</option>
+            <option value="apk-kurir">Undangan / Resi .APK</option>
+            <option value="loker-bumn">Loker BUMN (Task Fraud)</option>
           </select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => resetSimulation(selectedScenarioKey)}
-            className="text-xs h-9 cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-            Ulangi
-          </Button>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => resetSimulation(selectedScenarioKey)}
+          className="text-xs h-7 px-2.5 cursor-pointer"
+        >
+          <RotateCcw className="w-3 h-3 mr-1" />
+          Reset Chat
+        </Button>
       </div>
 
       {/* Mobile-Friendly Switcher (only on mobile < lg) */}
@@ -287,18 +275,18 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
           mobileTab === "telemetry" ? "flex" : "hidden lg:flex"
         }`}>
           {/* Telemetry Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold">
-              <Terminal className="w-4 h-4 animate-pulse" />
-              <span>LIVE SCAMMER TELEMETRY X-RAY</span>
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+              <Terminal className="w-3.5 h-3.5" />
+              <span>TELEMETRI PSIKOLOGIS PELAKU</span>
             </div>
             {getMoodBadge(telemetry.scammerMood)}
           </div>
 
           {/* Victim Vulnerability Gauge */}
-          <div className="space-y-2 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800">
-            <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-slate-400">Kerentanan Korban (Vulnerability):</span>
+          <div className="space-y-1.5 bg-slate-900/80 p-3 rounded-md border border-slate-800">
+            <div className="flex items-center justify-between text-xs font-semibold">
+              <span className="text-slate-400">Kerentanan Target:</span>
               <span
                 className={`font-mono ${
                   vulnerability >= 70
@@ -313,7 +301,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
             </div>
             <Progress
               value={vulnerability}
-              className={`h-2.5 ${
+              className={`h-2 ${
                 vulnerability >= 70
                   ? "[&>div]:bg-rose-500"
                   : vulnerability >= 40
@@ -321,33 +309,26 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                   : "[&>div]:bg-emerald-500"
               }`}
             />
-            <p className="text-[10px] text-slate-400 italic">
-              {vulnerability >= 70
-                ? "Penipu mendeteksi Anda panik/tergiur dan akan melancarkan permintaan transfer saldo sekarang."
-                : vulnerability <= 30
-                ? "Respon kritis Anda mematahkan logika penipu dan memicu rasa gugup sindikat."
-                : "Penipu masih berusaha memanipulasi Anda dengan bukti sosial atau urgensi."}
-            </p>
           </div>
 
           {/* Active Psychological Vector */}
-          <div className="space-y-1.5 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800">
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+          <div className="space-y-1 bg-slate-900/80 p-3 rounded-md border border-slate-800">
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
               Taktik Manipulasi Aktif:
             </div>
-            <div className="text-sm font-bold text-amber-300 flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-amber-400 shrink-0" />
+            <div className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               {telemetry.activeTactic}
             </div>
           </div>
 
           {/* Live Scammer Inner Monologue */}
-          <div className="space-y-2 bg-rose-950/20 border border-rose-900/50 p-4 rounded-lg text-rose-200">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+          <div className="space-y-1.5 bg-rose-950/20 border border-rose-900/50 p-3 rounded-md text-rose-200">
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5" />
-              Monolog Batin Si Penipu (Isi Kepala):
+              Monolog Batin Pelaku:
             </div>
-            <p className="text-xs leading-relaxed italic bg-black/40 p-3 rounded-lg border border-rose-900/30">
+            <p className="text-xs leading-relaxed italic bg-black/40 p-2.5 rounded border border-rose-900/30">
               "{telemetry.internalThought}"
             </p>
           </div>

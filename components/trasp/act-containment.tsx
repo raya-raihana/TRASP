@@ -71,37 +71,26 @@ export function ActContainment() {
   return (
     <div className="space-y-8">
       {/* Playbook Header & Selector */}
-      <div className="bg-card border border-border p-4 rounded-lg shadow-xs">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-rose-500 border-rose-500/40 text-[10px] font-mono">
-                15-MINUTE GOLDEN HOUR
-              </Badge>
-              <h2 className="text-base font-bold text-foreground">
-                Interactive Incident Triage &amp; Containment
-              </h2>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Panduan darurat menit-demi-menit saat Anda atau keluarga terindikasi menjadi korban manipulasi digital.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <select
-              value={selectedPlaybookKey}
-              onChange={(e) => {
-                setSelectedPlaybookKey(e.target.value);
-                setCompletedSteps({});
-              }}
-              className="text-xs bg-muted/60 border border-border rounded-lg px-3 py-1.5 font-medium text-foreground h-9 w-full md:w-auto"
-            >
-              <option value="apk-installed">Kondisi: Telanjur Pasang File .APK</option>
-              <option value="otp-compromised">Kondisi: Telanjur Berikan OTP / PIN</option>
-              <option value="money-transferred">Kondisi: Telanjur Transfer Uang</option>
-            </select>
-          </div>
+      <div className="flex items-center justify-between gap-3 bg-muted/40 border border-border px-3.5 py-2 rounded-md text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-foreground">Kondisi Darurat:</span>
+          <select
+            value={selectedPlaybookKey}
+            onChange={(e) => {
+              setSelectedPlaybookKey(e.target.value);
+              setCompletedSteps({});
+            }}
+            className="text-xs bg-background border border-border rounded px-2.5 py-1 font-medium text-foreground cursor-pointer"
+          >
+            <option value="apk-installed">Telanjur Pasang File .APK</option>
+            <option value="otp-compromised">Telanjur Berikan OTP / PIN</option>
+            <option value="money-transferred">Telanjur Transfer Saldo</option>
+          </select>
         </div>
+
+        <Badge variant="outline" className="text-rose-500 border-rose-500/30 text-[10px] font-mono">
+          Mitigasi 15 Menit
+        </Badge>
       </div>
 
       {/* Main Grid: Steps on Left, Official Report on Right */}

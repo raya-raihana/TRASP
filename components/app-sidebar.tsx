@@ -68,27 +68,23 @@ export function AppSidebar({
   const tools = [
     {
       id: "recognize",
-      title: "1. Recognize (Forensik)",
+      title: "1. Recognize (Kenali)",
       icon: IconSearch,
-      badge: "On-Device",
     },
     {
       id: "learn",
-      title: "2. Learn (Hero Sandbox)",
+      title: "2. Learn (Simulasi)",
       icon: IconTerminal2,
-      badge: "Split-Screen",
     },
     {
       id: "act",
-      title: "3. Act (Mitigasi 15M)",
+      title: "3. Act (Mitigasi)",
       icon: IconAlertTriangle,
-      badge: "Darurat",
     },
     {
       id: "redteam",
-      title: "4. Red Team (Mode Penipu)",
+      title: "4. Red Team",
       icon: IconUserX,
-      badge: "Simulasi",
     },
   ]
 
@@ -141,7 +137,7 @@ export function AppSidebar({
         {/* Core Forensic Tools */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            Mesin Proteksi Utama
+            Menu Proteksi
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -152,22 +148,10 @@ export function AppSidebar({
                     <SidebarMenuButton
                       onClick={() => handleToolSelect(tool.id)}
                       isActive={isActive}
-                      className="cursor-pointer justify-between"
+                      className="cursor-pointer"
                     >
-                      <div className="flex items-center gap-2">
-                        <tool.icon className="h-4 w-4" />
-                        <span className="text-xs font-semibold">{tool.title}</span>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] px-1 py-0 ${
-                          isActive
-                            ? "border-emerald-500/50 text-emerald-600 dark:text-emerald-400"
-                            : "border-border text-muted-foreground"
-                        }`}
-                      >
-                        {tool.badge}
-                      </Badge>
+                      <tool.icon className="h-4 w-4" />
+                      <span className="text-xs font-medium">{tool.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )
@@ -179,7 +163,7 @@ export function AppSidebar({
         {/* Preset Case Studies */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            Alur Cepat Juri (Kasus)
+            Studi Kasus
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
