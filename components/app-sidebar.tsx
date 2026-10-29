@@ -2,188 +2,246 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
-import { useSession } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
 import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
+  IconAlertTriangle,
+  IconDeviceMobile,
+  IconFileText,
   IconFolder,
-  IconHelp,
-  IconListDetails,
+  IconLifebuoy,
   IconReport,
   IconSearch,
-  IconSettings,
-  IconUsers,
+  IconShieldCheck,
+  IconTerminal2,
+  IconUserX,
 } from "@tabler/icons-react"
-
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { Badge } from "@/components/ui/badge"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
-const staticData = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
-    },
-  ],
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  activeTool?: string
+  onSelectTool?: (tool: string) => void
+  onSelectPreset?: (presetId: string) => void
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
-  
-  const userData = session?.user ? {
-    name: session.user.name || "User",
-    email: session.user.email,
-    avatar: session.user.image || "/codeguide-logo.png",
-  } : {
-    name: "Guest",
-    email: "guest@example.com", 
-    avatar: "/codeguide-logo.png",
+export function AppSidebar({
+  activeTool = "recognize",
+  onSelectTool,
+  onSelectPreset,
+  ...props
+}: AppSidebarProps) {
+  const router = useRouter()
+  const { setOpenMobile, isMobile } = useSidebar()
+
+  const handleToolSelect = (id: string) => {
+    if (onSelectTool) {
+      onSelectTool(id)
+    } else {
+      router.push(`/?tool=${id}`)
+    }
+    if (isMobile) setOpenMobile(false)
   }
+
+  const handlePresetSelect = (id: string) => {
+    if (onSelectTool && onSelectPreset) {
+      onSelectTool("recognize")
+      onSelectPreset(id)
+    } else {
+      router.push(`/?tool=recognize&preset=${id}`)
+    }
+    if (isMobile) setOpenMobile(false)
+  }
+
+  const tools = [
+    {
+      id: "recognize",
+      title: "1. Recognize (Forensik)",
+      icon: IconSearch,
+      badge: "On-Device",
+    },
+    {
+      id: "learn",
+      title: "2. Learn (Hero Sandbox)",
+      icon: IconTerminal2,
+      badge: "Split-Screen",
+    },
+    {
+      id: "act",
+      title: "3. Act (Mitigasi 15M)",
+      icon: IconAlertTriangle,
+      badge: "Darurat",
+    },
+    {
+      id: "redteam",
+      title: "4. Red Team (Mode Penipu)",
+      icon: IconUserX,
+      badge: "Simulasi",
+    },
+  ]
+
+  const presets = [
+    {
+      id: "apk-kurir",
+      title: "Kasus 1: Undangan .APK",
+      icon: IconDeviceMobile,
+    },
+    {
+      id: "loker-bumn",
+      title: "Kasus 2: Loker BUMN",
+      icon: IconFileText,
+    },
+    {
+      id: "phishing-pajak",
+      title: "Kasus 3: Phishing Pajak",
+      icon: IconAlertTriangle,
+    },
+    {
+      id: "m-banking-palsu",
+      title: "Kasus 4: M-Banking Editan",
+      icon: IconReport,
+    },
+  ]
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-sidebar-border p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <Link href="/">
-                <Image src="/codeguide-logo.png" alt="CodeGuide" width={32} height={32} className="rounded-lg" />
-                <span className="text-base font-semibold font-parkinsans">CodeGuide</span>
-              </Link>
-            </SidebarMenuButton>
+            <div className="flex items-center gap-2.5 px-2 py-1.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                <IconShieldCheck className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
+                  TRASP Workbench
+                </span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  MIT-WEEK 2026 UNMUL
+                </span>
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={staticData.navMain} />
-        <NavDocuments items={staticData.documents} />
-        <NavSecondary items={staticData.navSecondary} className="mt-auto" />
+        {/* Core Forensic Tools */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+            Mesin Proteksi Utama
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {tools.map((tool) => {
+                const isActive = activeTool === tool.id
+                return (
+                  <SidebarMenuItem key={tool.id}>
+                    <SidebarMenuButton
+                      onClick={() => handleToolSelect(tool.id)}
+                      isActive={isActive}
+                      className="cursor-pointer justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        <tool.icon className="h-4 w-4" />
+                        <span className="text-xs font-semibold">{tool.title}</span>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] px-1 py-0 ${
+                          isActive
+                            ? "border-emerald-500/50 text-emerald-600 dark:text-emerald-400"
+                            : "border-border text-muted-foreground"
+                        }`}
+                      >
+                        {tool.badge}
+                      </Badge>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Preset Case Studies */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+            Alur Cepat Juri (Kasus)
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {presets.map((preset) => (
+                <SidebarMenuItem key={preset.id}>
+                  <SidebarMenuButton
+                    onClick={() => handlePresetSelect(preset.id)}
+                    className="cursor-pointer text-xs"
+                  >
+                    <preset.icon className="h-4 w-4 text-muted-foreground" />
+                    <span>{preset.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Secondary Navigation */}
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="text-xs">
+                  <Link href="/dashboard">
+                    <IconReport className="h-4 w-4" />
+                    <span>Dashboard Metrik</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="text-xs">
+                  <a
+                    href="https://github.com/raya-raihana/TRASP"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <IconFolder className="h-4 w-4" />
+                    <span>GitHub Repositori</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => onSelectTool?.("recognize")}
+                  className="text-xs"
+                >
+                  <IconLifebuoy className="h-4 w-4" />
+                  <span>Juknis &amp; Disclaimer</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={userData} />
+
+      <SidebarFooter className="border-t border-sidebar-border p-3 flex flex-row items-center justify-between">
+        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          <span>Zero Server Leak</span>
+        </div>
+        <ThemeToggle />
       </SidebarFooter>
     </Sidebar>
   )

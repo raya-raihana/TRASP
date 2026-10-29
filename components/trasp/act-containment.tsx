@@ -71,7 +71,7 @@ export function ActContainment() {
   return (
     <div className="space-y-8">
       {/* Playbook Header & Selector */}
-      <div className="bg-card border border-border p-4 rounded-xl shadow-xs">
+      <div className="bg-card border border-border p-4 rounded-lg shadow-xs">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export function ActContainment() {
                   <div
                     key={idx}
                     onClick={() => toggleStep(step.title)}
-                    className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
+                    className={`p-3.5 rounded-lg border transition-all cursor-pointer flex items-start gap-3 ${
                       isChecked
                         ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
                         : "bg-card border-border hover:border-muted-foreground/30"
@@ -279,7 +279,7 @@ export function ActContainment() {
           </Card>
 
           {/* Vaksin Grup WA Card */}
-          <div className="p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 space-y-3">
+          <div className="p-4 rounded-lg border border-emerald-500/40 bg-emerald-500/10 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Share2 className="w-4 h-4 text-emerald-500" />

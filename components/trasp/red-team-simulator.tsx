@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UserX, Sparkles, CheckCircle, RotateCcw, Shield, ArrowRight } from "lucide-react";
+import { UserX, Zap, CheckCircle, RotateCcw, Shield, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -84,7 +84,7 @@ export function RedTeamSimulator() {
 
       <CardContent className="space-y-6">
         {/* Victim Defense Meter */}
-        <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-2">
+        <div className="bg-muted/30 border border-border p-4 rounded-lg space-y-2">
           <div className="flex items-center justify-between text-xs font-bold">
             <span>Benteng Pertahanan Mental Korban (Skeptisisme):</span>
             <span className="font-mono text-purple-600 dark:text-purple-400">
@@ -121,11 +121,11 @@ export function RedTeamSimulator() {
                 <button
                   key={idx}
                   onClick={() => handleApplyTactic(tactic)}
-                  className="p-3.5 rounded-xl border border-border bg-card hover:bg-muted/40 hover:border-purple-500/50 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2"
+                  className="p-3.5 rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-purple-500/50 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2"
                 >
                   <div>
                     <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                      <Zap className="w-3.5 h-3.5 text-purple-500" />
                       {tactic.name}
                     </h5>
                     <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
@@ -140,7 +140,7 @@ export function RedTeamSimulator() {
             </div>
           </div>
         ) : (
-          <div className="p-5 rounded-xl bg-purple-500/10 border border-purple-500/30 space-y-3 text-center">
+          <div className="p-5 rounded-lg bg-purple-500/10 border border-purple-500/30 space-y-3 text-center">
             <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 mx-auto flex items-center justify-center">
               <CheckCircle className="w-5 h-5" />
             </div>

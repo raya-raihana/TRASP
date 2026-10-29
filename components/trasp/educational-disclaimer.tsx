@@ -7,7 +7,7 @@ export function EducationalDisclaimer() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="w-full bg-amber-500/10 border-y sm:border sm:rounded-xl border-amber-500/30 text-amber-900 dark:text-amber-200 px-4 py-3 mb-6 transition-all duration-200 shadow-xs">
+    <div className="w-full bg-amber-500/10 border-y sm:border sm:rounded-lg border-amber-500/30 text-amber-900 dark:text-amber-200 px-4 py-3 mb-6 transition-all duration-200 shadow-xs">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 bg-amber-500/20 rounded-md shrink-0 text-amber-600 dark:text-amber-400">

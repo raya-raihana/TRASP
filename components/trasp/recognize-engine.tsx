@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ShieldAlert,
   Search,
@@ -9,7 +9,7 @@ import {
   AlertOctagon,
   ArrowRight,
   Layers,
-  Sparkles,
+  Zap,
   Link as LinkIcon,
   FileText,
   Shield,
@@ -31,17 +31,32 @@ import {
 import { CanvasRedactor } from "./canvas-redactor";
 
 interface RecognizeEngineProps {
+  initialPresetId?: string;
   onSwitchToSandbox?: (caseId: string, customMessage?: string) => void;
 }
 
-export function RecognizeEngine({ onSwitchToSandbox }: RecognizeEngineProps) {
+export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandbox }: RecognizeEngineProps) {
   const [activeInputTab, setActiveInputTab] = useState<"text" | "url" | "canvas">("text");
-  const [inputText, setInputText] = useState(PRESET_CASES[0].rawText);
-  const [inputUrl, setInputUrl] = useState(PRESET_CASES[0].rawUrl || "");
-  const [selectedPresetId, setSelectedPresetId] = useState<string>("apk-kurir");
+  
+  const defaultPreset = PRESET_CASES.find((p) => p.id === initialPresetId) || PRESET_CASES[0];
+  const [inputText, setInputText] = useState(defaultPreset.rawText);
+  const [inputUrl, setInputUrl] = useState(defaultPreset.rawUrl || "");
+  const [selectedPresetId, setSelectedPresetId] = useState<string>(defaultPreset.id);
   const [analysisResult, setAnalysisResult] = useState<ForensicResult>(() =>
-    analyzeForensics(PRESET_CASES[0].rawText, PRESET_CASES[0].rawUrl)
+    analyzeForensics(defaultPreset.rawText, defaultPreset.rawUrl)
   );
+
+  useEffect(() => {
+    if (initialPresetId && initialPresetId !== selectedPresetId) {
+      const p = PRESET_CASES.find((c) => c.id === initialPresetId);
+      if (p) {
+        setSelectedPresetId(p.id);
+        setInputText(p.rawText);
+        setInputUrl(p.rawUrl || "");
+        setAnalysisResult(analyzeForensics(p.rawText, p.rawUrl));
+      }
+    }
+  }, [initialPresetId]);
 
   const handleSelectPreset = (preset: PresetCase) => {
     setSelectedPresetId(preset.id);
@@ -89,7 +104,7 @@ export function RecognizeEngine({ onSwitchToSandbox }: RecognizeEngineProps) {
               <button
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset)}
-                className={`p-3 text-left rounded-xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                className={`p-3 text-left rounded-lg border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? "border-emerald-500 bg-emerald-500/10 shadow-sm ring-1 ring-emerald-500/30"
                     : "border-border hover:border-muted-foreground/40 bg-card hover:bg-muted/30"
@@ -193,9 +208,9 @@ export function RecognizeEngine({ onSwitchToSandbox }: RecognizeEngineProps) {
           </Card>
 
           {/* Quick Context Card */}
-          <div className="p-3.5 rounded-xl border border-dashed border-border bg-muted/20 text-xs space-y-1.5">
+          <div className="p-3.5 rounded-lg border border-dashed border-border bg-muted/20 text-xs space-y-1.5">
             <div className="flex items-center gap-1.5 font-bold text-foreground">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
               Normalizer Linguistik Aktif:
             </div>
             <p className="text-muted-foreground text-[11px] leading-relaxed">
@@ -306,7 +321,7 @@ export function RecognizeEngine({ onSwitchToSandbox }: RecognizeEngineProps) {
               )}
 
               {/* Safe Action CTA */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-lg">
                 <div className="text-xs">
                   <div className="font-bold text-foreground">
                     Penasaran bagaimana isi kepala penipu ini?

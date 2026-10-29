@@ -11,7 +11,6 @@ import {
   XCircle,
   HelpCircle,
   Send,
-  Sparkles,
   ArrowRight,
   ShieldAlert
 } from "lucide-react";
@@ -114,7 +113,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
   return (
     <div className="space-y-6">
       {/* Scenario Selector & Reset Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-card border border-border p-4 rounded-xl shadow-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-card border border-border p-4 rounded-lg shadow-xs">
         <div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-emerald-500 border-emerald-500/40 font-mono text-[10px]">
@@ -151,7 +150,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
       </div>
 
       {/* Mobile-Friendly Switcher (only on mobile < lg) */}
-      <div className="flex lg:hidden bg-muted/70 p-1 rounded-xl border border-border">
+      <div className="flex lg:hidden bg-muted/70 p-1 rounded-lg border border-border">
         <button
           type="button"
           onClick={() => setMobileTab("chat")}
@@ -182,7 +181,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
       {/* Split-Screen Main Arena */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* Left Screen: Victim WhatsApp Chat Phone (6 Cols) */}
-        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-900 border-2 border-slate-700 rounded-2xl overflow-hidden shadow-xl ${
+        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-900 border border-border rounded-lg overflow-hidden shadow-xs ${
           mobileTab === "chat" ? "flex" : "hidden lg:flex"
         }`}>
           {/* Mock Phone Header */}
@@ -213,7 +212,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                 className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs shadow-xs ${
+                  className={`max-w-[85%] rounded-lg px-3.5 py-2.5 text-xs shadow-xs ${
                     msg.sender === "user"
                       ? "bg-emerald-600 text-white rounded-br-none"
                       : "bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700"
@@ -284,7 +283,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
         </div>
 
         {/* Right Screen: Live Scammer Telemetry Terminal (6 Cols) */}
-        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-950 border-2 border-emerald-900/50 rounded-2xl p-4 sm:p-5 shadow-xl font-mono text-xs text-slate-200 overflow-y-auto space-y-4 sm:space-y-5 ${
+        <div className={`lg:col-span-6 flex flex-col h-[520px] sm:h-[580px] bg-slate-950 border border-emerald-900/50 rounded-lg p-4 sm:p-5 shadow-xs font-mono text-xs text-slate-200 overflow-y-auto space-y-4 sm:space-y-5 ${
           mobileTab === "telemetry" ? "flex" : "hidden lg:flex"
         }`}>
           {/* Telemetry Header */}
@@ -297,7 +296,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
           </div>
 
           {/* Victim Vulnerability Gauge */}
-          <div className="space-y-2 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+          <div className="space-y-2 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-400">Kerentanan Korban (Vulnerability):</span>
               <span
@@ -332,18 +331,18 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
           </div>
 
           {/* Active Psychological Vector */}
-          <div className="space-y-1.5 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+          <div className="space-y-1.5 bg-slate-900/80 p-3.5 rounded-lg border border-slate-800">
             <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
               Taktik Manipulasi Aktif:
             </div>
             <div className="text-sm font-bold text-amber-300 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <Activity className="w-4 h-4 text-amber-400 shrink-0" />
               {telemetry.activeTactic}
             </div>
           </div>
 
           {/* Live Scammer Inner Monologue */}
-          <div className="space-y-2 bg-rose-950/20 border border-rose-900/50 p-4 rounded-xl text-rose-200">
+          <div className="space-y-2 bg-rose-950/20 border border-rose-900/50 p-4 rounded-lg text-rose-200">
             <div className="text-[10px] font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5" />
               Monolog Batin Si Penipu (Isi Kepala):
@@ -363,7 +362,7 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
 
           {/* Post-Mortem Card (when scenario is finished) */}
           {isFinished && (
-            <div className="p-4 rounded-xl bg-slate-900 border border-emerald-500/40 space-y-3">
+            <div className="p-4 rounded-lg bg-slate-900 border border-emerald-500/40 space-y-3">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
                 <CheckCircle className="w-4 h-4" />
                 {scenario.postMortem.title}

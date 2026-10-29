@@ -19,9 +19,9 @@ const parkinsans = Parkinsans({
 });
 
 export const metadata: Metadata = {
-  title: "Codeguide Starter Fullstack",
+  title: "TRASP — Cyber-Forensic & Digital Deception Workbench",
   description:
-    "A modern Next.js starter with TypeScript, TailwindCSS, shadcn/ui, Better Auth, and Drizzle ORM",
+    "Guardians of the Digital Space: Navigating Digital Deception — Karya Web Development MIT-WEEK 2026 UNMUL",
 };
 
 export default function RootLayout({

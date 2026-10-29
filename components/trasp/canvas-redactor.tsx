@@ -198,19 +198,19 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
         </div>
       </div>
 
-      <div className="relative border-2 border-dashed border-border rounded-xl p-2 bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative border-2 border-dashed border-border rounded-lg p-2 bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
         <canvas
           ref={canvasRef}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className="max-w-full h-auto rounded-lg cursor-crosshair shadow-lg touch-none"
+          className="max-w-full h-auto rounded-md cursor-crosshair shadow-xs touch-none"
           style={{ maxHeight: "360px" }}
         />
         <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-xs text-xs px-2.5 py-1 rounded-md text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
           <CheckCircle className="w-3.5 h-3.5" />
-          {redactedCount > 0 ? `${redactedCount} Bagian Telah Disensor` : "Siap Sensor: Klik & Seret Mouse"}
+          {redactedCount > 0 ? `${redactedCount} Bagian Disensor` : "Siap Sensor: Seret Mouse / Sentuh"}
         </div>
       </div>
     </div>
