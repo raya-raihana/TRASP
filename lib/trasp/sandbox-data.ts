@@ -47,7 +47,7 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
     title: "Modus File .APK Kurir Paket",
     scammerName: "Kurir J&T Budi Santoso",
     scammerNumber: "+62 812-9988-7711",
-    scammerAvatar: "📦",
+    scammerAvatar: "KP",
     initialVulnerability: 50,
     steps: [
       {
@@ -142,7 +142,7 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
     title: "Modus Loker Freelance BUMN (Task Fraud)",
     scammerName: "HR Rekrutmen Talent BUMN",
     scammerNumber: "+62 857-4433-2211",
-    scammerAvatar: "💼",
+    scammerAvatar: "HR",
     initialVulnerability: 60,
     steps: [
       {

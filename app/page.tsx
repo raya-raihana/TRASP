@@ -84,52 +84,52 @@ export default function Home() {
           <EducationalDisclaimer />
 
           {/* Compact Mobile-Only Tool Switcher (Hidden on Desktop because Sidebar is visible) */}
-          <div className="grid grid-cols-4 gap-1 p-1 rounded-lg bg-muted/50 border border-border md:hidden text-xs">
+          <div className="grid grid-cols-4 gap-1 p-1 rounded-md bg-muted/40 border border-border md:hidden text-xs">
             <button
               onClick={() => setActiveTool("recognize")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-md font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
                 activeTool === "recognize"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <IconSearch className="h-4 w-4 mb-0.5 text-emerald-500" />
+              <IconSearch className="h-4 w-4 mb-0.5" />
               <span>Kenali</span>
             </button>
 
             <button
               onClick={() => setActiveTool("learn")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-md font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
                 activeTool === "learn"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <IconTerminal2 className="h-4 w-4 mb-0.5 text-amber-500" />
+              <IconTerminal2 className="h-4 w-4 mb-0.5" />
               <span>Simulasi</span>
             </button>
 
             <button
               onClick={() => setActiveTool("act")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-md font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
                 activeTool === "act"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <IconAlertTriangle className="h-4 w-4 mb-0.5 text-rose-500" />
+              <IconAlertTriangle className="h-4 w-4 mb-0.5" />
               <span>Mitigasi</span>
             </button>
 
             <button
               onClick={() => setActiveTool("redteam")}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-md font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded font-medium transition-colors ${
                 activeTool === "redteam"
                   ? "bg-background text-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <IconUserX className="h-4 w-4 mb-0.5 text-purple-500" />
+              <IconUserX className="h-4 w-4 mb-0.5" />
               <span>Red Team</span>
             </button>
           </div>

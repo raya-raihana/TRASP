@@ -120,14 +120,14 @@ export function RedTeamSimulator() {
                 >
                   <div>
                     <h5 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-purple-500" />
+                      <Zap className="w-3.5 h-3.5 text-muted-foreground" />
                       {tactic.name}
                     </h5>
                     <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
                       {tactic.description}
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-rose-500">
+                  <span className="text-[10px] font-mono text-muted-foreground">
                     Dampak Melemahkan: {tactic.effect}%
                   </span>
                 </button>
@@ -135,19 +135,16 @@ export function RedTeamSimulator() {
             </div>
           </div>
         ) : (
-          <div className="p-5 rounded-lg bg-purple-500/10 border border-purple-500/30 space-y-3 text-center">
-            <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 mx-auto flex items-center justify-center">
-              <CheckCircle className="w-5 h-5" />
-            </div>
-            <h4 className="text-sm font-bold text-foreground">
-              Uji Coba Selesai: Mengapa Eksperimen Ini Sangat Berharga?
+          <div className="p-4 rounded-md bg-muted/30 border border-border space-y-2.5 text-center">
+            <h4 className="text-sm font-semibold text-foreground">
+              Evaluasi Red Team Selesai
             </h4>
             <p className="text-xs text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Anda baru saja melihat sendiri bahwa <strong>penipuan siber bukan meretas komputer, melainkan meretas emosi manusia</strong>. Hanya dengan memicu rasa takut atau iming-iming uang, orang yang cerdas sekalipun bisa kehilangan kewaspadaan.
+              Eksperimen membuktikan bahwa manipulasi siber berfokus pada kerentanan psikologis manusia (urgensi palsu, ketakutan, iming-iming instan), bukan kelemahan teknis perangkat.
             </p>
-            <div className="pt-2">
-              <span className="inline-block bg-background px-3 py-1 rounded-full border border-border text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                🛡️ Sekarang Anda Tahu Trik Mereka: Jangan Pernah Mengambil Keputusan Saat Sedang Ditekan Emosi!
+            <div className="pt-1">
+              <span className="inline-block bg-background px-3 py-1 rounded border border-border text-[11px] font-medium text-foreground">
+                Kesimpulan: Hindari mengambil keputusan saat berada dalam tekanan emosi atau kepanikan.
               </span>
             </div>
           </div>

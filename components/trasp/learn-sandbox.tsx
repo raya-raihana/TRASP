@@ -94,17 +94,17 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
   const getMoodBadge = (mood: string) => {
     switch (mood) {
       case "CONFIDENT":
-        return <Badge className="bg-rose-500/20 text-rose-400 border-rose-500/40">🔴 Percaya Diri (Menekan)</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Percaya Diri</Badge>;
       case "PUSHING":
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/40">🟡 Agresif Mengejar Batas Waktu</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Agresif</Badge>;
       case "DEFLECTING":
-        return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/40">🟣 Mengalihkan Pertanyaan</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Defensif</Badge>;
       case "PANICKED":
-        return <Badge className="bg-sky-500/20 text-sky-400 border-sky-500/40">🔵 Mulai Gugup &amp; Gertak Sambal</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border text-foreground">Gugup</Badge>;
       case "BUSTED":
-        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40">🟢 Tertangkap Basah (Kalah)</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border text-emerald-600 dark:text-emerald-400">Tertangkap</Badge>;
       default:
-        return <Badge variant="outline">{mood}</Badge>;
+        return <Badge variant="outline" className="text-[10px] font-mono border-border">{mood}</Badge>;
     }
   };
 
@@ -138,31 +138,30 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
       </div>
 
       {/* Mobile-Friendly Switcher (only on mobile < lg) */}
-      <div className="flex lg:hidden bg-muted/70 p-1 rounded-lg border border-border">
+      <div className="flex lg:hidden bg-muted/50 p-1 rounded-md border border-border">
         <button
           type="button"
           onClick={() => setMobileTab("chat")}
-          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-1.5 text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5 ${
             mobileTab === "chat"
-              ? "bg-emerald-600 text-white shadow-xs"
+              ? "bg-background text-foreground shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Smartphone className="w-3.5 h-3.5" />
-          📱 Chat HP Simulasi
+          Chat Simulasi
         </button>
         <button
           type="button"
           onClick={() => setMobileTab("telemetry")}
-          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-1.5 text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5 ${
             mobileTab === "telemetry"
-              ? "bg-slate-900 text-emerald-400 border border-emerald-500/40 shadow-xs"
+              ? "bg-background text-foreground shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Terminal className="w-3.5 h-3.5" />
-          ⚡ X-Ray Otak Penipu
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+          Telemetri Pelaku
         </button>
       </div>
 
@@ -244,9 +243,9 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                   <button
                     type="button"
                     onClick={() => setMobileTab("telemetry")}
-                    className="lg:hidden w-full text-center py-1.5 px-3 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg text-xs font-bold transition-colors mt-2"
+                    className="lg:hidden w-full text-center py-1.5 px-3 bg-muted text-foreground border border-border rounded text-xs font-medium transition-colors mt-2"
                   >
-                    ⚡ Intip Reaksi Isi Kepala Penipu di X-Ray 👉
+                    Buka Panel Telemetri Pelaku
                   </button>
                 )}
               </>
@@ -254,8 +253,8 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
 
             {isFinished && (
               <div className="text-center py-2 space-y-2">
-                <p className="text-xs text-emerald-400 font-bold">
-                  Sesi Simulasi Selesai! Lihat Evaluasi Otak Penipu di Panel Kanan 👉
+                <p className="text-xs text-muted-foreground font-medium">
+                  Simulasi selesai. Lihat ringkasan evaluasi pada panel kanan.
                 </p>
                 <Button
                   size="sm"
@@ -336,16 +335,16 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
           <button
             type="button"
             onClick={() => setMobileTab("chat")}
-            className="lg:hidden w-full text-center py-2 px-3 bg-slate-900 text-slate-200 border border-slate-700 hover:border-emerald-500/40 rounded-lg text-xs font-bold transition-colors"
+            className="lg:hidden w-full text-center py-2 px-3 bg-muted text-foreground border border-border rounded text-xs font-medium transition-colors"
           >
-            👈 Balas Chat Lagi di WhatsApp Simulasi
+            Kembali ke Chat
           </button>
 
           {/* Post-Mortem Card (when scenario is finished) */}
           {isFinished && (
-            <div className="p-4 rounded-lg bg-slate-900 border border-emerald-500/40 space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                <CheckCircle className="w-4 h-4" />
+            <div className="p-3.5 rounded-md bg-slate-900 border border-slate-700 space-y-2.5">
+              <div className="flex items-center gap-2 text-foreground font-semibold text-xs">
+                <CheckCircle className="w-4 h-4 text-emerald-500" />
                 {scenario.postMortem.title}
               </div>
 
@@ -355,16 +354,18 @@ export function LearnSandbox({ initialScenarioId = "apk-kurir", onSwitchToAct }:
                   : scenario.postMortem.vulnerableConclusion}
               </p>
 
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-amber-300 font-semibold">
-                💡 Pelajaran Kunci: {scenario.postMortem.coreLesson}
+              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-300">
+                <span className="font-semibold text-foreground">Pelajaran Kunci:</span> {scenario.postMortem.coreLesson}
               </div>
 
               {onSwitchToAct && (
                 <Button
+                  variant="outline"
+                  size="sm"
                   onClick={onSwitchToAct}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 cursor-pointer mt-2"
+                  className="w-full text-xs h-8 cursor-pointer mt-1"
                 >
-                  Pelajari Protokol Darurat &amp; Laporan (Act)
+                  Buka Panduan Mitigasi (Act)
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
               )}

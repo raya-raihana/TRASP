@@ -49,7 +49,7 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
 
     ctx.fillStyle = "#fef08a";
     ctx.font = "bold 15px monospace";
-    ctx.fillText("📁 LIHAT_FOTO_PAKET_JNT.apk (6.8 MB)", 40, 180);
+    ctx.fillText("[Berkas] LIHAT_FOTO_PAKET_JNT.apk (6.8 MB)", 40, 180);
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "13px sans-serif";

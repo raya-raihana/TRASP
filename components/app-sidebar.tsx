@@ -8,7 +8,6 @@ import {
   IconDeviceMobile,
   IconFileText,
   IconFolder,
-  IconLifebuoy,
   IconReport,
   IconSearch,
   IconShieldCheck,
@@ -188,14 +187,6 @@ export function AppSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="text-xs">
-                  <Link href="/dashboard">
-                    <IconReport className="h-4 w-4" />
-                    <span>Dashboard Metrik</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="text-xs">
                   <a
                     href="https://github.com/raya-raihana/TRASP"
                     target="_blank"
@@ -204,15 +195,6 @@ export function AppSidebar({
                     <IconFolder className="h-4 w-4" />
                     <span>GitHub Repositori</span>
                   </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={() => onSelectTool?.("recognize")}
-                  className="text-xs"
-                >
-                  <IconLifebuoy className="h-4 w-4" />
-                  <span>Juknis &amp; Disclaimer</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

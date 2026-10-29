@@ -60,7 +60,7 @@ export function ActContainment() {
     setTimeout(() => setCopiedReport(false), 2500);
   };
 
-  const vaccineText = `🚨 *PERINGATAN WASPADA PENIPUAN (BAGIKAN KE KELUARGA)* 🚨\n\nBapak/Ibu/Teman-teman, hati-hati jika menerima pesan chat dari nomor tidak dikenal dengan modus:\n❌ Mengirim file berakhiran ".APK" (berdalih Foto Paket, Resi J&T, Surat Undangan Nikah, atau Surat Tilang).\n❌ Menawarkan kerja paruh waktu mudah (like/subscribe YouTube) lalu meminta deposit uang.\n\n⚠️ *INGAT 3 ATURAN EMAS:* \n1. Jangan pernah klik atau buka file .APK apa pun di WhatsApp!\n2. Petugas bank dan kurir resmi TIDAK PERNAH meminta kode OTP atau transfer deposit.\n3. Jika ragu, segera verifikasi langsung ke call center resmi bank atau portal CekRekening.id.\n\n_Edukasi Keamanan Digital TRASP (Guardians of the Digital Space)_`;
+  const vaccineText = `*PERINGATAN WASPADA PENIPUAN*\n\nBapak/Ibu/Teman-teman, waspada jika menerima pesan chat dari nomor tidak dikenal dengan modus:\n- Mengirim file berakhiran ".APK" (berdalih Foto Paket, Resi J&T, Surat Undangan, atau Tilang).\n- Menawarkan kerja paruh waktu mudah (like/subscribe YouTube) lalu meminta deposit saldo.\n\n*3 ATURAN UTAMA:*\n1. Jangan pernah membuka file .APK apa pun di WhatsApp.\n2. Bank dan kurir resmi TIDAK PERNAH meminta kode OTP, PIN, atau transfer deposit.\n3. Verifikasi selalu ke kontak resmi perbankan atau portal CekRekening.id.\n\n_Edukasi Keamanan Digital TRASP_`;
 
   const handleCopyVaccine = () => {
     navigator.clipboard.writeText(vaccineText);
@@ -151,8 +151,8 @@ export function ActContainment() {
                         {step.action}
                       </p>
                       {step.commandOrTip && (
-                        <p className="text-[11px] text-amber-500 font-medium">
-                          💡 Catatan: {step.commandOrTip}
+                        <p className="text-[11px] text-muted-foreground font-mono">
+                          Catatan: {step.commandOrTip}
                         </p>
                       )}
                     </div>
@@ -268,22 +268,22 @@ export function ActContainment() {
           </Card>
 
           {/* Vaksin Grup WA Card */}
-          <div className="p-4 rounded-lg border border-emerald-500/40 bg-emerald-500/10 space-y-3">
+          <div className="p-3.5 rounded-md border border-border bg-muted/30 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-emerald-500" />
-                <h4 className="text-xs font-bold text-foreground">
-                  Vaksin Edukasi Grup WhatsApp Keluarga
+                <Share2 className="w-4 h-4 text-muted-foreground" />
+                <h4 className="text-xs font-semibold text-foreground">
+                  Draf Peringatan Grup Chat
                 </h4>
               </div>
-              <Badge className="bg-emerald-600 text-white text-[10px]">Anti Hoaks &amp; Tipuan</Badge>
+              <Badge variant="outline" className="text-[10px]">Anti Penipuan</Badge>
             </div>
 
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Bantu lindungi orang tua, teman, atau grup keluarga dari modus penipuan berantai dengan membagikan pesan peringatan ringkas ini:
+              Draf pesan edukasi ringkas untuk dibagikan ke kerabat atau grup keluarga:
             </p>
 
-            <div className="p-3 bg-card border border-border rounded-lg text-[11px] font-mono leading-relaxed whitespace-pre-line text-foreground/90 max-h-36 overflow-y-auto">
+            <div className="p-2.5 bg-background border border-border rounded text-[11px] font-mono leading-relaxed whitespace-pre-line text-foreground/90 max-h-36 overflow-y-auto">
               {vaccineText}
             </div>
 
@@ -291,17 +291,17 @@ export function ActContainment() {
               onClick={handleCopyVaccine}
               variant="outline"
               size="sm"
-              className="w-full text-xs h-8 cursor-pointer border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
+              className="w-full text-xs h-8 cursor-pointer"
             >
               {copiedVaccine ? (
                 <>
                   <Check className="w-3.5 h-3.5 mr-1.5" />
-                  Teks Peringatan Siap Dikirim ke Grup WA!
+                  Tersalin ke Clipboard
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 mr-1.5" />
-                  Salin Teks Peringatan untuk Grup WA
+                  Salin Teks Peringatan
                 </>
               )}
             </Button>

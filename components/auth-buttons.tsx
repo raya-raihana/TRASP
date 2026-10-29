@@ -73,9 +73,9 @@ export function AuthButtons() {
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/dashboard">
+            <Link href="/">
               <User className="mr-2 h-4 w-4" />
-              Dashboard
+              Workbench
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -126,9 +126,9 @@ export function HeroAuthButtons() {
     return (
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Button asChild size="lg" className="text-base px-8 py-3">
-          <Link href="/dashboard">
+          <Link href="/">
             <User className="mr-2 h-5 w-5" />
-            Go to Dashboard
+            Buka Workbench
           </Link>
         </Button>
       </div>

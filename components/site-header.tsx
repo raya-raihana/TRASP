@@ -26,10 +26,10 @@ export function SiteHeader({ activeToolName = "Recognize Engine" }: SiteHeaderPr
       <div className="flex items-center gap-2 sm:gap-3">
         <Badge
           variant="outline"
-          className="hidden md:inline-flex text-[10px] border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-mono items-center gap-1"
+          className="hidden md:inline-flex text-[10px] border-border text-muted-foreground font-mono items-center gap-1"
         >
-          <IconShieldCheck className="w-3.5 h-3.5" />
-          On-Device Security
+          <IconShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+          On-Device
         </Badge>
         <a
           href="https://github.com/raya-raihana/TRASP"

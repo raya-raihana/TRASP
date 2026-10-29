@@ -71,11 +71,11 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
   const getRiskColor = (level: "HIGH" | "MEDIUM" | "LOW") => {
     switch (level) {
       case "HIGH":
-        return "text-rose-600 dark:text-rose-400 border-rose-500/30 bg-rose-500/10";
+        return "text-rose-600 dark:text-rose-400 border-border bg-muted/30";
       case "MEDIUM":
-        return "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10";
+        return "text-amber-600 dark:text-amber-400 border-border bg-muted/30";
       case "LOW":
-        return "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10";
+        return "text-emerald-600 dark:text-emerald-400 border-border bg-muted/30";
     }
   };
 
@@ -161,7 +161,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
 
               <Button
                 onClick={handleRunAnalysis}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9 cursor-pointer"
+                className="w-full text-xs h-9 cursor-pointer"
               >
                 <Search className="w-3.5 h-3.5 mr-1.5" />
                 Periksa Indikator Forensik
@@ -209,13 +209,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
                       </div>
                       <Progress
                         value={vec.score}
-                        className={`h-1.5 ${
-                          vec.score >= 60
-                            ? "[&>div]:bg-rose-500"
-                            : vec.score >= 30
-                            ? "[&>div]:bg-amber-500"
-                            : "[&>div]:bg-emerald-500"
-                        }`}
+                        className="h-1.5"
                       />
                       {vec.detectedClues.length > 0 && (
                         <div className="flex flex-wrap gap-1 pt-0.5">
