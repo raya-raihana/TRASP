@@ -154,11 +154,11 @@ export default function MobilePage() {
           {activeTool === "learn" && (
             <LearnSandbox
               initialScenarioId={activeScenarioId}
-              onSwitchToAct={() => setToolAndUrl("act")}
+              onSwitchToAct={(scenarioId) => setToolAndUrl("act", scenarioId)}
             />
           )}
 
-          {activeTool === "act" && <ActContainment />}
+          {activeTool === "act" && <ActContainment initialScenarioId={activeScenarioId} />}
 
           {activeTool === "redteam" && <RedTeamSimulator />}
         </div>

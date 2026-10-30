@@ -558,34 +558,72 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
 export function matchCustomUserReply(
   userText: string,
   scenarioId: string,
-  _currentStepIndex: number
+  currentStepIndex: number = 0
 ): DialogueChoice {
   const normalized = userText.toLowerCase().trim();
 
-  // 1. Critical keywords (user is vigilant, investigating, or calling out the scam)
+  // 1. Check if userText closely matches any pre-configured choice in scenario.steps[currentStepIndex]
+  const scenario = SANDBOX_SCENARIOS[scenarioId] || SANDBOX_SCENARIOS["apk-kurir"];
+  if (scenario && scenario.steps) {
+    const currentStep = scenario.steps[currentStepIndex] || scenario.steps[scenario.steps.length - 1];
+    if (currentStep && currentStep.userChoices) {
+      const matchedChoice = currentStep.userChoices.find((c) => {
+        const cNorm = c.text.toLowerCase().trim();
+        return (
+          normalized === cNorm ||
+          normalized.includes(cNorm.substring(0, 20)) ||
+          cNorm.includes(normalized.substring(0, 20))
+        );
+      });
+      if (matchedChoice) {
+        return matchedChoice;
+      }
+    }
+  }
+
+  // 2. Critical keywords (user is vigilant, investigating, or calling out the scam)
   const criticalKeywords = [
     "polisi", "lapor", "cekrekening", "patroli", "ojk", "kemenaker", "komdigi",
     "palsu", "hoax", "penipu", "bohong", "surat tugas", "call center", "resmi",
     "kantor", "identitas", "ktp", "resi", "ekstensi", "apk", "format", "virus",
     "malware", "trojan", "blokir", "mutasi", "bukti mutasi", "delay", "kring pajak",
     "ngapain", "tidak mau", "gamau", "gak mau", "tolak", "ogah", "mana izin",
-    "rekening siapa", "bca", "bank", "modus", "tipu"
+    "rekening siapa", "bca", "bank", "modus", "tipu", "cek", "jnt", "tidak ada",
+    "bukan", "ngaco", "situs", "website", "lacak", "track", "keberatan"
   ];
 
-  // 2. Vulnerable keywords (user is falling into the trap or obeying)
+  // 3. Vulnerable keywords (user is falling into the trap or obeying)
   const vulnerableKeywords = [
     "transfer", "kirim", "tf", "rekening", "saldo", "setor", "uang", "deposit",
     "bayar", "install", "pasang", "unduh", "download", "buka", "klik", "otp",
     "kode", "sms", "pin", "password", "siap", "oke", "ok", "iya", "baik",
-    "sebentar", "ini buktinya", "ini struknya", "sudah", "udah", "tolong",
-    "kasihan", "pinjam", "nomor berapa", "rekening mana"
+    "sebentar", "ini buktinya", "ini struknya", "sudah transfer", "sudah kirim",
+    "sudah bayar", "sudah install", "sudah pasang", "udah transfer", "udah kirim",
+    "tolong", "kasihan", "pinjam", "nomor berapa", "rekening mana"
   ];
 
   const hasCritical = criticalKeywords.some((kw) => normalized.includes(kw));
   const hasVulnerable = vulnerableKeywords.some((kw) => normalized.includes(kw));
 
-  // Determine classification
-  if (hasCritical && !hasVulnerable) {
+  // Determine classification: critical inquiry / scam detection takes precedence
+  if (hasCritical) {
+    if (currentStepIndex >= 1) {
+      // User stays critical into step 2 -> Scammer is busted / aborts mission
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -50,
+        scammerResponse:
+          "[Panggilan Ditolak] — Nomor ini telah memblokir kontak Anda setelah kedoknya terbongkar.",
+        nextTelemetry: {
+          activeTactic: "Kekalahan Total (Scammer Busted & Abort)",
+          scammerMood: "BUSTED",
+          internalThought:
+            "MAMPUS! Korban sudah lapor patroli siber dan tahu semua taktik kami. Segera cabut nomor dan buang kartu perdana ini!"
+        }
+      };
+    }
+
     if (scenarioId === "apk-kurir") {
       return {
         text: userText,

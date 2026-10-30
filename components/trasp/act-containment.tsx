@@ -24,24 +24,107 @@ import {
   OFFICIAL_HOTLINES,
   generateIncidentReport
 } from "@/lib/trasp/containment-data";
+import { useEffect } from "react";
 
-export function ActContainment() {
-  const [selectedPlaybookKey, setSelectedPlaybookKey] = useState<string>("apk-installed");
+const SCENARIO_PRESETS: Record<
+  string,
+  {
+    playbook: string;
+    label: string;
+    report: {
+      victimName: string;
+      incidentType: string;
+      platform: string;
+      scammerContact: string;
+      scammerBankDetails: string;
+      lossAmount: string;
+      chronology: string;
+    };
+  }
+> = {
+  "apk-kurir": {
+    playbook: "apk-installed",
+    label: "Kasus 1: Undangan & Resi Kurir .APK",
+    report: {
+      victimName: "",
+      incidentType: "Penyusupan Malware Berkas .APK (Banking Trojan)",
+      platform: "WhatsApp",
+      scammerContact: "+62 812-9988-7711 (Kurir J&T Budi Santoso)",
+      scammerBankDetails: "BCA 8820-192-331 a.n Rudi",
+      lossAmount: "Rp0 (Berhasil diisolasi sebelum saldo terkuras)",
+      chronology:
+        "Pelaku mengirimkan berkas LIHAT_FOTO_PAKET.apk melalui chat WhatsApp dengan mengaku sebagai kurir ekspedisi untuk mencuri SMS OTP dan izin aksesibilitas."
+    }
+  },
+  "loker-bumn": {
+    playbook: "money-transferred",
+    label: "Kasus 2: Loker Freelance BUMN (Task Fraud)",
+    report: {
+      victimName: "",
+      incidentType: "Penipuan Lowongan Kerja Deposit (Task Fraud)",
+      platform: "Telegram / WhatsApp",
+      scammerContact: "+62 857-4433-2211 (HRD Rekrutmen BUMN)",
+      scammerBankDetails: "BCA 5410-982-219 a.n Bendahara Task VIP",
+      lossAmount: "Rp200.000 (Deposit Awal)",
+      chronology:
+        "Pelaku menawarkan pekerjaan sampingan like & subscribe YouTube dengan iming-iming komisi harian, lalu mewajibkan transfer deposit awal ke rekening penampung."
+    }
+  },
+  "phishing-pajak": {
+    playbook: "otp-compromised",
+    label: "Kasus 3: Tagihan Denda Pajak DJP",
+    report: {
+      victimName: "",
+      incidentType: "Phishing Kredensial & Pencatutan Nama Instansi Pemerintah (DJP)",
+      platform: "SMS / WhatsApp",
+      scammerContact: "+62 821-7788-9900 (Ditjen Pajak RI)",
+      scammerBankDetails: "Tautan Palsu: https://djp-pajak.klikbca.pembayaran-denda.top",
+      lossAmount: "Kredensial perbankan terancam tereksfiltrasi",
+      chronology:
+        "Pelaku mengirim ancaman denda pajak progresif dan pemblokiran rekening 1x24 jam, mengarahkan korban mengisi kode OTP pada portal tiruan."
+    }
+  },
+  "m-banking-palsu": {
+    playbook: "money-transferred",
+    label: "Kasus 4: Bukti Transfer M-Banking Editan",
+    report: {
+      victimName: "",
+      incidentType: "Rekayasa Sosial Kelebihan Transfer (Struk Palsu)",
+      platform: "WhatsApp",
+      scammerContact: "+62 813-1122-3344 (Pembeli Online Shop)",
+      scammerBankDetails: "BCA 8901-234-567 a.n Siti Nurhaliza",
+      lossAmount: "Rp1.350.000 (Permintaan pengembalian selisih)",
+      chronology:
+        "Pelaku mengaku salah transfer nominal uang dengan melampirkan struk m-Banking palsu dan menuntut korban mentransfer balik uang selisih."
+    }
+  }
+};
+
+interface ActContainmentProps {
+  initialScenarioId?: string;
+}
+
+export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainmentProps) {
+  const initialPreset = SCENARIO_PRESETS[initialScenarioId] || SCENARIO_PRESETS["apk-kurir"];
+  const [activeScenarioKey, setActiveScenarioKey] = useState<string>(initialScenarioId);
+  const [selectedPlaybookKey, setSelectedPlaybookKey] = useState<string>(initialPreset.playbook);
   const playbook = CONTAINMENT_PLAYBOOKS[selectedPlaybookKey] || CONTAINMENT_PLAYBOOKS["apk-installed"];
 
   // Checklist state
   const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({});
 
   // Report Form state
-  const [reportData, setReportData] = useState({
-    victimName: "",
-    incidentType: "Penyusupan Malware File .APK",
-    platform: "WhatsApp",
-    scammerContact: "+62 812-9988-7711",
-    scammerBankDetails: "BCA 8820192318 a.n Rudi",
-    lossAmount: "Rp0 (Berhasil diisolasi)",
-    chronology: "Pelaku mengirimkan berkas LIHAT_FOTO_PAKET.apk melalui chat WhatsApp dengan mengaku sebagai kurir ekspedisi."
-  });
+  const [reportData, setReportData] = useState(initialPreset.report);
+
+  useEffect(() => {
+    if (initialScenarioId && SCENARIO_PRESETS[initialScenarioId]) {
+      setActiveScenarioKey(initialScenarioId);
+      const preset = SCENARIO_PRESETS[initialScenarioId];
+      setSelectedPlaybookKey(preset.playbook);
+      setReportData(preset.report);
+      setCompletedSteps({});
+    }
+  }, [initialScenarioId]);
 
   const [copiedReport, setCopiedReport] = useState(false);
   const [copiedVaccine, setCopiedVaccine] = useState(false);
@@ -69,7 +152,46 @@ export function ActContainment() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Auto-Fill Context Banner (Single-Pipeline Integration) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-muted/40 border border-border text-xs rounded-none">
+        <div className="flex items-center gap-2">
+          <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span className="font-semibold text-foreground">
+            Alur Terintegrasi:
+          </span>
+          <span className="text-muted-foreground">
+            Formulir &amp; SOP darurat disesuaikan otomatis dari kasus:{" "}
+            <strong className="text-foreground">
+              {SCENARIO_PRESETS[activeScenarioKey]?.label || "Kasus Kustom"}
+            </strong>
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] text-muted-foreground">Ganti Kasus:</span>
+          <select
+            value={activeScenarioKey}
+            onChange={(e) => {
+              const key = e.target.value;
+              setActiveScenarioKey(key);
+              const p = SCENARIO_PRESETS[key];
+              if (p) {
+                setSelectedPlaybookKey(p.playbook);
+                setReportData(p.report);
+                setCompletedSteps({});
+              }
+            }}
+            className="text-xs bg-background border border-border px-2 py-0.5 font-medium text-foreground cursor-pointer rounded-none"
+          >
+            {Object.entries(SCENARIO_PRESETS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Playbook Header & Selector */}
       <div className="flex items-center justify-between gap-3 bg-muted/40 border border-border px-3.5 py-2 rounded-md text-xs">
         <div className="flex items-center gap-2">

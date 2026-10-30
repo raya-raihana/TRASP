@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 
 interface CanvasRedactorProps {
   onImageReady?: (dataUrl: string) => void;
+  onRedactedChange?: (count: number) => void;
+  onSampleLoaded?: (text: string, url: string) => void;
 }
 
-export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
+export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded }: CanvasRedactorProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
@@ -58,6 +60,13 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
 
     setHasImage(true);
     setRedactedCount(0);
+    if (onRedactedChange) onRedactedChange(0);
+    if (onSampleLoaded) {
+      onSampleLoaded(
+        "Selamat siang, paket tertahan karena alamat tidak lengkap. Tolong install berkas resi resmi di bawah ini kak: [Berkas] LIHAT_FOTO_PAKET_JNT.apk (6.8 MB). Penerima: Ahmad Fauzi — No. Rek: 8820-192-331 (BCA). Jika tidak dipasang dalam 2 jam, paket dikembalikan ke gudang!",
+        "http://194.233.164.88/unduh/LIHAT_FOTO_PAKET_JNT.apk"
+      );
+    }
     if (onImageReady) onImageReady(canvas.toDataURL());
   };
 
@@ -100,7 +109,11 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
 
     setIsDrawing(false);
     setStartPos(null);
-    setRedactedCount((prev) => prev + 1);
+    setRedactedCount((prev) => {
+      const next = prev + 1;
+      if (onRedactedChange) onRedactedChange(next);
+      return next;
+    });
 
     if (onImageReady) onImageReady(canvas.toDataURL());
   };
@@ -140,7 +153,11 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
 
     setIsDrawing(false);
     setStartPos(null);
-    setRedactedCount((prev) => prev + 1);
+    setRedactedCount((prev) => {
+      const next = prev + 1;
+      if (onRedactedChange) onRedactedChange(next);
+      return next;
+    });
 
     if (onImageReady) onImageReady(canvas.toDataURL());
   };
@@ -163,6 +180,13 @@ export function CanvasRedactor({ onImageReady }: CanvasRedactorProps) {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         setHasImage(true);
         setRedactedCount(0);
+        if (onRedactedChange) onRedactedChange(0);
+        if (onSampleLoaded) {
+          onSampleLoaded(
+            "Tangkapan layar percakapan telah disensor secara lokal melalui Canvas Privacy Scrubber. Mengandung indikator file tidak dikenal dan desakan waktu.",
+            ""
+          );
+        }
         if (onImageReady) onImageReady(canvas.toDataURL());
       };
       img.src = event.target?.result as string;
