@@ -1,22 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SANDBOX_SCENARIOS, matchCustomUserReply } from "@/lib/trasp/sandbox-data";
 
+function createFallbackResponse(userMessage: string, scenarioId: string, currentStepIndex: number = 0) {
+  const fallback = matchCustomUserReply(userMessage || "", scenarioId || "apk-kurir", currentStepIndex);
+  return {
+    ok: true,
+    source: "local-heuristic",
+    scammerResponse: fallback.scammerResponse,
+    activeTactic: fallback.nextTelemetry?.activeTactic || "Manipulasi Taktis Siber",
+    scammerMood: fallback.nextTelemetry?.scammerMood || "DEFLECTING",
+    internalThought: fallback.nextTelemetry?.internalThought || "Target memberikan respons yang patut diwaspadai.",
+    vulnerabilityDelta: typeof fallback.vulnerabilityDelta === "number" ? fallback.vulnerabilityDelta : 0,
+  };
+}
+
 export async function POST(req: NextRequest) {
+  let userMessage = "";
+  let scenarioId = "apk-kurir";
+  let currentStepIndex = 0;
+
   try {
     const body = await req.json();
-    const { scenarioId, userMessage, chatHistory, currentVulnerability } = body;
+    userMessage = body.userMessage || "";
+    scenarioId = body.scenarioId || "apk-kurir";
+    currentStepIndex = body.currentStepIndex || 0;
+    const { chatHistory, currentVulnerability } = body;
 
     const apiKey = process.env.GEMINI_API_KEY;
     const scenario = SANDBOX_SCENARIOS[scenarioId] || SANDBOX_SCENARIOS["apk-kurir"];
 
-    // If no API key, fallback immediately
-    if (!apiKey) {
-      const fallback = matchCustomUserReply(userMessage || "", scenarioId || "apk-kurir", 0);
-      return NextResponse.json({
-        ok: true,
-        source: "fallback",
-        ...fallback
-      });
+    // If no API key or dummy key, fallback immediately without network delay (Kepatuhan Juknis Anti-Lag)
+    if (!apiKey || apiKey.length < 15) {
+      return NextResponse.json(createFallbackResponse(userMessage, scenarioId, currentStepIndex));
     }
 
     const systemPrompt = `Kamu adalah mesin AI simulator siber forensik untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
@@ -48,11 +63,11 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
   "vulnerabilityDelta": angka antara -50 sampai +50 (negatif jika target bersikap waspada/kritis, positif jika target menunjukkan tanda-tanda termakan umpan)
 }`;
 
-    // Call Gemini 3.8 Flash with 4-second timeout abort controller
+    // 3.5s timeout abort controller (Anti-Lag requirement)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const res = await fetch(apiUrl, {
       method: "POST",
@@ -88,13 +103,8 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
       internalThought: parsed.internalThought || "Target memberikan respon tak terduga.",
       vulnerabilityDelta: typeof parsed.vulnerabilityDelta === "number" ? parsed.vulnerabilityDelta : 0,
     });
-  } catch (err) {
+  } catch (_err) {
     // Deterministic fallback (Kepatuhan Juknis: Zero-Crash & Offline-Ready)
-    const fallback = matchCustomUserReply("Halo kak", "apk-kurir", 0);
-    return NextResponse.json({
-      ok: true,
-      source: "local-fallback",
-      ...fallback
-    });
+    return NextResponse.json(createFallbackResponse(userMessage, scenarioId, currentStepIndex));
   }
 }

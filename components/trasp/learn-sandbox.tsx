@@ -31,7 +31,7 @@ import {
 
 interface LearnSandboxProps {
   initialScenarioId?: string;
-  onSwitchToAct?: () => void;
+  onSwitchToAct?: (scenarioId?: string) => void;
 }
 
 export function LearnSandbox({
@@ -169,7 +169,7 @@ export function LearnSandbox({
     };
 
     try {
-      // Call Gemini 3.8 Flash API route
+      // Call Gemini API route with graceful local fallback
       const res = await fetch("/api/trasp/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,18 +177,19 @@ export function LearnSandbox({
           scenarioId: selectedScenarioKey,
           userMessage: userText,
           chatHistory: updatedHistory,
-          currentVulnerability: vulnerability
+          currentVulnerability: vulnerability,
+          currentStepIndex: currentStepIndex
         })
       });
 
       if (res.ok) {
         const data = await res.json();
         responseData = {
-          scammerResponse: data.scammerResponse,
-          activeTactic: data.activeTactic,
-          scammerMood: data.scammerMood,
-          internalThought: data.internalThought,
-          vulnerabilityDelta: data.vulnerabilityDelta,
+          scammerResponse: data.scammerResponse || "...",
+          activeTactic: data.activeTactic || data.nextTelemetry?.activeTactic || "Manipulasi Taktis Siber",
+          scammerMood: data.scammerMood || data.nextTelemetry?.scammerMood || "DEFLECTING",
+          internalThought: data.internalThought || data.nextTelemetry?.internalThought || "Target memberikan respons yang patut diwaspadai.",
+          vulnerabilityDelta: typeof data.vulnerabilityDelta === "number" ? data.vulnerabilityDelta : 0,
           source: data.source || "gemini-ai"
         };
       } else {
@@ -747,7 +748,7 @@ export function LearnSandbox({
               {onSwitchToAct && (
                 <Button
                   size="sm"
-                  onClick={onSwitchToAct}
+                  onClick={() => onSwitchToAct(selectedScenarioKey)}
                   className="w-full text-xs h-8 cursor-pointer mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   Buka Protokol Mitigasi 15 Menit (Act)
