@@ -79,6 +79,17 @@ export function LearnSandbox({
   const [selectedAttachmentModal, setSelectedAttachmentModal] = useState<string | null>(null);
   const [lastSource, setLastSource] = useState<string>("gemini-ai");
 
+  // Track user decisions throughout simulation turns for Post-Mortem Review
+  const [userDecisions, setUserDecisions] = useState<
+    Array<{
+      turn: number;
+      userText: string;
+      type: "CRITICAL" | "VULNERABLE" | "NEUTRAL";
+      delta: number;
+      tactic: string;
+    }>
+  >([]);
+
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -139,6 +150,7 @@ export function LearnSandbox({
     setIsScammerTyping(false);
     setHasNewTelemetry(false);
     setSelectedAttachmentModal(null);
+    setUserDecisions([]);
   };
 
   const handleSendMessage = async (userText: string, staticChoice?: DialogueChoice) => {
@@ -247,7 +259,29 @@ export function LearnSandbox({
       });
       setHasNewTelemetry(true);
 
-      if (responseData.scammerMood === "BUSTED" || currentStepIndex >= 4) {
+      const decisionType = staticChoice
+        ? staticChoice.type
+        : responseData.vulnerabilityDelta < 0
+          ? "CRITICAL"
+          : responseData.vulnerabilityDelta > 15
+            ? "VULNERABLE"
+            : "NEUTRAL";
+
+      setUserDecisions((prev) => [
+        ...prev,
+        {
+          turn: prev.length + 1,
+          userText,
+          type: decisionType,
+          delta: responseData.vulnerabilityDelta,
+          tactic: responseData.activeTactic
+        }
+      ]);
+
+      if (
+        responseData.scammerMood === "BUSTED" ||
+        currentStepIndex >= scenario.steps.length - 1
+      ) {
         setIsFinished(true);
       } else {
         setCurrentStepIndex((prev) => prev + 1);
@@ -337,7 +371,7 @@ export function LearnSandbox({
             className="text-[10px] font-mono border-emerald-500/30 text-emerald-400 bg-emerald-950/20 hidden sm:flex items-center gap-1"
           >
             <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
-            Gemini 3.8 AI Active
+            {lastSource === "gemini-ai" ? "Gemini 2.5 Flash Active" : "Forensik Lokal Aktif"}
           </Badge>
 
           <Button
@@ -611,18 +645,38 @@ export function LearnSandbox({
             )}
 
             {isFinished && (
-              <div className="text-center py-2 space-y-2 bg-slate-950 p-3 border border-slate-800">
-                <p className="text-xs text-slate-300 font-medium">
-                  Skenario berakhir. Buka panel kanan untuk melihat evaluasi psikologis &amp; rekomendasi mitigasi.
+              <div className="text-center py-2.5 px-3 space-y-2 bg-slate-950 p-3 border border-slate-800">
+                <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-400 font-semibold font-mono">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Sesi Obrolan Simulasi Selesai</span>
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  {vulnerability <= 40
+                    ? "Hebat! Anda berhasil mempertahankan ketegasan dan menangkis manipulasi sindikat."
+                    : "Waspada! Sindikat sempat memanfaatkan titik kerentanan atau kepanikan Anda."}
                 </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => resetSimulation(selectedScenarioKey)}
-                  className="text-xs h-7 text-slate-200 border-slate-700 cursor-pointer"
-                >
-                  Ulangi Skenario Ini
-                </Button>
+                <div className="flex items-center justify-center gap-2 pt-0.5">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => resetSimulation(selectedScenarioKey)}
+                    className="text-xs h-7 text-slate-200 border-slate-700 hover:bg-slate-800 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Ulangi Skenario
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileTab("telemetry");
+                      const elem = document.getElementById("post-mortem-section");
+                      if (elem) elem.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="text-xs h-7 px-2.5 rounded bg-primary text-primary-foreground font-medium lg:hidden cursor-pointer"
+                  >
+                    Lihat Rapor Forensik →
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -715,13 +769,90 @@ export function LearnSandbox({
             </p>
           </div>
 
-          {/* Post-Mortem Card (when scenario is finished) */}
+          {/* Post-Mortem Forensic Scorecard (when scenario is finished) */}
           {isFinished && (
-            <div className="p-4 bg-slate-900 border border-primary/50 space-y-3 mt-auto">
-              <div className="flex items-center gap-2 text-foreground font-serif font-bold text-xs">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                {scenario.postMortem.title}
+            <div id="post-mortem-section" className="p-4 bg-slate-900 border border-primary/50 space-y-3.5 mt-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div className="flex items-center gap-2 text-foreground font-serif font-bold text-xs">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <span>Rapor Forensik Pasca-Simulasi</span>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] font-mono px-2 py-0.5 ${
+                    100 - vulnerability >= 75
+                      ? "text-emerald-400 border-emerald-500/50 bg-emerald-950/40"
+                      : 100 - vulnerability >= 45
+                        ? "text-amber-400 border-amber-500/50 bg-amber-950/40"
+                        : "text-rose-400 border-rose-500/50 bg-rose-950/40"
+                  }`}
+                >
+                  {100 - vulnerability >= 75
+                    ? "🛡️ DIGITAL GUARDIAN"
+                    : 100 - vulnerability >= 45
+                      ? "⚠️ CYBER AWARE"
+                      : "🚨 HIGH RISK"}
+                </Badge>
               </div>
+
+              {/* Cyber-Resilience Meter */}
+              <div className="space-y-1.5 p-2.5 bg-slate-950 border border-slate-800">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-slate-400">Indeks Ketahanan Siber:</span>
+                  <span className="font-bold text-primary text-xs">
+                    {Math.max(0, Math.min(100, 100 - vulnerability))}/100
+                  </span>
+                </div>
+                <Progress
+                  value={Math.max(0, Math.min(100, 100 - vulnerability))}
+                  className="h-2"
+                />
+                <p className="text-[10px] text-slate-400">
+                  {100 - vulnerability >= 75
+                    ? "Pertahanan kuat! Anda berhasil menolak jebakan social engineering dan menuntut verifikasi resmi."
+                    : 100 - vulnerability >= 45
+                      ? "Waspada! Anda menunjukkan sikap hati-hati, namun penipu masih menemukan celah untuk mendesak."
+                      : "Berisiko tinggi! Pelaku berhasil memanfaatkan dorongan emosi atau kepanikan Anda."}
+                </p>
+              </div>
+
+              {/* Move-by-Move Decision Audit */}
+              {userDecisions.length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+                    Audit Keputusan Anda:
+                  </span>
+                  <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
+                    {userDecisions.map((dec, i) => (
+                      <div
+                        key={i}
+                        className={`p-1.5 border text-[10px] flex items-start justify-between gap-2 ${
+                          dec.type === "CRITICAL"
+                            ? "bg-emerald-950/30 border-emerald-500/30 text-emerald-300"
+                            : dec.type === "VULNERABLE"
+                              ? "bg-rose-950/30 border-rose-500/30 text-rose-300"
+                              : "bg-slate-950 border-slate-800 text-slate-300"
+                        }`}
+                      >
+                        <div className="space-y-0.5">
+                          <span className="font-bold font-mono">
+                            {dec.type === "CRITICAL"
+                              ? "✓ TANGKAS"
+                              : dec.type === "VULNERABLE"
+                                ? "✗ TERJEBAK"
+                                : "○ NETRAL"}
+                            :
+                          </span>{" "}
+                          <span className="italic">&quot;{dec.userText.length > 36 ? dec.userText.substring(0, 36) + "..." : dec.userText}&quot;</span>
+                        </div>
+                        <span className="font-mono text-[9px] shrink-0">
+                          {dec.delta <= 0 ? `${dec.delta}%` : `+${dec.delta}%`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <p className="text-xs text-slate-300 leading-relaxed">
                 {vulnerability <= 40
@@ -736,7 +867,7 @@ export function LearnSandbox({
 
               <div className="space-y-1 pt-1">
                 <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-                  Ceklis Tindakan Preventif:
+                  SOP Tindakan Preventif:
                 </span>
                 <ul className="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
                   {scenario.postMortem.recommendedActions.map((action, i) => (
@@ -745,16 +876,27 @@ export function LearnSandbox({
                 </ul>
               </div>
 
-              {onSwitchToAct && (
+              <div className="space-y-2 pt-2 border-t border-slate-800">
+                {onSwitchToAct && (
+                  <Button
+                    size="sm"
+                    onClick={() => onSwitchToAct(selectedScenarioKey)}
+                    className="w-full text-xs h-8 cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Buka Protokol Mitigasi 15 Menit (Act)
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Button>
+                )}
                 <Button
                   size="sm"
-                  onClick={() => onSwitchToAct(selectedScenarioKey)}
-                  className="w-full text-xs h-8 cursor-pointer mt-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                  variant="outline"
+                  onClick={() => resetSimulation(selectedScenarioKey)}
+                  className="w-full text-xs h-7 text-slate-200 border-slate-700 hover:bg-slate-800 cursor-pointer"
                 >
-                  Buka Protokol Mitigasi 15 Menit (Act)
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  <RotateCcw className="w-3 h-3 mr-1.5" />
+                  Ulangi Simulasi Skenario Ini
                 </Button>
-              )}
+              </div>
             </div>
           )}
 

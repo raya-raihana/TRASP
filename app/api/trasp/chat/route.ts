@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY;
     const scenario = SANDBOX_SCENARIOS[scenarioId] || SANDBOX_SCENARIOS["apk-kurir"];
 
-    // If no API key or dummy key, fallback immediately without network delay (Kepatuhan Juknis Anti-Lag)
-    if (!apiKey || apiKey.length < 15) {
+    // If no API key or non-AIzaSy key, fallback immediately without network delay (Kepatuhan Juknis Anti-Lag)
+    if (!apiKey || !apiKey.startsWith("AIzaSy")) {
       return NextResponse.json(createFallbackResponse(userMessage, scenarioId, currentStepIndex));
     }
 
