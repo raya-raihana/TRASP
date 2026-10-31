@@ -43,6 +43,14 @@ export function RecognizeEngine({
   const [inputText, setInputText] = useState(defaultPreset.rawText);
   const [inputUrl, setInputUrl] = useState(defaultPreset.rawUrl || "");
   const [selectedPresetId, setSelectedPresetId] = useState<string>(defaultPreset.id);
+
+  // Canvas Redactor State
+  const [canvasText, setCanvasText] = useState(
+    "Selamat siang kak, mohon maaf paket J&T tertahan karena alamat kurang jelas. Tolong buka dan cek foto resi di berkas LIHAT_FOTO_PAKET_JNT.apk ini ya kak. Wajib di-install sekarang sebelum paket dikembalikan ke gudang dalam 2 jam!"
+  );
+  const [canvasUrl, setCanvasUrl] = useState("http://194.233.164.88/unduh/LIHAT_FOTO_PAKET_JNT.apk");
+  const [canvasRedactedCount, setCanvasRedactedCount] = useState(0);
+
   const [analysisResult, setAnalysisResult] = useState<ForensicResult>(() =>
     analyzeForensics(defaultPreset.rawText, defaultPreset.rawUrl)
   );
@@ -72,9 +80,30 @@ export function RecognizeEngine({
   };
 
   const handleRunAnalysis = () => {
-    const textToAnalyze = activeInputTab === "url" ? inputUrl : inputText;
-    const res = analyzeForensics(textToAnalyze, inputUrl);
+    let textToAnalyze = inputText;
+    let urlToAnalyze = inputUrl;
+
+    if (activeInputTab === "url") {
+      textToAnalyze = inputUrl || inputText;
+      urlToAnalyze = inputUrl;
+    } else if (activeInputTab === "canvas") {
+      textToAnalyze = canvasText;
+      urlToAnalyze = canvasUrl;
+    }
+
+    const res = analyzeForensics(textToAnalyze, urlToAnalyze);
     setAnalysisResult(res);
+  };
+
+  const handleTabChange = (val: "text" | "url" | "canvas") => {
+    setActiveInputTab(val);
+    if (val === "canvas") {
+      setAnalysisResult(analyzeForensics(canvasText, canvasUrl));
+    } else if (val === "url") {
+      setAnalysisResult(analyzeForensics(inputUrl || inputText, inputUrl));
+    } else {
+      setAnalysisResult(analyzeForensics(inputText, inputUrl));
+    }
   };
 
   const getRiskColor = (level: "HIGH" | "MEDIUM" | "LOW") => {
@@ -128,7 +157,7 @@ export function RecognizeEngine({
             </CardHeader>
 
             <CardContent className="p-4 space-y-3">
-              <Tabs value={activeInputTab} onValueChange={(val) => setActiveInputTab(val as any)}>
+              <Tabs value={activeInputTab} onValueChange={(val) => handleTabChange(val as any)}>
                 <TabsList className="grid grid-cols-3 w-full h-8 mb-2">
                   <TabsTrigger value="text" className="text-xs">
                     <FileText className="w-3.5 h-3.5 mr-1" />
@@ -165,7 +194,16 @@ export function RecognizeEngine({
                 </TabsContent>
 
                 <TabsContent value="canvas" className="mt-0">
-                  <CanvasRedactor />
+                  <CanvasRedactor
+                    onRedactedChange={(count) => setCanvasRedactedCount(count)}
+                    onSampleLoaded={(text, url) => {
+                      setCanvasText(text);
+                      setCanvasUrl(url);
+                      if (activeInputTab === "canvas") {
+                        setAnalysisResult(analyzeForensics(text, url));
+                      }
+                    }}
+                  />
                 </TabsContent>
               </Tabs>
 
@@ -196,6 +234,17 @@ export function RecognizeEngine({
             </div>
 
             <CardContent className="p-4 space-y-4">
+              {activeInputTab === "canvas" && (
+                <div className="flex items-center gap-2 p-2.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono">
+                  <Shield className="w-4 h-4 shrink-0" />
+                  <span>
+                    {canvasRedactedCount > 0
+                      ? `Sensor Privasi Aktif: ${canvasRedactedCount} area data pribadi (nama/rekening/HP) berhasil disensor sebelum analisis.`
+                      : "Pemrosesan Lokal: Tangkapan layar dianalisis 100% di browser tanpa kebocoran data ke server."}
+                  </span>
+                </div>
+              )}
+
               <p className="text-xs text-foreground/90 leading-relaxed bg-muted/30 p-2.5 rounded-md border border-border">
                 {analysisResult.summary}
               </p>

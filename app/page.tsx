@@ -71,7 +71,10 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSwitchToAct = () => {
+  const handleSwitchToAct = (scenarioId?: string) => {
+    if (scenarioId) {
+      setActiveScenarioId(scenarioId);
+    }
     setActiveTool("act");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -167,7 +170,7 @@ export default function Home() {
             )}
 
             {activeTool === "act" && (
-              <ActContainment />
+              <ActContainment initialScenarioId={activeScenarioId} />
             )}
 
             {activeTool === "redteam" && (
