@@ -25,6 +25,7 @@ import {
   ForensicResult
 } from "@/lib/trasp/engine";
 import { CanvasRedactor } from "./canvas-redactor";
+import { InfoHint } from "./info-hint";
 
 interface RecognizeEngineProps {
   initialPresetId?: string;
@@ -121,7 +122,19 @@ export function RecognizeEngine({
     <div className="space-y-4">
       {/* Sleek Preset Pills (1 Clean Line) */}
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
-        <span className="text-muted-foreground font-medium text-[11px] mr-1">Sampel Kasus:</span>
+        <div className="flex items-center gap-1 mr-1">
+          <span className="text-muted-foreground font-medium text-[11px]">Sampel Kasus:</span>
+          <InfoHint
+            title="Sampel Kasus Nyata"
+            badge="4 Skenario Modus"
+            description="Kumpulan sampel kasus penipuan siber yang marak di Indonesia untuk menguji kemampuan mesin forensik secara instan."
+            howItWorks={[
+              "Pilih salah satu tombol kasus (Resi APK, Loker BUMN, Tagihan Pajak, atau Bukti Transfer Editan).",
+              "Isi pesan dan tautan otomatis dimuat ke panel input.",
+              "Hasil analisis forensik di panel kanan akan langsung membedah pola manipulasi dan tingkat bahayanya."
+            ]}
+          />
+        </div>
         {PRESET_CASES.map((preset) => {
           const isSelected = selectedPresetId === preset.id;
           return (
@@ -150,7 +163,18 @@ export function RecognizeEngine({
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-serif font-bold flex items-center gap-2">
                   <Search className="w-4 h-4 text-primary" />
-                  Input Pesan &amp; Tautan
+                  <span>Input Pesan &amp; Tautan</span>
+                  <InfoHint
+                    title="Input Pesan & Tautan"
+                    badge="On-Device Local"
+                    description="Area kerja untuk memasukkan teks pesan WhatsApp/SMS, tautan (URL) mencurigakan, atau gambar tangkapan layar untuk diperiksa."
+                    howItWorks={[
+                      "Tab Teks: Tempelkan isi pesan chat atau SMS mencurigakan.",
+                      "Tab URL: Masukkan alamat tautan website yang mencurigakan.",
+                      "Tab Gambar: Unggah bukti tangkapan layar dan sensor data pribadi Anda sebelum dianalisis.",
+                      "Klik 'Periksa Indikator Forensik' untuk menjalankan deteksi."
+                    ]}
+                  />
                 </CardTitle>
                 <span className="text-[10px] font-mono text-muted-foreground">Lokal (On-Device)</span>
               </div>
@@ -227,6 +251,16 @@ export function RecognizeEngine({
                 <span className="font-serif font-bold text-sm">
                   {analysisResult.statusLabel}
                 </span>
+                <InfoHint
+                  title="Tingkat Risiko & Skor Forensik"
+                  badge="Evaluasi Probabilistik"
+                  description="Status risiko (Tinggi / Sedang / Rendah) dihitung dari akumulasi indikator psikologis dan analisis teknis tautan/ekstensi berkas."
+                  howItWorks={[
+                    "Skor 0-35 (Rendah): Tidak terdeteksi indikator bahaya yang signifikan.",
+                    "Skor 36-69 (Sedang): Ditemukan beberapa pola manipulasi seperti urgensi waktu atau dalih otoritas.",
+                    "Skor 70-100 (Tinggi): Terindikasi kuat modus kejahatan siber (malware APK, phishing rekening, task fraud)."
+                  ]}
+                />
               </div>
               <div className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-background/80 border border-border">
                 Skor: {analysisResult.riskScore}/100
@@ -254,7 +288,18 @@ export function RecognizeEngine({
                 <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
                   <span className="flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-emerald-500" />
-                    Vektor Heuristik
+                    <span>Vektor Heuristik</span>
+                    <InfoHint
+                      title="Vektor Heuristik Manipulasi"
+                      badge="Psikologi Forensik"
+                      description="Deteksi taktik rekayasa sosial yang kerap dipakai pelaku untuk menjebak korban agar panik atau tergiur."
+                      howItWorks={[
+                        "Tekanan Urgensi: Memaksa korban bertindak cepat dalam batas waktu sempit (contoh: 'dalam 2 jam').",
+                        "Permintaan Aset / OTP: Meminta kode rahasia, deposit saldo, atau instalasi berkas .APK.",
+                        "Iming-iming Keuntungan: Menjanjikan komisi besar tanpa beban kerja yang masuk akal.",
+                        "Pencatutan Otoritas: Mengaku dari instansi resmi (DJP/BUMN/Kurir J&T) untuk menakut-nakuti."
+                      ]}
+                    />
                   </span>
                   <span>Intensitas</span>
                 </div>
@@ -288,7 +333,19 @@ export function RecognizeEngine({
               {analysisResult.urlAnalysis && analysisResult.urlAnalysis.isValid && (
                 <div className="p-3 rounded-md border border-border bg-slate-950 text-slate-100 font-mono text-xs space-y-1.5">
                   <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
-                    <span>Deconstructor Domain</span>
+                    <span className="flex items-center gap-1.5">
+                      <span>Deconstructor Domain</span>
+                      <InfoHint
+                        title="Deconstructor Domain"
+                        badge="Deteksi Phishing"
+                        description="Membongkar struktur alamat tautan untuk mengungkap pemilik asli di balik nama palsu atau subdomain tiruan."
+                        howItWorks={[
+                          "Domain Pemilik: Domain asli tempat data sebenarnya dikirim jika tautan diklik.",
+                          "Subdomain: Nama di bagian depan yang sengaja ditiru pelaku agar tampak resmi (contoh: djp-pajak.klikbca.pembayaran-denda.top sebenarnya milik pembayaran-denda.top, BUKAN DJP atau BCA!).",
+                          "Ekstensi TLD Mencurigakan: Mendeteksi penggunaan domain murah (.xyz, .top) yang sering dimanfaatkan sindikat penipuan."
+                        ]}
+                      />
+                    </span>
                     <ExternalLink className="w-3 h-3" />
                   </div>
                   <div className="text-[11px] space-y-0.5">

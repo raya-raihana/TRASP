@@ -28,6 +28,7 @@ import {
   DialogueChoice,
   matchCustomUserReply
 } from "@/lib/trasp/sandbox-data";
+import { InfoHint } from "./info-hint";
 
 interface LearnSandboxProps {
   initialScenarioId?: string;
@@ -351,8 +352,18 @@ export function LearnSandbox({
     <div className="space-y-4">
       {/* Sleek Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 bg-muted/40 border border-border px-3.5 py-2 text-xs">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <span className="font-semibold text-foreground">Skenario Aktif:</span>
+          <InfoHint
+            title="Simulasi Sandbox WhatsApp"
+            badge="Roleplay AI Interaktif"
+            description="Lingkungan simulasi percakapan aman untuk melatih ketangkasan menghadapi modus penipuan siber Indonesia secara langsung."
+            howItWorks={[
+              "Pilih skenario dari menu pilihan (Resi Kurir APK, Loker BUMN, Phishing Pajak DJP, atau Struk Salah Transfer).",
+              "Kirim respons dengan memilih opsi cepat atau mengetik balasan bebas di kotak chat.",
+              "Amati bagaimana penipu merespons dan lihat perubahan pada panel radar psikologis di samping."
+            ]}
+          />
           <select
             value={selectedScenarioKey}
             onChange={(e) => resetSimulation(e.target.value)}
@@ -658,11 +669,11 @@ export function LearnSandbox({
                 <div className="flex items-center justify-center gap-2 pt-0.5">
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => resetSimulation(selectedScenarioKey)}
-                    className="text-xs h-7 text-slate-200 border-slate-700 hover:bg-slate-800 cursor-pointer"
+                    className="text-xs h-7 bg-slate-900 hover:bg-slate-800 text-slate-100 hover:text-white border border-slate-700 cursor-pointer"
                   >
-                    <RotateCcw className="w-3 h-3 mr-1" />
+                    <RotateCcw className="w-3.5 h-3.5 mr-1 text-slate-300" />
                     Ulangi Skenario
                   </Button>
                   <button
@@ -690,9 +701,19 @@ export function LearnSandbox({
         >
           {/* Telemetry Header */}
           <div className="flex items-center justify-between pb-2.5 border-b border-slate-800">
-            <div className="flex items-center gap-2 text-primary font-bold text-xs tracking-wide">
+            <div className="flex items-center gap-1.5 text-primary font-bold text-xs tracking-wide">
               <Terminal className="w-4 h-4" />
               <span>LIVE SCAMMER TELEMETRY X-RAY</span>
+              <InfoHint
+                title="Telemetry X-Ray Sindikat"
+                badge="Radar Psikologis"
+                description="Panel pemantau kondisi psikologis dan niat jahat penipu secara real-time saat percakapan simulasi berlangsung."
+                howItWorks={[
+                  "Taktik Manipulasi Aktif: Menunjukkan teknik bujukan atau ancaman yang sedang dilancarkan pelaku.",
+                  "Monolog Batin Pelaku: Membongkar apa yang sebenarnya dipikirkan dan direncanakan penipu di balik kata-katanya.",
+                  "Status Emosi (Mood): Menunjukkan apakah penipu sedang percaya diri, mulai defensif, panik, atau terbongkar (Busted)."
+                ]}
+              />
             </div>
             {getMoodBadge(telemetry.scammerMood)}
           </div>
@@ -700,7 +721,19 @@ export function LearnSandbox({
           {/* Victim Vulnerability Gauge */}
           <div className="space-y-1.5 bg-slate-900/90 p-3.5 border border-slate-800">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-slate-400">Kerentanan Target Saat Ini:</span>
+              <span className="text-slate-400 flex items-center gap-1.5">
+                <span>Kerentanan Target Saat Ini:</span>
+                <InfoHint
+                  title="Indikator Kerentanan Target"
+                  badge="Evaluasi Respons"
+                  description="Mengukur seberapa besar risiko Anda terjerat dalam bujuk rayu atau ancaman sindikat berdasarkan pesan balasan Anda."
+                  howItWorks={[
+                    "0-39% (Kebal): Anda bersikap kritis, meminta bukti legal, atau menolak instalasi mencurigakan sehingga penipu terdesak.",
+                    "40-69% (Waspada): Ada tanda-tanda keraguan yang masih bisa dimanfaatkan oleh sindikat.",
+                    "70-100% (Bahaya Tinggi): Respon Anda menuruti arahan penipu (misal siap install APK atau transfer saldo)."
+                  ]}
+                />
+              </span>
               <span
                 className={`font-mono font-bold text-xs ${
                   vulnerability >= 70
@@ -889,11 +922,11 @@ export function LearnSandbox({
                 )}
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => resetSimulation(selectedScenarioKey)}
-                  className="w-full text-xs h-7 text-slate-200 border-slate-700 hover:bg-slate-800 cursor-pointer"
+                  className="w-full text-xs h-8 bg-slate-900 hover:bg-slate-800 text-slate-100 hover:text-white border border-slate-700 cursor-pointer"
                 >
-                  <RotateCcw className="w-3 h-3 mr-1.5" />
+                  <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-slate-300" />
                   Ulangi Simulasi Skenario Ini
                 </Button>
               </div>
@@ -928,9 +961,9 @@ export function LearnSandbox({
             <div className="flex justify-end">
               <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 onClick={() => setSelectedAttachmentModal(null)}
-                className="text-xs h-7 border-slate-700 text-slate-200"
+                className="text-xs h-7 bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 cursor-pointer"
               >
                 Tutup Peringatan
               </Button>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { InfoHint } from "./info-hint";
 
 export function RedTeamSimulator() {
   const [targetResistance, setTargetResistance] = useState(100);
@@ -63,7 +64,17 @@ export function RedTeamSimulator() {
           <div>
             <CardTitle className="text-base font-serif font-bold tracking-tight flex items-center gap-2">
               <UserX className="w-4 h-4 text-primary" />
-              Simulasi Red Team (Pola Pikir Pelaku)
+              <span>Simulasi Red Team</span>
+              <InfoHint
+                title="Mode Simulasi Red Team"
+                badge="Eksplorasi Pola Pikir Penipu"
+                description="Fitur edukatif untuk membedah psikologi rekayasa sosial dari sudut pandang penyerang (Red Team), sehingga Anda memahami bagaimana manipulasi emosi meruntuhkan pertahanan logika target."
+                howItWorks={[
+                  "Pilih taktik serangan sosial (Urgensi Waktu, Intimidasi Otoritas, atau Eksploitasi Empati).",
+                  "Lihat bagaimana tingkat skeptisisme target berkurang jika diserang pada titik lemah emosionalnya.",
+                  "Pahami celah psikologis tersebut agar Anda sendiri kebal saat dihadapkan pada situasi nyata."
+                ]}
+              />
             </CardTitle>
             <CardDescription className="text-xs mt-0.5">
               Eksplorasi bagaimana manipulasi emosional digunakan untuk melemahkan kewaspadaan target.

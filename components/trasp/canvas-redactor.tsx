@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, MouseEvent } from "react";
 import { Shield, RotateCcw, CheckCircle, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InfoHint } from "./info-hint";
 
 interface CanvasRedactorProps {
   onImageReady?: (dataUrl: string) => void;
@@ -197,11 +198,22 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 bg-muted/40 p-3 rounded-none border border-border">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <Shield className="w-4 h-4 text-primary shrink-0" />
           <span className="text-xs font-semibold text-foreground">
-            On-Device Privacy Scrubber: Tarik kotak hitam di atas nama/nomor HP untuk menyensor data sebelum analisis.
+            Sensor Privasi Gambar
           </span>
+          <InfoHint
+            title="Sensor Privasi Gambar (Privacy Scrubber)"
+            badge="100% On-Device"
+            description="Fitur ini berfungsi untuk menutupi dan menyensor data sensitif pribadi Anda (seperti nama asli korban, nomor HP, atau nomor rekening bank) sebelum tangkapan layar percakapan diperiksa oleh mesin forensik."
+            howItWorks={[
+              "Pilih sampel bawaan atau klik tombol 'Upload Tangkapan Layar' untuk memilih bukti screenshot chat Anda.",
+              "Seret (drag) mouse atau usap layar sentuh HP Anda di atas bagian teks pribadi yang ingin ditutup hingga muncul kotak hitam bertuliskan [DISENSOR LOKAL].",
+              "Jika salah menutup, klik 'Reset Sampel' untuk mengulang dari awal.",
+              "Setelah selesai disensor, klik tombol 'Periksa Indikator Forensik' di bawah untuk mengecek ancaman siber secara aman tanpa risiko data pribadi Anda bocor ke internet."
+            ]}
+          />
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -209,7 +221,7 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
             variant="outline"
             size="sm"
             onClick={drawSampleMockup}
-            className="text-xs h-8 rounded-none"
+            className="text-xs h-8 rounded-none cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Reset Sampel

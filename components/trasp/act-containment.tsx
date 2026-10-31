@@ -25,6 +25,7 @@ import {
   generateIncidentReport
 } from "@/lib/trasp/containment-data";
 import { useEffect } from "react";
+import { InfoHint } from "./info-hint";
 
 const SCENARIO_PRESETS: Record<
   string,
@@ -196,6 +197,16 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
       <div className="flex items-center justify-between gap-3 bg-muted/40 border border-border px-3.5 py-2 rounded-md text-xs">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-foreground">Kondisi Darurat:</span>
+          <InfoHint
+            title="Protokol Mitigasi 15 Menit"
+            badge="Golden Hours Triage"
+            description="Panduan tindakan tanggap darurat berurutan untuk memutus akses peretas, mengamankan saldo bank, dan memulihkan akun."
+            howItWorks={[
+              "Pilih kondisi darurat Anda (Pasang APK, OTP Bocor, atau Transfer Saldo).",
+              "Lakukan tindakan langkah demi langkah secara berurutan dan centang setiap poin yang sudah selesai.",
+              "Gunakan draf laporan di panel kanan untuk melapor ke bank dan aparat kepolisian."
+            ]}
+          />
           <select
             value={selectedPlaybookKey}
             onChange={(e) => {
@@ -320,7 +331,17 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <FileText className="w-4 h-4 text-blue-500" />
-                  Generator Draf Laporan Resmi (IASC OJK / POLRI)
+                  <span>Draf Laporan Resmi</span>
+                  <InfoHint
+                    title="Generator Draf Laporan Resmi"
+                    badge="IASC OJK / POLRI"
+                    description="Otomatis menyusun format laporan insiden siber yang rapi dan siap disalin untuk mempercepat proses pemblokiran rekening penipu oleh bank atau pelaporan ke kepolisian."
+                    howItWorks={[
+                      "Sesuaikan data nama korban, kontak penipu, dan rekening tujuan jika ada.",
+                      "Klik 'Salin Draf Laporan Resmi'.",
+                      "Tempelkan langsung saat menghubungi call center bank, portal aduan.komdigi.go.id, atau patrolisiber.id."
+                    ]}
+                  />
                 </CardTitle>
                 <Badge variant="outline" className="text-[10px]">
                   Siap Salin
