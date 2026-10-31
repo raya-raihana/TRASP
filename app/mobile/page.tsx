@@ -147,6 +147,7 @@ export default function MobilePage() {
           {activeTool === "recognize" && (
             <RecognizeEngine
               initialPresetId={activeScenarioId}
+              onPresetChange={setActiveScenarioId}
               onSwitchToSandbox={(scenarioId) => setToolAndUrl("learn", scenarioId)}
             />
           )}

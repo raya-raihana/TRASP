@@ -34,12 +34,14 @@ import {
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   activeTool?: string
+  activePreset?: string
   onSelectTool?: (tool: string) => void
   onSelectPreset?: (presetId: string) => void
 }
 
 export function AppSidebar({
   activeTool = "recognize",
+  activePreset,
   onSelectTool,
   onSelectPreset,
   ...props
@@ -172,6 +174,7 @@ export function AppSidebar({
                 <SidebarMenuItem key={preset.id}>
                   <SidebarMenuButton
                     onClick={() => handlePresetSelect(preset.id)}
+                    isActive={activeTool === "recognize" && activePreset === preset.id}
                     className="cursor-pointer text-xs"
                   >
                     <preset.icon className="h-4 w-4 text-muted-foreground" />

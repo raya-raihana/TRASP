@@ -28,10 +28,15 @@ import { CanvasRedactor } from "./canvas-redactor";
 
 interface RecognizeEngineProps {
   initialPresetId?: string;
+  onPresetChange?: (presetId: string) => void;
   onSwitchToSandbox?: (caseId: string, customMessage?: string) => void;
 }
 
-export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandbox }: RecognizeEngineProps) {
+export function RecognizeEngine({ 
+  initialPresetId = "apk-kurir", 
+  onPresetChange,
+  onSwitchToSandbox 
+}: RecognizeEngineProps) {
   const [activeInputTab, setActiveInputTab] = useState<"text" | "url" | "canvas">("text");
   
   const defaultPreset = PRESET_CASES.find((p) => p.id === initialPresetId) || PRESET_CASES[0];
@@ -43,7 +48,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
   );
 
   useEffect(() => {
-    if (initialPresetId && initialPresetId !== selectedPresetId) {
+    if (initialPresetId) {
       const p = PRESET_CASES.find((c) => c.id === initialPresetId);
       if (p) {
         setSelectedPresetId(p.id);
@@ -52,7 +57,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
         setAnalysisResult(analyzeForensics(p.rawText, p.rawUrl));
       }
     }
-  }, [initialPresetId, selectedPresetId]);
+  }, [initialPresetId]);
 
   const handleSelectPreset = (preset: PresetCase) => {
     setSelectedPresetId(preset.id);
@@ -60,6 +65,10 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
     setInputUrl(preset.rawUrl || "");
     const res = analyzeForensics(preset.rawText, preset.rawUrl);
     setAnalysisResult(res);
+    if (activeInputTab === "canvas") {
+      setActiveInputTab("text");
+    }
+    onPresetChange?.(preset.id);
   };
 
   const handleRunAnalysis = () => {
@@ -88,6 +97,7 @@ export function RecognizeEngine({ initialPresetId = "apk-kurir", onSwitchToSandb
           const isSelected = selectedPresetId === preset.id;
           return (
             <button
+              type="button"
               key={preset.id}
               onClick={() => handleSelectPreset(preset)}
               className={`px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer ${

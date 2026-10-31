@@ -87,6 +87,7 @@ export default function Home() {
       <AppSidebar
         variant="inset"
         activeTool={activeTool}
+        activePreset={activeScenarioId}
         onSelectTool={setActiveTool}
         onSelectPreset={handleSelectPreset}
       />
@@ -153,6 +154,7 @@ export default function Home() {
             {activeTool === "recognize" && (
               <RecognizeEngine
                 initialPresetId={activeScenarioId}
+                onPresetChange={setActiveScenarioId}
                 onSwitchToSandbox={handleSwitchToSandbox}
               />
             )}
