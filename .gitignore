@@ -34,6 +34,10 @@ yarn-error.log*
 .env*
 !.env.example
 
+# e2e testing artifacts & cache
+.e2e/
+.e2e*
+
 # private & confidential competition documents
 dokumen-rahasia/
 /dokumen-rahasia/
