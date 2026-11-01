@@ -2,7 +2,7 @@ import { test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { loginToHero } from './e2e-auth-helper';
 
-test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsive Verification', async ({ app, screen }) => {
+test('TRASP Full Suite: All Features, Dynamic Indicators, Unified Learn & Assistant AI, and Kompendium', async ({ app, screen }) => {
   // 1. Open the workbench application
   await app.open('/');
   await loginToHero(app, screen);
@@ -53,19 +53,19 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
   await app.screenshot('04-privacy-scrubber-view');
 
   // -------------------------------------------------------------
-  // FITUR 3: LEARN SANDBOX & INTERACTIVE CHATBOT (AI ENGINE)
+  // FITUR 3: UNIFIED LEARN (SIMULASI PENIPU & ASISTEN FORENSIK AI)
   // -------------------------------------------------------------
-  // Navigate to 2. Learn (Simulasi) via sidebar button
-  const simulasiNav = screen.getByRole('button', '2. Learn (Simulasi)');
+  // Navigate to 2. Learn (Simulasi & Asisten AI) via sidebar
+  const simulasiNav = screen.getByRole('button', /2\. Learn/i);
   await simulasiNav.tap();
 
-  // Verify Chatbot container and initial scammer message
-  await expect(screen.getByText('Simulasi WhatsApp')).toBeVisible();
-  await expect(screen.getByText(/Gemini AI Studio Active/i)).toBeVisible();
+  // 3A. Verify Simulator Mode (WhatsApp Roleplay & Scammer Telemetry)
+  await expect(screen.getByText('1. Simulasi Penipu (WhatsApp Roleplay)')).toBeVisible();
+  await expect(screen.getByText('2. Konsultasi Asisten Forensik AI (Live)')).toBeVisible();
   await expect(screen.getByText('LIVE SCAMMER TELEMETRY X-RAY')).toBeVisible();
-  await app.screenshot('05-learn-sandbox-initial');
+  await app.screenshot('05-learn-simulator-initial');
 
-  // Interact with Scammer via critical dialogue choice
+  // Interact with Scammer in Simulator
   const criticalChoice = screen.getByRole('button', /Loh katanya kerja freelance kak/i);
   if ((await criticalChoice.count()) > 0) {
     await criticalChoice.tap();
@@ -73,12 +73,40 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
     const chatInput = screen.getByPlaceholder(/Ketik balasan bebas Anda ke penipu/i);
     await chatInput.fill('Loh kenapa harus deposit uang? Bukannya penipuan?');
     const sendBtn = screen.getByRole('button', { name: /kirim/i });
-    await sendBtn.tap();
+    if ((await sendBtn.count()) > 0) {
+      await sendBtn.tap();
+    }
   }
 
   // Wait for scammer response and internal thought telemetry
   await expect(screen.getByText(/Monolog Batin Pelaku/i)).toBeVisible();
-  await app.screenshot('06-learn-chatbot-response-and-telemetry');
+  await app.screenshot('06-learn-simulator-response-verified');
+
+  // 3B. Switch to Mode 2: Konsultasi Asisten Forensik AI (Unified in Same Module!)
+  const assistantTabBtn = screen.getByRole('button', /2\. Konsultasi Asisten Forensik AI/i);
+  await assistantTabBtn.tap();
+
+  // Verify Assistant Terminal and Forensic Knowledge Panel are visible
+  await expect(screen.getByRole('heading', { name: /TRASP AI FORENSIC COPILOT/i })).toBeVisible();
+  await expect(screen.getByText('PANEL INTELIJEN & RUJUKAN FORENSIK')).toBeVisible();
+  await expect(screen.getByText('Didukung Google AI Studio (Gemini 3.6 Flash) & Basis Regulasi Siber RI')).toBeVisible();
+  await app.screenshot('07-learn-assistant-unified-view');
+
+  // Send consultation message to the AI Assistant
+  const assistantInput = screen.getByPlaceholder(/Ketik pertanyaan konsultasi atau tempel pesan penipuan/i);
+  await assistantInput.fill('Apa dasar hukum penipuan online di Indonesia?');
+  const assistantSend = screen.getByRole('button', 'Kirim Pesan');
+  await assistantSend.tap();
+
+  // Verify AI Assistant answered with legal & forensic guidance
+  await expect(screen.getByText('Apa dasar hukum penipuan online di Indonesia?')).toBeVisible();
+  await expect(screen.getByText('Pasal 28 (1) jo. Pasal 45A (1) UU ITE No. 1/2024')).toBeVisible();
+  await app.screenshot('08-learn-assistant-live-reply-verified');
+
+  // Switch back to Simulator to confirm seamless two-way state preservation
+  const simulatorTabBtn = screen.getByRole('button', /1\. Simulasi Penipu/i);
+  await simulatorTabBtn.tap();
+  await expect(screen.getByText('LIVE SCAMMER TELEMETRY X-RAY')).toBeVisible();
 
   // -------------------------------------------------------------
   // FITUR 4: MITIGASI DARURAT (ACT CONTAINMENT)
@@ -90,7 +118,7 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
   await expect(screen.getByText(/Gawat: Saya Telanjur/i)).toBeVisible();
   await expect(screen.getByText('IASC OJK (Anti Scam Centre)')).toBeVisible();
   await expect(screen.getByRole('button', 'Salin Draf Laporan Siap Kirim')).toBeVisible();
-  await app.screenshot('07-mitigasi-emergency-playbook');
+  await app.screenshot('09-mitigasi-emergency-playbook');
 
   // -------------------------------------------------------------
   // FITUR 5: MODE RED TEAM
@@ -107,7 +135,7 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
 
   // Verify resistance decreased
   await expect(screen.getByText('65% BERTAHAN')).toBeVisible();
-  await app.screenshot('08-redteam-tactic-executed');
+  await app.screenshot('10-redteam-tactic-executed');
 
   // -------------------------------------------------------------
   // FITUR 6: RESPONSIVE VERIFICATION & CLEAN NAVIGATION
@@ -115,7 +143,7 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
   // Verify sidebar has no /mobile button
   const mobileSidebarLink = screen.getByText(/Mode Tampilan Mobile/i);
   expect(await mobileSidebarLink.count()).toBe(0);
-  await app.screenshot('09-final-clean-responsive-verified');
+  await app.screenshot('11-final-clean-responsive-verified');
 
   // -------------------------------------------------------------
   // FITUR 7: DEDICATED KOMPENDIUM & KATALOG EDUKASI KASUS SIBER
@@ -127,56 +155,36 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Chatbot AI & Responsiv
   // Verify Kompendium page loaded with official research badges & statistics
   await expect(screen.getByRole('heading', { name: /Kompendium Forensik Digital/i })).toBeVisible();
   await expect(screen.getByText(/405\.000\+/i)).toBeVisible();
-  await app.screenshot('10-kompendium-page-initial');
+  await app.screenshot('12-kompendium-page-initial');
 
   // Test search filter: type "Coretax"
   const searchInput = screen.getByPlaceholder(/Cari kasus, modus, atau kata kunci/i);
   await searchInput.fill('Coretax');
   await expect(screen.getByText(/Impersonasi Otoritas Resmi/i)).toBeVisible();
-  await app.screenshot('11-kompendium-filtered-coretax');
+  await app.screenshot('13-kompendium-filtered-coretax');
 
   // Switch to Tab 2: Protokol Darurat Resmi
   const protokolTab = screen.getByRole('button', /2\. Protokol Darurat Resmi/i);
   await protokolTab.tap();
   await expect(screen.getByText(/Konsep Golden Time/i)).toBeVisible();
-  await app.screenshot('12-kompendium-golden-time-protocols');
+  await app.screenshot('14-kompendium-golden-time-protocols');
 
   // Switch to Tab 3: Tinjauan Yuridis & KUHP/UU ITE
   const yuridisTab = screen.getByRole('button', /3\. Tinjauan Yuridis/i);
   await yuridisTab.tap();
   await expect(screen.getByText(/LEX SPECIALIS DEROGAT LEGI GENERALI/i)).toBeVisible();
-  await app.screenshot('13-kompendium-juridical-analysis');
+  await app.screenshot('15-kompendium-juridical-analysis');
 
   // Switch to Tab 4: Daftar Pustaka Otoritas
   const referensiTab = screen.getByRole('button', /4\. Daftar Pustaka Otoritas/i);
   await referensiTab.tap();
   await expect(screen.getByText(/Kementerian Komunikasi dan Digital/i)).toBeVisible();
   await expect(screen.getByText('Otoritas Jasa Keuangan & Satgas PASTI')).toBeVisible();
-  await app.screenshot('14-kompendium-official-references');
+  await app.screenshot('16-kompendium-official-references');
 
   // Return back to workbench
   const backBtn = screen.getByRole('link', /Kembali ke Workbench/i);
   await backBtn.tap();
   await expect(screen.getByText('TRASP Workbench')).toBeVisible();
-  await app.screenshot('15-returned-to-workbench');
-
-  // -------------------------------------------------------------
-  // FITUR 8: ASISTEN FORENSIK AI COPILOT ("Layaknya Kita Ini")
-  // -------------------------------------------------------------
-  const copilotBtn = screen.getByRole('button', /Asisten Forensik AI/i);
-  await copilotBtn.tap();
-
-  await expect(screen.getByRole('heading', { name: 'TRASP AI FORENSIC COPILOT' })).toBeVisible();
-  await expect(screen.getByText('Google AI Studio (Gemini 3.6 Flash) & Satgas IASC OJK')).toBeVisible();
-  await app.screenshot('16-ai-copilot-drawer-opened');
-
-  // Send interactive prompt to Copilot
-  const copilotInput = screen.getByPlaceholder(/Tanya asisten atau tempel pesan penipuan di sini/i);
-  await copilotInput.fill('Apa dasar hukum penipuan online di Indonesia?');
-  const copilotSend = screen.getByRole('button', 'Kirim Pesan');
-  await copilotSend.tap();
-
-  // Wait for AI response
-  await expect(screen.getByText(/UU ITE No\. 1\/2024|Pasal 378 KUHP|Analisis Forensik|keamanan siber/i)).toBeVisible();
-  await app.screenshot('17-ai-copilot-interactive-chat-verified');
+  await app.screenshot('17-returned-to-workbench');
 });

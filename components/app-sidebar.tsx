@@ -77,7 +77,7 @@ export function AppSidebar({
     },
     {
       id: "learn",
-      title: "2. Learn (Simulasi)",
+      title: "2. Learn (Simulasi & Asisten AI)",
       icon: IconTerminal2,
     },
     {

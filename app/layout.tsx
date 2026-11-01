@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Bodoni_Moda } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AICopilot } from "@/components/trasp/ai-copilot";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,7 +41,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <AICopilot />
         </ThemeProvider>
       </body>
     </html>
