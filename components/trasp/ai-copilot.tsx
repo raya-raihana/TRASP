@@ -32,7 +32,7 @@ interface ChatMessage {
 const DEFAULT_GREETING: ChatMessage = {
   id: "greeting",
   sender: "assistant",
-  text: `Halo! Saya **TRASP AI Forensic Copilot** yang terhubung langsung dengan **Google AI Studio (Gemini 3.6 Flash)**.
+  text: `Halo! Saya **TRASP AI Forensic Copilot** yang terhubung langsung dengan **Google AI Studio (Gemini)**.
 
 Kamu bisa berdiskusi dan berkonsultasi dengan saya layaknya rekan analis keamanan siber ("pair analyst"):
 - 🔍 **Analisis Kasus:** Tempel teks chat WhatsApp atau SMS mencurigakan untuk dibedah.
@@ -42,7 +42,7 @@ Kamu bisa berdiskusi dan berkonsultasi dengan saya layaknya rekan analis keamana
 
 Ada sampel atau pertanyaan yang ingin kita pelajari bersama?`,
   timestamp: "Baru saja",
-  source: "gemini-ai (gemini-3.6-flash)",
+  source: "gemini-ai",
   vectors: ["AI Forensik Studio", "Regulasi OJK & Polri", "UU ITE 2024"],
 };
 
