@@ -19,9 +19,11 @@ const bodoniModa = Bodoni_Moda({
 });
 
 export const metadata: Metadata = {
-  title: "TRASP — Cyber-Forensic & Digital Deception Workbench",
-  description:
-    "Guardians of the Digital Space: Navigating Digital Deception — Karya Web Development MIT-WEEK 2026 UNMUL",
+  title: "TRASP",
+  description: "Guardians of the Digital Space: Navigating Digital Deception",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

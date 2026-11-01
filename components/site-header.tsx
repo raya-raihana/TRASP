@@ -1,17 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { IconBrandGithub, IconShieldCheck, IconBook } from "@tabler/icons-react"
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { IconBrandGithub } from "@tabler/icons-react";
 
 interface SiteHeaderProps {
-  activeToolName?: string
+  activeToolName?: string;
+  onNavigateTool?: (tool: string) => void;
 }
 
-export function SiteHeader({ activeToolName = "Recognize Engine" }: SiteHeaderProps) {
+export function SiteHeader({ activeToolName = "Recognize" }: SiteHeaderProps) {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border bg-background px-4">
       <div className="flex items-center gap-2">
@@ -25,22 +24,6 @@ export function SiteHeader({ activeToolName = "Recognize Engine" }: SiteHeaderPr
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <Link
-          href="/kompendium"
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
-          title="Katalog Kasus & Kompendium Edukasi Forensik"
-        >
-          <IconBook className="h-3.5 w-3.5 text-primary" />
-          <span className="hidden sm:inline">Katalog & Regulasi</span>
-          <span className="sm:hidden">Katalog</span>
-        </Link>
-        <Badge
-          variant="outline"
-          className="hidden md:inline-flex text-[10px] border-border text-muted-foreground font-mono items-center gap-1"
-        >
-          <IconShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          On-Device
-        </Badge>
         <a
           href="https://github.com/raya-raihana/TRASP"
           target="_blank"
@@ -53,5 +36,5 @@ export function SiteHeader({ activeToolName = "Recognize Engine" }: SiteHeaderPr
         <ThemeToggle />
       </div>
     </header>
-  )
+  );
 }

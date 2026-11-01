@@ -1,24 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   IconAlertTriangle,
-  IconBook,
-  IconDeviceMobile,
-  IconFileText,
   IconFolder,
-  IconReport,
   IconSearch,
-  IconShieldCheck,
   IconTerminal2,
-  IconUserX,
   IconUsers,
-} from "@tabler/icons-react"
-import { TeamInfoDialog } from "@/components/trasp/team-info-dialog"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Badge } from "@/components/ui/badge"
+  IconVideo,
+} from "@tabler/icons-react";
+import { TeamInfoDialog } from "@/components/trasp/team-info-dialog";
+import { VideoDemoDialog } from "@/components/trasp/video-demo-dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -31,122 +24,72 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTool?: string
-  activePreset?: string
-  onSelectTool?: (tool: string) => void
-  onSelectPreset?: (presetId: string) => void
+  activeTool?: string;
+  onSelectTool?: (tool: string) => void;
 }
 
 export function AppSidebar({
   activeTool = "recognize",
-  activePreset,
   onSelectTool,
-  onSelectPreset,
   ...props
 }: AppSidebarProps) {
-  const router = useRouter()
-  const { setOpenMobile, isMobile } = useSidebar()
+  const router = useRouter();
+  const { setOpenMobile, isMobile } = useSidebar();
 
   const handleToolSelect = (id: string) => {
     if (onSelectTool) {
-      onSelectTool(id)
+      onSelectTool(id);
     } else {
-      router.push(`/?tool=${id}`)
+      router.push(`/?tool=${id}`);
     }
-    if (isMobile) setOpenMobile(false)
-  }
-
-  const handlePresetSelect = (id: string) => {
-    if (onSelectTool && onSelectPreset) {
-      onSelectTool("recognize")
-      onSelectPreset(id)
-    } else {
-      router.push(`/?tool=recognize&preset=${id}`)
-    }
-    if (isMobile) setOpenMobile(false)
-  }
+    if (isMobile) setOpenMobile(false);
+  };
 
   const tools = [
     {
       id: "recognize",
-      title: "1. Recognize (Kenali)",
+      title: "Recognize",
       icon: IconSearch,
     },
     {
       id: "learn",
-      title: "2. Learn (Simulasi & Asisten AI)",
+      title: "Learn",
       icon: IconTerminal2,
     },
     {
       id: "act",
-      title: "3. Act (Mitigasi)",
+      title: "Act",
       icon: IconAlertTriangle,
     },
-    {
-      id: "redteam",
-      title: "4. Red Team",
-      icon: IconUserX,
-    },
-  ]
-
-  const presets = [
-    {
-      id: "apk-kurir",
-      title: "Kasus 1: Undangan .APK",
-      icon: IconDeviceMobile,
-    },
-    {
-      id: "loker-bumn",
-      title: "Kasus 2: Loker BUMN",
-      icon: IconFileText,
-    },
-    {
-      id: "phishing-pajak",
-      title: "Kasus 3: Phishing Pajak",
-      icon: IconAlertTriangle,
-    },
-    {
-      id: "m-banking-palsu",
-      title: "Kasus 4: M-Banking Editan",
-      icon: IconReport,
-    },
-  ]
+  ];
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader className="border-b border-sidebar-border p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className="flex items-center gap-2.5 px-2 py-1.5">
-              <div className="flex h-8 w-8 items-center justify-center bg-primary text-primary-foreground border border-border">
-                <IconShieldCheck className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-serif font-bold tracking-tight text-sidebar-foreground">
-                  TRASP Workbench
-                </span>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  MIT-WEEK 2026 UNMUL
-                </span>
-              </div>
+            <div className="px-2 py-1.5 flex items-center">
+              <span className="text-base font-serif font-black tracking-wider text-sidebar-foreground">
+                TRASP
+              </span>
             </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Core Forensic Tools */}
+        {/* Core Tools */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            Menu Proteksi
+            Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {tools.map((tool) => {
-                const isActive = activeTool === tool.id
+                const isActive = activeTool === tool.id;
                 return (
                   <SidebarMenuItem key={tool.id}>
                     <SidebarMenuButton
@@ -158,57 +101,38 @@ export function AppSidebar({
                       <span className="text-xs font-medium">{tool.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Preset Case Studies */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
-            Studi Kasus
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {presets.map((preset) => (
-                <SidebarMenuItem key={preset.id}>
-                  <SidebarMenuButton
-                    onClick={() => handlePresetSelect(preset.id)}
-                    isActive={activeTool === "recognize" && activePreset === preset.id}
-                    className="cursor-pointer text-xs"
-                  >
-                    <preset.icon className="h-4 w-4 text-muted-foreground" />
-                    <span>{preset.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Secondary Navigation */}
+        {/* Secondary Navigation (Bawah) */}
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild className="text-xs">
-                  <Link href="/kompendium">
-                    <IconBook className="h-4 w-4 text-primary" />
-                    <span>Katalog & Regulasi Siber</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
               <SidebarMenuItem>
                 <TeamInfoDialog
                   trigger={
                     <SidebarMenuButton className="cursor-pointer text-xs">
                       <IconUsers className="h-4 w-4" />
-                      <span>Informasi Tim (MIT-010)</span>
+                      <span>Informasi Tim</span>
                     </SidebarMenuButton>
                   }
                 />
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <VideoDemoDialog
+                  trigger={
+                    <SidebarMenuButton className="cursor-pointer text-xs">
+                      <IconVideo className="h-4 w-4 text-primary" />
+                      <span>Video Live</span>
+                    </SidebarMenuButton>
+                  }
+                />
+              </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="text-xs">
                   <a
@@ -217,7 +141,7 @@ export function AppSidebar({
                     rel="noopener noreferrer"
                   >
                     <IconFolder className="h-4 w-4" />
-                    <span>GitHub Repositori</span>
+                    <span>GitHub</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -227,12 +151,10 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3 flex flex-row items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
-          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span>Zero Server Leak</span>
-        </div>
-        <ThemeToggle />
+        <span className="text-xs font-mono font-semibold text-muted-foreground">
+          Tiga Trio
+        </span>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

@@ -35,7 +35,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   COMPENDIUM_CASES,
@@ -89,7 +88,7 @@ export default function CompendiumPage() {
             className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Kembali ke Workbench</span>
+            <span>Kembali</span>
           </Link>
           <div className="h-4 w-[1px] bg-border hidden sm:block" />
           <div className="flex items-center gap-2">
@@ -129,59 +128,44 @@ export default function CompendiumPage() {
         <div className="border border-border bg-muted/20 p-5 md:p-6 space-y-3">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <Badge className="bg-primary text-primary-foreground font-mono text-[11px] rounded-none">
-              DOKUMEN RISET RESMI
+              DOKUMEN RISET
             </Badge>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground font-mono text-[11px]">
-              Bareskrim Polri • Satgas PASTI OJK (IASC) • Komdigi • Jurnal Hukum Forensik 2025
-            </span>
           </div>
 
           <h1 className="text-xl md:text-3xl font-serif font-black tracking-tight text-foreground">
-            Kompendium Forensik Digital: Ensiklopedia Kasus Penipuan Siber & Protokol Penanggulangan
+            Kompendium Forensik Digital
           </h1>
 
-          <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-4xl">
-            Panduan komprehensif bagi publik dan aparat untuk membedah anatomi rekayasa sosial (*social engineering*),
-            taktik manipulasi bias kognitif, celah keamanan teknis, serta standar operasional penanganan darurat
-            dalam kurun waktu kritis (*Golden Time 15–30 Menit*).
-          </p>
-
-          <EducationalDisclaimer />
         </div>
 
         {/* Statistical Highlights Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-3.5 border border-border bg-card">
             <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-              Total Laporan Transaksi
+              Total Laporan
             </div>
             <div className="text-lg md:text-2xl font-bold font-mono text-primary mt-1">405.000+</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">Komdigi RI (2017–2024)</div>
           </div>
 
           <div className="p-3.5 border border-border bg-card">
             <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-              Kerugian Finansial 3 Bln
+              Kerugian Finansial
             </div>
             <div className="text-lg md:text-2xl font-bold font-mono text-rose-500 mt-1">Rp700 Miliar</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">42.257 aduan OJK</div>
           </div>
 
           <div className="p-3.5 border border-border bg-card">
             <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-              Rekening Pelaku Diblokir
+              Rekening Diblokir
             </div>
             <div className="text-lg md:text-2xl font-bold font-mono text-emerald-500 mt-1">33.857 Akun</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">IASC OJK (Rp133,2 M selamat)</div>
           </div>
 
           <div className="p-3.5 border border-border bg-card">
             <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-              Golden Time Penyelamatan
+              Golden Time
             </div>
             <div className="text-lg md:text-2xl font-bold font-mono text-amber-500 mt-1">15–30 Menit</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">Batas blokir kilat bank</div>
           </div>
         </div>
 
@@ -197,7 +181,7 @@ export default function CompendiumPage() {
               }`}
             >
               <Layers className="w-3.5 h-3.5 text-primary" />
-              <span>1. Katalog 6 Kasus Riil</span>
+              <span>Katalog Kasus</span>
             </button>
 
             <button
@@ -209,7 +193,7 @@ export default function CompendiumPage() {
               }`}
             >
               <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>2. Protokol Darurat Resmi</span>
+              <span>Protokol Darurat</span>
             </button>
 
             <button
@@ -221,7 +205,7 @@ export default function CompendiumPage() {
               }`}
             >
               <Scale className="w-3.5 h-3.5 text-blue-500" />
-              <span>3. Tinjauan Yuridis & KUHP/UU ITE</span>
+              <span>Tinjauan Yuridis</span>
             </button>
 
             <button
@@ -233,7 +217,7 @@ export default function CompendiumPage() {
               }`}
             >
               <Globe className="w-3.5 h-3.5 text-emerald-500" />
-              <span>4. Daftar Pustaka Otoritas</span>
+              <span>Daftar Pustaka</span>
             </button>
           </div>
         </div>
@@ -312,7 +296,7 @@ export default function CompendiumPage() {
                           >
                             <Link href={`/?tool=recognize&preset=${item.workbenchPresetId}`}>
                               <Sparkles className="w-3 h-3 mr-1" />
-                              Uji di Workbench
+                              Workbench
                             </Link>
                           </Button>
                         )}
@@ -403,7 +387,7 @@ export default function CompendiumPage() {
                             ) : (
                               <>
                                 <Copy className="w-3 h-3" />
-                                <span>Salin Langkah</span>
+                                <span>Salin</span>
                               </>
                             )}
                           </button>
@@ -425,16 +409,11 @@ export default function CompendiumPage() {
         {/* TAB 2: PROTOKOL DARURAT RESMI (GOLDEN TIME) */}
         {activeTab === "protokol" && (
           <div className="space-y-6">
-            <div className="p-4 bg-amber-500/10 border border-amber-500/30 space-y-1">
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30">
               <h3 className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
                 <Zap className="w-4 h-4" />
-                Konsep Golden Time (15–30 Menit Pertama Pasca Insiden)
+                Konsep Golden Time (15–30 Menit)
               </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Regulator keuangan (OJK) dan penegak hukum (Polri) menegaskan bahwa batas waktu terpenting untuk
-                menyelamatkan dana dan mengisolasi malware adalah 15–30 menit pertama sebelum pelaku memecah dana ke
-                jaringan rekening penampung (*nominee mule accounts*).
-              </p>
             </div>
 
             {/* Sub-protokol Teknis APK */}
@@ -445,16 +424,13 @@ export default function CompendiumPage() {
                   {EMERGENCY_PROTOCOLS.technical.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 space-y-2">
                 {EMERGENCY_PROTOCOLS.technical.steps.map((st) => (
-                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
-                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-primary text-primary-foreground font-mono font-bold text-xs shrink-0">
+                  <div key={st.step} className="flex items-center gap-3 p-2.5 border border-border bg-card">
+                    <span className="flex items-center justify-center h-5 w-5 rounded-none bg-primary text-primary-foreground font-mono font-bold text-xs shrink-0">
                       {st.step}
                     </span>
-                    <div className="space-y-1 text-xs">
-                      <div className="font-bold text-foreground">{st.title}</div>
-                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
-                    </div>
+                    <div className="font-bold text-xs text-foreground">{st.title}</div>
                   </div>
                 ))}
               </CardContent>
@@ -468,16 +444,13 @@ export default function CompendiumPage() {
                   {EMERGENCY_PROTOCOLS.financial.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 space-y-2">
                 {EMERGENCY_PROTOCOLS.financial.steps.map((st) => (
-                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
-                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-rose-600 text-white font-mono font-bold text-xs shrink-0">
+                  <div key={st.step} className="flex items-center gap-3 p-2.5 border border-border bg-card">
+                    <span className="flex items-center justify-center h-5 w-5 rounded-none bg-rose-600 text-white font-mono font-bold text-xs shrink-0">
                       {st.step}
                     </span>
-                    <div className="space-y-1 text-xs">
-                      <div className="font-bold text-foreground">{st.title}</div>
-                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
-                    </div>
+                    <div className="font-bold text-xs text-foreground">{st.title}</div>
                   </div>
                 ))}
               </CardContent>
@@ -491,16 +464,13 @@ export default function CompendiumPage() {
                   {EMERGENCY_PROTOCOLS.policeReport.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 space-y-2">
                 {EMERGENCY_PROTOCOLS.policeReport.steps.map((st) => (
-                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
-                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-blue-600 text-white font-mono font-bold text-xs shrink-0">
+                  <div key={st.step} className="flex items-center gap-3 p-2.5 border border-border bg-card">
+                    <span className="flex items-center justify-center h-5 w-5 rounded-none bg-blue-600 text-white font-mono font-bold text-xs shrink-0">
                       {st.step}
                     </span>
-                    <div className="space-y-1 text-xs">
-                      <div className="font-bold text-foreground">{st.title}</div>
-                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
-                    </div>
+                    <div className="font-bold text-xs text-foreground">{st.title}</div>
                   </div>
                 ))}
               </CardContent>
@@ -512,50 +482,40 @@ export default function CompendiumPage() {
         {activeTab === "yuridis" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-border bg-card space-y-2">
+              <div className="p-4 border border-border bg-card space-y-1">
                 <Badge variant="outline" className="text-[10px] font-mono border-blue-500/40 text-blue-500">
                   LEX GENERALI
                 </Badge>
                 <h4 className="text-sm font-bold text-foreground font-serif">
                   {JURIDICAL_ANALYSIS.lexGenerali.article}
                 </h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {JURIDICAL_ANALYSIS.lexGenerali.desc}
-                </p>
               </div>
 
-              <div className="p-4 border border-border bg-card space-y-2">
+              <div className="p-4 border border-border bg-card space-y-1">
                 <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-500">
                   LEX SPECIALIS DEROGAT LEGI GENERALI
                 </Badge>
                 <h4 className="text-sm font-bold text-foreground font-serif">
                   {JURIDICAL_ANALYSIS.lexSpecialis.article}
                 </h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {JURIDICAL_ANALYSIS.lexSpecialis.desc}
-                </p>
               </div>
             </div>
 
-            {/* 4 Kendala Pembuktian Berdasarkan Jurnal Fuad Nur 2025 */}
+            {/* 4 Kendala Pembuktian */}
             <Card className="border-border shadow-none rounded-none">
               <CardHeader className="bg-muted/20 border-b border-border py-3">
                 <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
                   <Scale className="w-4 h-4 text-primary" />
-                  4 Kendala Utama Pembuktian Forensik Digital (Kajian Jurnal Ilmiah Fuad Nur, 2025)
+                  4 Kendala Pembuktian Forensik Digital
                 </CardTitle>
-                <CardDescription className="text-xs">
-                  Faktor-faktor teknis mengapa pelaku penipuan siber sulit ditindak tanpa bukti forensik digital terstandarisasi.
-                </CardDescription>
               </CardHeader>
               <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                 {JURIDICAL_ANALYSIS.forensicChallenges.map((ch, idx) => (
-                  <div key={idx} className="p-3 border border-border bg-card space-y-1 text-xs">
+                  <div key={idx} className="p-3 border border-border bg-card text-xs">
                     <div className="font-bold text-foreground flex items-center gap-1.5">
                       <span className="font-mono text-primary font-bold">{idx + 1}.</span>
                       <span>{ch.title}</span>
                     </div>
-                    <p className="text-muted-foreground leading-relaxed pl-4">{ch.desc}</p>
                   </div>
                 ))}
               </CardContent>
@@ -566,13 +526,10 @@ export default function CompendiumPage() {
         {/* TAB 4: DAFTAR PUSTAKA & KANAL RESMI */}
         {activeTab === "referensi" && (
           <div className="space-y-4">
-            <div className="p-4 border border-border bg-muted/20 space-y-1">
+            <div className="p-3 border border-border bg-muted/20">
               <h3 className="text-sm font-bold text-foreground font-serif">
-                Daftar Referensi Regulasi, Jurnal, & Portal Terverifikasi
+                Daftar Referensi &amp; Portal
               </h3>
-              <p className="text-xs text-muted-foreground">
-                Seluruh materi dalam kompendium ini bersumber langsung dari portal resmi kementerian, otoritas penegak hukum, dan publikasi ilmiah terindeks:
-              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -583,7 +540,6 @@ export default function CompendiumPage() {
                       <span>{link.name}</span>
                       <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{link.desc}</p>
                     <div className="font-mono text-[11px] text-primary">{link.portal}</div>
                   </div>
 
@@ -594,7 +550,7 @@ export default function CompendiumPage() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline font-medium"
                     >
-                      <span>Kunjungi Portal Resmi</span>
+                      <span>Portal Resmi</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -604,36 +560,6 @@ export default function CompendiumPage() {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border p-4 bg-background text-center text-xs text-muted-foreground mt-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>TRASP Kompendium Forensik Siber • MIT-WEEK 2026 UNMUL</span>
-          <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-foreground underline">
-              Buka Workbench
-            </Link>
-            <span>•</span>
-            <a
-              href="https://patrolisiber.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground underline"
-            >
-              Patroli Siber
-            </a>
-            <span>•</span>
-            <a
-              href="https://iasc.ojk.go.id"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground underline"
-            >
-              IASC OJK
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

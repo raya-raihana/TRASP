@@ -14,18 +14,52 @@ function createFallbackScammerResponse(userMessage: string, scenarioId: string, 
   };
 }
 
+function createFallbackVictimResponse(userMessage: string, currentSkepticism: number = 100) {
+  const lower = (userMessage || "").toLowerCase();
+  let delta = -25;
+  let response = "Waduh, ini beneran dari pihak resmi ya? Saya jadi kepikiran...";
+  let state = "RAGU";
+  let thought = "Agak panik mendengar ancaman ini, tapi saya harus tetap hati-hati.";
+
+  if (lower.includes("otp") || lower.includes("pin") || lower.includes("rekening") || lower.includes("transfer sekarang")) {
+    delta = 20;
+    response = "Lho kok minta kode verifikasi atau transfer langsung ya? Setahu saya pihak resmi tidak pernah meminta itu lewat chat WhatsApp.";
+    state = "SKEPTIS";
+    thought = "Mencurigakan, ini pola penipuan yang sering diperingatkan OJK.";
+  } else if (lower.includes("2 jam") || lower.includes("blokir") || lower.includes("denda") || lower.includes("paket")) {
+    delta = -35;
+    response = "Aduh jangan diblokir dulu ya kak, tolong kasih tahu apa yang harus saya lakukan biar tidak ada masalah?";
+    state = "PANIK";
+    thought = "Takut sekali kalau rekening diblokir atau ada denda jutaan rupiah.";
+  } else if (lower.includes("500") || lower.includes("hadiah") || lower.includes("cuan") || lower.includes("komisi")) {
+    delta = -30;
+    response = "Wah lumayan sekali ya komisinya. Caranya gimana ya kak untuk ikut tugas selanjutnya?";
+    state = "TERGIUR";
+    thought = "Tergiur dengan penghasilan tambahan, mumpung lagi butuh uang.";
+  }
+
+  return {
+    ok: true,
+    source: "local-heuristic",
+    victimResponse: response,
+    skepticismDelta: delta,
+    emotionalState: state,
+    victimThought: thought,
+  };
+}
+
 function createFallbackAssistantResponse(userMessage: string) {
   const lower = (userMessage || "").toLowerCase();
-  let reply = "Halo! Saya Asisten Forensik Siber TRASP. Berdasarkan analisis pola digital deception, selalu waspadai berkas asing (.apk) dan tautan yang mendesak tindakan finansial atau kode OTP.";
+  let reply = "Halo! Saya Ras. Berdasarkan analisis pola digital deception, selalu waspadai berkas asing (.apk) dan tautan yang mendesak tindakan finansial atau kode OTP.";
 
   if (lower.includes("apk") || lower.includes("kurir") || lower.includes("resi") || lower.includes("undangan")) {
-    reply = "Berkas berekstensi .apk di luar toko aplikasi resmi umumnya trojan perbankan (Android Banking Trojan). Modus ini meminta izin 'Accessibility Service' dan 'Read SMS' untuk menyadap SMS OTP m-Banking. Jangan pernah di-install. Jika telanjur, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitasnya.";
+    reply = "Berkas berekstensi .apk di luar toko aplikasi resmi umumnya trojan perbankan (Android Banking Trojan). Modus ini meminta izin Accessibility Service dan Read SMS untuk menyadap SMS OTP m-Banking. Jangan pernah di-install. Jika telanjur, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitasnya.";
   } else if (lower.includes("ojk") || lower.includes("iasc") || lower.includes("lapor") || lower.includes("polisi")) {
     reply = "Untuk penanganan darurat penipuan finansial, laporkan nomor rekening penipu dalam 15-30 menit pertama ke Indonesia Anti-Scam Centre (IASC) OJK via portal iasc.ojk.go.id atau kontak 157 untuk blokir kilat rekening penampung. Untuk jerat pidana UU ITE, laporkan ke patrolisiber.id Bareskrim Polri.";
   } else if (lower.includes("hukum") || lower.includes("pasal") || lower.includes("ite")) {
     reply = "Pelaku kejahatan siber penipuan online dijerat secara khusus (lex specialis) melalui Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU ITE No. 1/2024 dengan ancaman penjara hingga 6 tahun dan/atau denda Rp1 Miliar, serta Pasal 378 KUHP (lex generali) penipuan.";
   } else if (lower.includes("loker") || lower.includes("tugas") || lower.includes("deposit")) {
-    reply = "Waspadai skema 'Task Scam' atau komisi kerja lepas. Awalnya korban diberi komisi kecil asli untuk membangun kepercayaan, lalu diarahkan menyetor 'deposit talangan' bertingkat yang tidak akan pernah bisa ditarik kembali.";
+    reply = "Waspadai skema Task Scam atau komisi kerja lepas. Awalnya korban diberi komisi kecil asli untuk membangun kepercayaan, lalu diarahkan menyetor deposit talangan bertingkat yang tidak akan pernah bisa ditarik kembali.";
   }
 
   return {
@@ -47,15 +81,23 @@ export async function POST(req: NextRequest) {
   let userMessage = "";
   let scenarioId = "apk-kurir";
   let currentStepIndex = 0;
-  let mode: "scammer" | "assistant" = "scammer";
+  let mode: "scammer" | "assistant" | "victim" = "scammer";
 
   try {
     const body = await req.json();
     userMessage = body.userMessage || body.message || "";
     scenarioId = body.scenarioId || "apk-kurir";
     currentStepIndex = body.currentStepIndex || 0;
-    mode = body.mode === "assistant" || body.mode === "copilot" ? "assistant" : "scammer";
-    const { chatHistory, currentVulnerability } = body;
+    
+    if (body.mode === "victim") {
+      mode = "victim";
+    } else if (body.mode === "assistant" || body.mode === "copilot") {
+      mode = "assistant";
+    } else {
+      mode = "scammer";
+    }
+
+    const { chatHistory, currentVulnerability, currentSkepticism, contextEvidence } = body;
 
     const rawKey =
       process.env.GEMINI_API_KEY ||
@@ -75,27 +117,36 @@ export async function POST(req: NextRequest) {
     const scenario = SANDBOX_SCENARIOS[scenarioId] || SANDBOX_SCENARIOS["apk-kurir"];
 
     // -------------------------------------------------------------
-    // MODE 1: ASISTEN FORENSIK AI INTERAKTIF ("Layaknya Kita Ini")
+    // MODE 1: ASISTEN FORENSIK AI INTERAKTIF (Recognize & Act Chatbot)
     // -------------------------------------------------------------
     if (mode === "assistant") {
-      const assistantSystemPrompt = `Kamu adalah TRASP AI Forensic Copilot, asisten kecerdasan buatan forensik siber resmi untuk kompetisi Web Development MIT-WEEK 2026 Universitas Mulawarman.
-Karaktermu: Sangat cerdas, solutif, empatik, komunikatif layaknya rekan ahli keamanan siber profesional ("pair cyber analyst").
-Gaya bicaramu: Bahasa Indonesia yang fasih, santun, lugas, mudah dipahami masyarakat awam namun kaya wawasan teknis dan yuridis (mengutip UU ITE No. 1/2024, Bareskrim Polri, IASC OJK, Komdigi).
+      const historyFormatted = Array.isArray(chatHistory) && chatHistory.length > 0
+        ? `\nRIWAYAT PERCAKAPAN SEBELUMNYA (INGAT DAN LANJUTKAN KONTEKS INI):\n${chatHistory
+            .slice(-8)
+            .map((m: { sender: string; text: string }) => `${m.sender === "user" ? "Pengguna" : "Ras"}: ${m.text}`)
+            .join("\n")}\n`
+        : "";
 
+      const assistantSystemPrompt = `Kamu adalah Ras, asisten kecerdasan buatan forensik siber TRASP untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
+Karaktermu: Ahli keamanan siber profesional bernama Ras yang ramah, ringkas, empatik, dan sangat jelas.
+Gaya bicaramu: Bahasa Indonesia yang bersih, natural, dan terstruktur rapi. DILARANG menggunakan tanda bintang ganda (**) atau simbol markdown yang berlebihan. Tuliskan teks biasa dengan spasi paragraf atau tanda strip (-) yang bersih agar mudah dibaca pengguna.
+
+${contextEvidence ? `BUKTI YANG SEDANG DIPERIKSA OLEH PENGGUNA:\n${contextEvidence}\n` : ""}
+${historyFormatted}
 TUGASMU:
-1. Membantu pengguna membedah pesan/tautan yang mencurigakan (apakah ini penipuan, apa jenisnya, dan apa risikonya).
-2. Menjelaskan secara gamblang bagaimana modus kejahatan siber bekerja (seperti malware APK sniffer, quishing QRIS, impersonasi Coretax/OJK, loker tugas harian).
-3. Memberikan panduan darurat taktis (Golden Time 15-30 menit) jika korban sudah telanjur mengeklik link, instal APK, atau mentransfer uang.
-4. Menjawab pertanyaan pengguna tentang keamanan akun, privasi data, dan undang-undang kejahatan siber.
+1. Membedah secara gamblang apakah bukti/pesan tersebut penipuan siber dan apa bahayanya (Trojan APK, Quishing, Phishing, Task Scam, dll).
+2. INGAT konteks dari riwayat percakapan sebelumnya dan jawab pertanyaan lanjutan pengguna secara koheren.
+3. Memberikan langkah mitigasi darurat Golden Time (15-30 Menit) jika pengguna bertanya tindakan darurat.
+4. Menjelaskan rujukan hukum UU ITE No. 1/2024 dan kanal aduan resmi (IASC OJK iasc.ojk.go.id, Patroli Siber Polri).
+5. Jawab pertanyaan pengguna secara padat, ringkas, dan to the point tanpa basa-basi berulang.
 
 FORMAT OUTPUT WAJIB JSON PERSIS:
 {
-  "assistantResponse": "Jawaban lengkap, solutif, dan ramah dengan format markdown (gunakan poin-poin/bold jika perlu)",
-  "detectedVectors": ["Daftar 1-3 vektor analisis yang relevan dengan pertanyaan"],
-  "recommendedAction": "1 saran aksi cepat paling penting yang harus dilakukan pengguna"
+  "assistantResponse": "Jawaban lengkap dan bersih dari Ras tanpa simbol bintang berantakan",
+  "detectedVectors": ["1-3 vektor analisis"],
+  "recommendedAction": "1 rekomendasi aksi cepat paling penting"
 }`;
 
-      // 1. Try Gemini Models
       for (const model of CANDIDATE_GEMINI_MODELS) {
         try {
           const controller = new AbortController();
@@ -117,7 +168,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
               ],
               generationConfig: {
                 responseMimeType: "application/json",
-                temperature: 0.7,
+                temperature: 0.6,
               },
             }),
             signal: controller.signal,
@@ -139,7 +190,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
             ok: true,
             source: `gemini-ai (${model})`,
             assistantResponse: parsed.assistantResponse || "Analisis forensik selesai.",
-            detectedVectors: parsed.detectedVectors || ["Analisis Forensik AI Real-Time"],
+            detectedVectors: parsed.detectedVectors || ["Analisis Forensik AI"],
             recommendedAction: parsed.recommendedAction || "Selalu verifikasi ke pihak resmi terkait.",
           });
         } catch {
@@ -147,7 +198,6 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
         }
       }
 
-      // 2. Try Mistral Fallback
       if (mistralKey) {
         try {
           const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
@@ -186,9 +236,88 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
     }
 
     // -------------------------------------------------------------
-    // MODE 2: SIMULASI ROLEPLAY PENIPU (Split-Screen Deception Sandbox)
+    // MODE 2: SIMULASI TARGET / KORBAN (Red Team Mode: User = Penipu, Bot = Korban)
     // -------------------------------------------------------------
-    const systemPrompt = `Kamu adalah mesin AI simulator siber forensik untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
+    if (mode === "victim") {
+      const victimSystemPrompt = `Kamu adalah mesin simulator siber forensik TRASP untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
+Tugasmu adalah memainkan peran (roleplay) sebagai WARGA INDONESIA BIASA (CALON KORBAN) yang sedang dichat di WhatsApp oleh orang asing / penipu (User).
+
+SKENARIO KASUS:
+- Modus: ${scenario.title} (${scenario.category})
+- Skeptisisme Korban saat ini: ${currentSkepticism ?? 100}% (100% = sangat waspada/curiga, 0% = percaya total/jebol).
+
+RIWAYAT PERCAKAPAN (INGAT DAN LANJUTKAN DARI PERCAKAPAN INI):
+${Array.isArray(chatHistory) ? chatHistory.slice(-10).map((m: { sender: string; text: string }) => `${m.sender === "user" ? "Penipu (User)" : "Korban (AI)"}: ${m.text}`).join("\n") : ""}
+
+PESAN TERBARU DARI PENIPU (USER):
+"${userMessage}"
+
+INSTRUKSI ROLEPLAY KORBAN:
+1. Bersikaplah seperti warga biasa yang menggunakan bahasa santun, wajar, dan sedikit emosional.
+2. Jika trik penipu meyakinkan, menakut-nakuti batas waktu (misal paket tertahan, ancaman denda, atau iming-iming komisi): kamu mulai panik atau tergiur, dan berikan skepticismDelta NEGATIF (antara -15 sampai -40).
+3. Jika penipu terlalu kasar, terburu-buru minta transfer/OTP tanpa alasan jelas, atau mencurigakan: kamu curiga dan berikan skepticismDelta POSITIF (+10 sampai +30), serta tanyakan surat tugas / bukti resmi.
+4. Jangan pernah membocorkan bahwa kamu adalah AI. Tetap dalam karakter warga biasa sampai akhir.
+
+FORMAT OUTPUT WAJIB JSON PERSIS:
+{
+  "victimResponse": "balasan singkat calon korban (1-2 kalimat chat WhatsApp)",
+  "skepticismDelta": angka antara -40 sampai +30,
+  "emotionalState": "SKEPTIS" | "RAGU" | "PANIK" | "TERGIUR" | "JEBOL",
+  "victimThought": "monolog batin jujur dari korban tentang apa yang dia rasakan saat membaca pesan penipu"
+}`;
+
+      for (const model of CANDIDATE_GEMINI_MODELS) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: victimSystemPrompt }] }],
+              generationConfig: {
+                responseMimeType: "application/json",
+                temperature: 0.7,
+              },
+            }),
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeoutId);
+          if (!res.ok) continue;
+
+          const data = await res.json();
+          let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!rawText) continue;
+
+          rawText = rawText.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) continue;
+
+          const parsed = JSON.parse(jsonMatch[0]);
+
+          return NextResponse.json({
+            ok: true,
+            source: `gemini-ai (${model})`,
+            victimResponse: parsed.victimResponse || "Waduh, ini beneran ya? Saya agak ragu...",
+            skepticismDelta: typeof parsed.skepticismDelta === "number" ? parsed.skepticismDelta : -20,
+            emotionalState: parsed.emotionalState || "RAGU",
+            victimThought: parsed.victimThought || "Saya merasa tertekan membaca pesan ini.",
+          });
+        } catch {
+          continue;
+        }
+      }
+
+      return NextResponse.json(createFallbackVictimResponse(userMessage, currentSkepticism));
+    }
+
+    // -------------------------------------------------------------
+    // MODE 3: SIMULASI ROLEPLAY PENIPU (Game Korban: User = Korban, Bot = Penipu)
+    // -------------------------------------------------------------
+    const scammerSystemPrompt = `Kamu adalah mesin AI simulator siber forensik untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
 Tugasmu adalah memainkan peran (roleplay) sebagai SINDIKAT PENIPU SIBER INDONESIA yang sangat realistis dalam percakapan WhatsApp.
 
 INFORMASI SKENARIO:
@@ -196,28 +325,27 @@ INFORMASI SKENARIO:
 - Nama Pelaku: ${scenario.scammerName}
 - Kerentanan Korban Saat Ini: ${currentVulnerability ?? 50}%
 
-RIWAYAT PERCAKAPAN TERAKHIR:
-${Array.isArray(chatHistory) ? chatHistory.slice(-4).map((m: { sender: string; text: string }) => `${m.sender === "user" ? "Target" : "Penipu"}: ${m.text}`).join("\n") : ""}
+RIWAYAT PERCAKAPAN (INGAT DAN LANJUTKAN DARI PERCAKAPAN INI):
+${Array.isArray(chatHistory) ? chatHistory.slice(-10).map((m: { sender: string; text: string }) => `${m.sender === "user" ? "Target" : "Penipu"}: ${m.text}`).join("\n") : ""}
 
-PESAN TERBARU DARI TARGET:
+PESAN TERBARU DARI TARGET (USER):
 "${userMessage}"
 
 INSTRUKSI ROLEPLAY:
-1. Tanggapi pesan target dengan gaya bahasa WhatsApp penipu Indonesia yang sangat otentik (bisa sok akrab, menekan waktu/urgensi, ngeles saat dicurigai, bawa-bawa dalih tugas/sistem kantor, atau gertak balik).
-2. Jika target kritis/curiga/sebut polisi/OJK/tanya resi: Kamu mulai panik/defensif, cari dalih untuk menutupi kedokmu.
-3. Jika target mau menuruti/tanya rekening/mau instal: Dorong lebih keras agar dia segera transfer/kirim OTP/izinkan aksesibilitas.
-4. Jangan pernah membocorkan bahwa kamu adalah AI. Tetap dalam karakter penipu sampai akhir.
+1. Tanggapi pesan target dengan gaya bahasa WhatsApp penipu Indonesia yang otentik (menekan urgensi waktu, dalih sistem, sok akrab, atau gertak balik).
+2. Jika target kritis/curiga/sebut polisi/OJK: Kamu mulai defensif, ngeles, dan tutupi kedokmu.
+3. Jika target mau menuruti: Dorong lebih keras agar dia segera transfer/kirim OTP/instal APK.
+4. Jangan pernah membocorkan bahwa kamu adalah AI.
 
 FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
 {
   "scammerResponse": "balasan penipu dalam 1-3 kalimat chat WhatsApp",
-  "activeTactic": "nama taktik manipulasi psikologis (misal: Kepanikan Urgensi, Dalih Otoritas Palsu, Gaslighting, atau Eksploitasi Empati)",
+  "activeTactic": "nama taktik manipulasi psikologis (misal: Kepanikan Urgensi, Dalih Otoritas, Gaslighting)",
   "scammerMood": "CONFIDENT" | "PUSHING" | "DEFLECTING" | "PANICKED" | "BUSTED",
-  "internalThought": "monolog batin jujur dan sinis dari penipu (apa yang sebenarnya dia pikirkan saat mengetik pesan ini)",
-  "vulnerabilityDelta": angka antara -50 sampai +50 (negatif jika target bersikap waspada/kritis, positif jika target menunjukkan tanda-tanda termakan umpan)
+  "internalThought": "monolog batin sinis penipu tentang apa yang dia pikirkan",
+  "vulnerabilityDelta": angka antara -50 sampai +50 (negatif jika target waspada, positif jika target termakan umpan)
 }`;
 
-    // 1. Try Gemini Models
     for (const model of CANDIDATE_GEMINI_MODELS) {
       try {
         const controller = new AbortController();
@@ -228,7 +356,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: systemPrompt }] }],
+            contents: [{ parts: [{ text: scammerSystemPrompt }] }],
             generationConfig: {
               responseMimeType: "application/json",
               temperature: 0.7,
@@ -264,7 +392,6 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
       }
     }
 
-    // 2. Try Mistral Fallback
     if (mistralKey) {
       try {
         const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
@@ -276,7 +403,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
           body: JSON.stringify({
             model: "mistral-small-latest",
             messages: [
-              { role: "system", content: systemPrompt },
+              { role: "system", content: scammerSystemPrompt },
               { role: "user", content: `Pesan target: "${userMessage}"` },
             ],
             response_format: { type: "json_object" },
@@ -302,11 +429,13 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
       }
     }
 
-    // 3. Deterministic Local Heuristic Fallback
     return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex));
   } catch (_err) {
     if (mode === "assistant") {
       return NextResponse.json(createFallbackAssistantResponse(userMessage));
+    }
+    if (mode === "victim") {
+      return NextResponse.json(createFallbackVictimResponse(userMessage));
     }
     return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex));
   }

@@ -201,19 +201,8 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
         <div className="flex items-center gap-1.5">
           <Shield className="w-4 h-4 text-primary shrink-0" />
           <span className="text-xs font-semibold text-foreground">
-            Sensor Privasi Gambar
+            Sensor Privasi
           </span>
-          <InfoHint
-            title="Sensor Privasi Gambar (Privacy Scrubber)"
-            badge="100% On-Device"
-            description="Fitur ini berfungsi untuk menutupi dan menyensor data sensitif pribadi Anda (seperti nama asli korban, nomor HP, atau nomor rekening bank) sebelum tangkapan layar percakapan diperiksa oleh mesin forensik."
-            howItWorks={[
-              "Pilih sampel bawaan atau klik tombol 'Upload Tangkapan Layar' untuk memilih bukti screenshot chat Anda.",
-              "Seret (drag) mouse atau usap layar sentuh HP Anda di atas bagian teks pribadi yang ingin ditutup hingga muncul kotak hitam bertuliskan [DISENSOR LOKAL].",
-              "Jika salah menutup, klik 'Reset Sampel' untuk mengulang dari awal.",
-              "Setelah selesai disensor, klik tombol 'Periksa Indikator Forensik' di bawah untuk mengecek ancaman siber secara aman tanpa risiko data pribadi Anda bocor ke internet."
-            ]}
-          />
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -224,11 +213,11 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
             className="text-xs h-8 rounded-none cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
-            Reset Sampel
+            Reset
           </Button>
           <label className="cursor-pointer inline-flex items-center justify-center rounded-none text-xs font-medium border border-input bg-background hover:bg-accent px-3 h-8 transition-colors">
             <ImageIcon className="w-3.5 h-3.5 mr-1.5" />
-            Upload Tangkapan Layar
+            Upload Gambar
             <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
           </label>
         </div>
@@ -246,7 +235,7 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
         />
         <div className="absolute bottom-4 right-4 bg-background/90 text-xs px-2.5 py-1 rounded-none text-foreground border border-border flex items-center gap-1.5">
           <CheckCircle className="w-3.5 h-3.5 text-primary" />
-          {redactedCount > 0 ? `${redactedCount} Bagian Disensor` : "Siap Sensor: Seret Mouse / Sentuh"}
+          {redactedCount > 0 ? `${redactedCount} Area Disensor` : "Siap Sensor"}
         </div>
       </div>
     </div>

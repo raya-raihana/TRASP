@@ -1,24 +1,23 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   Search,
   ExternalLink,
   AlertOctagon,
-  ArrowRight,
   Layers,
-  Link as LinkIcon,
   FileText,
   Shield,
-  Sparkles,
   Zap,
   Eye,
   CheckCircle2,
-  AlertTriangle,
-  RotateCcw,
   Bot,
   Brain,
   ShieldCheck,
+  Send,
+  RotateCcw,
+  Sparkles,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,10 +30,9 @@ import {
   PRESET_CASES,
   PresetCase,
   analyzeForensics,
-  ForensicResult
+  ForensicResult,
 } from "@/lib/trasp/engine";
 import { CanvasRedactor } from "./canvas-redactor";
-import { InfoHint } from "./info-hint";
 
 interface RecognizeEngineProps {
   initialPresetId?: string;
@@ -54,10 +52,32 @@ interface AIForensicStudy {
   mitigationRecommendation?: string;
 }
 
+interface ChatMessage {
+  id: string;
+  sender: "bot" | "user";
+  text: string;
+  time: string;
+  vectors?: string[];
+}
+
+function renderCleanMessage(text: string) {
+  const segments = text.split(/(\*\*[^*]+\*\*)/g);
+  return segments.map((seg, i) => {
+    if (seg.startsWith("**") && seg.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold text-foreground">
+          {seg.slice(2, -2)}
+        </strong>
+      );
+    }
+    const cleanSeg = seg.replace(/\*/g, "");
+    return <span key={i}>{cleanSeg}</span>;
+  });
+}
+
 export function RecognizeEngine({
   initialPresetId = "apk-kurir",
   onPresetChange,
-  onSwitchToSandbox
 }: RecognizeEngineProps) {
   const [activeInputTab, setActiveInputTab] = useState<"text" | "url" | "canvas">("text");
 
@@ -68,13 +88,12 @@ export function RecognizeEngine({
 
   // Canvas Redactor State
   const [canvasText, setCanvasText] = useState(
-    "Selamat siang kak, mohon maaf paket J&T tertahan karena alamat kurang jelas. Tolong buka dan cek foto resi di berkas LIHAT_FOTO_PAKET_JNT.apk ini ya kak. Wajib di-install sekarang sebelum paket dikembalikan ke gudang dalam 2 jam!"
+    "Selamat siang kak, paket J&T tertahan karena alamat kurang jelas. Tolong buka dan cek foto resi di berkas LIHAT_FOTO_PAKET_JNT.apk ini ya kak. Wajib di-install sekarang sebelum paket dikembalikan ke gudang dalam 2 jam!"
   );
   const [canvasUrl, setCanvasUrl] = useState("http://194.233.164.88/unduh/LIHAT_FOTO_PAKET_JNT.apk");
   const [canvasRedactedCount, setCanvasRedactedCount] = useState(0);
 
   const [isScanning, setIsScanning] = useState(false);
-  const [selectedClueInfo, setSelectedClueInfo] = useState<string | null>(null);
 
   const [analysisResult, setAnalysisResult] = useState<ForensicResult>(() =>
     analyzeForensics(defaultPreset.rawText, defaultPreset.rawUrl)
@@ -89,9 +108,72 @@ export function RecognizeEngine({
     riskLevel: "HIGH",
     biasExploited: ["Bias Urgensi Semu (Batas 2 Jam)", "Bias Otoritas Kurir Ekspedisi", "Kepanikan Paket Batal"],
     technicalThreats: ["Ekstensi APK Luar Toko Resmi", "IP Publik Mentah (Non-HTTPS)", "Penyadapan Izin Accessibility & SMS OTP"],
-    deepForensicReasoning: "Pesan ini mengeksploitasi kepanikan batas waktu 2 jam agar korban tidak sempat melakukan verifikasi. Berkas .apk disamarkan sebagai foto resi untuk menyusupkan malware pencuri kode OTP m-Banking saat izin aksesibilitas diberikan.",
-    mitigationRecommendation: "Jangan pernah install berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitas gawai.",
+    deepForensicReasoning: "Pesan ini mengeksploitasi kepanikan batas waktu 2 jam agar korban tidak sempat verifikasi. Berkas .apk disamarkan sebagai foto resi untuk menyusupkan malware pencuri kode OTP m-Banking saat izin aksesibilitas diberikan.",
+    mitigationRecommendation: "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitas gawai.",
   });
+
+  // Chatbot State
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Restore persistent state from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedText = localStorage.getItem("trasp_recognize_text");
+        const savedUrl = localStorage.getItem("trasp_recognize_url");
+        const savedChat = localStorage.getItem("trasp_recognize_chat");
+        if (savedText) {
+          setInputText(savedText);
+          setAnalysisResult(analyzeForensics(savedText, savedUrl || ""));
+        }
+        if (savedUrl) setInputUrl(savedUrl);
+        if (savedChat) {
+          const parsed = JSON.parse(savedChat);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setChatHistory(parsed);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load recognized storage", e);
+      }
+    }
+  }, []);
+
+  // Save input changes to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("trasp_recognize_text", inputText);
+        localStorage.setItem("trasp_recognize_url", inputUrl);
+      } catch (e) {}
+    }
+  }, [inputText, inputUrl]);
+
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [chatHistory, isBotTyping]);
+
+  // Initial welcome message from Chatbot based on forensic findings
+  const resetChatWithVerdict = useCallback((verdict: string, score: number, level: string, textSample: string) => {
+    const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const initialGreeting: ChatMessage = {
+      id: "bot-init-" + Date.now(),
+      sender: "bot",
+      text: `Halo! Saya Ras.\n\nSaya telah memindai bukti ini:\n• Deteksi: ${verdict}\n• Tingkat Bahaya: ${level} (${score}/100)\n\nSilakan tanyakan apa saja seputar bukti pesan ini.`,
+      time,
+    };
+    setChatHistory([initialGreeting]);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("trasp_recognize_chat", JSON.stringify([initialGreeting]));
+      } catch {}
+    }
+  }, []);
 
   const runAIForensicStudy = useCallback(async (text: string, url: string) => {
     setAiStudy((prev) => ({ ...prev, isLoading: true }));
@@ -103,24 +185,30 @@ export function RecognizeEngine({
       });
       if (res.ok) {
         const data = await res.json();
+        const verdict = data.summaryVerdict || "Terindikasi Manipulasi Siber";
+        const score = data.dangerScore ?? 60;
+        const level = data.riskLevel || "HIGH";
+
         setAiStudy({
           isLoading: false,
           source: data.source || "gemini-ai (gemini-3.6-flash)",
-          summaryVerdict: data.summaryVerdict,
-          dangerScore: data.dangerScore,
-          riskLevel: data.riskLevel,
+          summaryVerdict: verdict,
+          dangerScore: score,
+          riskLevel: level,
           biasExploited: data.biasExploited || [],
           technicalThreats: data.technicalThreats || [],
           deepForensicReasoning: data.deepForensicReasoning,
           mitigationRecommendation: data.mitigationRecommendation,
         });
+
+        resetChatWithVerdict(verdict, score, level, text);
       } else {
         setAiStudy((prev) => ({ ...prev, isLoading: false }));
       }
     } catch {
       setAiStudy((prev) => ({ ...prev, isLoading: false }));
     }
-  }, []);
+  }, [resetChatWithVerdict]);
 
   useEffect(() => {
     if (initialPresetId) {
@@ -189,6 +277,82 @@ export function RecognizeEngine({
     runAIForensicStudy(t, u);
   };
 
+  const handleSendChatMessage = async (presetPrompt?: string) => {
+    const text = (presetPrompt || chatInput).trim();
+    if (!text || isBotTyping) return;
+
+    const userTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const userMsg: ChatMessage = {
+      id: "user-" + Date.now(),
+      sender: "user",
+      text,
+      time: userTime,
+    };
+
+    const nextHistory = [...chatHistory, userMsg];
+    setChatHistory(nextHistory);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("trasp_recognize_chat", JSON.stringify(nextHistory));
+      } catch {}
+    }
+
+    setChatInput("");
+    setIsBotTyping(true);
+
+    const activeEvidence = `Sampel Bukti: "${activeInputTab === "url" ? inputUrl : activeInputTab === "canvas" ? canvasText : inputText}"\nStatus Deteksi: ${aiStudy.summaryVerdict || analysisResult.statusLabel}\nSkor Bahaya: ${aiStudy.dangerScore ?? analysisResult.riskScore}/100 (${aiStudy.riskLevel || analysisResult.riskLevel})`;
+
+    try {
+      const res = await fetch("/api/trasp/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userMessage: text,
+          mode: "assistant",
+          contextEvidence: activeEvidence,
+          chatHistory: nextHistory,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+        const botMsg: ChatMessage = {
+          id: "bot-" + Date.now(),
+          sender: "bot",
+          text: data.assistantResponse || "Analisis terhadap pesan telah selesai.",
+          time: botTime,
+        };
+        const updatedWithBot = [...nextHistory, botMsg];
+        setChatHistory(updatedWithBot);
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("trasp_recognize_chat", JSON.stringify(updatedWithBot));
+          } catch {}
+        }
+      } else {
+        throw new Error("Chatbot API offline");
+      }
+    } catch {
+      const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      const fallbackMsg: ChatMessage = {
+        id: "bot-err-" + Date.now(),
+        sender: "bot",
+        text: "Berdasarkan rujukan forensik siber: bukti ini mengandung indikator manipulasi rekayasa sosial. Jangan pernah mengirim uang, kode OTP, atau memasang aplikasi di luar toko resmi.",
+        time: botTime,
+      };
+      const updatedWithFallback = [...nextHistory, fallbackMsg];
+      setChatHistory(updatedWithFallback);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("trasp_recognize_chat", JSON.stringify(updatedWithFallback));
+        } catch {}
+      }
+    } finally {
+      setIsBotTyping(false);
+    }
+  };
+
   const getRiskColor = (level: "HIGH" | "MEDIUM" | "LOW") => {
     switch (level) {
       case "HIGH":
@@ -228,57 +392,37 @@ export function RecognizeEngine({
       return {
         text: part,
         isClue: !!match,
-        category: match ? match.category : ""
+        category: match ? match.category : "",
       };
     });
   }, [inputText, inputUrl, activeInputTab, analysisResult]);
 
+  const quickPrompts = [
+    "Kenapa bukti ini berbahaya?",
+    "Bagaimana cara verifikasi resi asli?",
+    "Apa langkah jika telanjur klik?",
+    "Apa pasal hukum penipuan ini?",
+  ];
+
   return (
     <div className="space-y-4">
-      {/* Sleek Preset Pills (1 Clean Line) */}
-      <div className="flex flex-wrap items-center gap-1.5 text-xs bg-muted/40 p-2 border border-border">
-        <div className="flex items-center gap-1 mr-1">
-          <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-            <Layers className="w-3.5 h-3.5 text-primary" />
-            Sampel Kasus Riil:
-          </span>
-          <InfoHint
-            title="Katalog Sampel Penipuan Riil"
-            description="Preset kasus nyata yang marak di Indonesia (2025/2026). Setiap skenario memicu analisis vektor forensik dan evaluasi psikologis yang berbeda secara dinamis."
-          />
-        </div>
 
-        {PRESET_CASES.map((preset) => {
-          const isSelected = selectedPresetId === preset.id;
-          return (
-            <button
-              key={preset.id}
-              onClick={() => handleSelectPreset(preset)}
-              className={`px-2 py-1 text-xs font-mono transition-all border cursor-pointer ${
-                isSelected
-                  ? "bg-primary text-primary-foreground border-primary font-bold shadow-sm"
-                  : "bg-background text-muted-foreground hover:text-foreground border-border hover:border-primary/50"
-              }`}
-            >
-              {preset.title.split(":")[0]}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Main Grid: Inputs vs Results */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left Input & Inspector Panel (5 Cols) */}
-        <div className="lg:col-span-5 space-y-4">
+      {/* Main Grid: Left (Inputs & Forensic Verdict) vs Right (Interactive AI Chatbot) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        {/* ========================================================= */}
+        {/* LEFT COLUMN: INPUT PENIPU & HASIL ANALISIS DETEKSI AWAL */}
+        {/* ========================================================= */}
+        <div className="lg:col-span-6 space-y-4 flex flex-col">
+          {/* Input Card */}
           <Card className="border-border">
             <CardHeader className="p-3.5 pb-2 border-b border-border bg-muted/20">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xs font-bold font-mono tracking-wider uppercase flex items-center gap-2">
                   <FileText className="w-4 h-4 text-primary" />
-                  Inspektor Bukti Digital
+                  Input Bukti
                 </CardTitle>
                 <Badge variant="outline" className="text-[10px] py-0 px-1.5 uppercase font-mono bg-background">
-                  Live Scanner
+                  Scanner
                 </Badge>
               </div>
             </CardHeader>
@@ -291,10 +435,10 @@ export function RecognizeEngine({
               >
                 <TabsList className="grid grid-cols-3 h-8 p-0.5 bg-muted border border-border mb-3">
                   <TabsTrigger value="text" className="text-xs font-mono h-7">
-                    Teks Pesan
+                    Teks
                   </TabsTrigger>
                   <TabsTrigger value="url" className="text-xs font-mono h-7">
-                    URL / Tautan
+                    URL
                   </TabsTrigger>
                   <TabsTrigger value="canvas" className="text-xs font-mono h-7">
                     Sensor Privasi
@@ -306,7 +450,7 @@ export function RecognizeEngine({
                     rows={4}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Tempel pesan WhatsApp/SMS mencurigakan di sini..."
+                    placeholder="Tempel pesan penipuan di sini..."
                     className="text-xs font-mono resize-none leading-relaxed border-border focus:border-primary"
                   />
                 </TabsContent>
@@ -316,12 +460,9 @@ export function RecognizeEngine({
                     type="url"
                     value={inputUrl}
                     onChange={(e) => setInputUrl(e.target.value)}
-                    placeholder="https://contoh-tautan-curiga.com/..."
+                    placeholder="https://tautan-mencurigakan.com/..."
                     className="text-xs font-mono h-9 border-border focus:border-primary"
                   />
-                  <p className="text-[10px] text-muted-foreground font-mono">
-                    Menganalisis domain, ekstensi TLD (.xyz/.top), punycode, dan subdomain ganda.
-                  </p>
                 </TabsContent>
 
                 <TabsContent value="canvas" className="mt-0">
@@ -347,282 +488,125 @@ export function RecognizeEngine({
                 {isScanning ? (
                   <>
                     <Zap className="w-3.5 h-3.5 mr-1.5 animate-spin text-amber-300" />
-                    Menganalisis Vektor Forensik...
+                    Memindai...
                   </>
                 ) : (
                   <>
                     <Search className="w-3.5 h-3.5 mr-1.5" />
-                    Pindai &amp; Bedah Pesan
+                    Pindai &amp; Analisis
                   </>
                 )}
               </Button>
-
-              {/* Live Interactive X-Ray Markup Box */}
-              <div className="pt-2 border-t border-border space-y-1.5">
-                <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground">
-                  <span className="flex items-center gap-1 font-semibold text-foreground">
-                    <Eye className="w-3.5 h-3.5 text-primary" />
-                    Live X-Ray Highlight:
-                  </span>
-                  <span className="text-[9px] text-muted-foreground">(Sorotan Kata Berbahaya)</span>
-                </div>
-
-                <div className="p-2.5 bg-slate-950 border border-slate-800 text-[11px] leading-relaxed text-slate-200 font-mono max-h-36 overflow-y-auto rounded-none">
-                  {highlightedTokens.map((t, idx) => {
-                    if (!t.isClue) {
-                      return <span key={idx}>{t.text}</span>;
-                    }
-
-                    let badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/50 px-1 py-0.2 mx-0.5 rounded-none font-bold";
-                    if (t.category === "asset") {
-                      badgeClass = "bg-rose-500/20 text-rose-300 border border-rose-500/50 px-1 py-0.2 mx-0.5 rounded-none font-bold";
-                    } else if (t.category === "authority") {
-                      badgeClass = "bg-blue-500/20 text-blue-300 border border-blue-500/50 px-1 py-0.2 mx-0.5 rounded-none font-bold";
-                    } else if (t.category === "financial") {
-                      badgeClass = "bg-purple-500/20 text-purple-300 border border-purple-500/50 px-1 py-0.2 mx-0.5 rounded-none font-bold";
-                    }
-
-                    return (
-                      <span
-                        key={idx}
-                        className={badgeClass}
-                        title={`Vektor: ${t.category}`}
-                      >
-                        {t.text}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Forensic Results Panel (7 Cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <Card className="border-border overflow-hidden">
-            {/* Risk Score Banner */}
-            <div className={`p-3.5 border-b flex items-center justify-between gap-3 ${getRiskColor(analysisResult.riskLevel)}`}>
-              <div className="flex items-center gap-2">
-                <AlertOctagon className="w-5 h-5 shrink-0" />
-                <div>
-                  <span className="font-serif font-bold text-sm block">
-                    {analysisResult.statusLabel}
-                  </span>
-                  <span className="text-[10px] opacity-80 font-mono block">
-                    {aiStudy.summaryVerdict ? aiStudy.summaryVerdict : "Analisis Probabilistik Heuristik (Juknis No. 29)"}
-                  </span>
-                </div>
+        {/* ========================================================= */}
+        {/* RIGHT COLUMN: INTERACTIVE AI FORENSIC CHATBOT */}
+        {/* ========================================================= */}
+        <div className="lg:col-span-6 flex flex-col h-[600px] lg:h-auto min-h-[580px] bg-card border border-border">
+          {/* Chatbot Header */}
+          <div className="px-3.5 py-2.5 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                <Bot className="w-4 h-4" />
               </div>
-              <div className="font-mono text-sm font-bold px-3 py-1 bg-background/90 border border-border shrink-0">
-                Skor: {analysisResult.riskScore}/100
+              <div>
+                <h3 className="text-xs font-bold font-mono tracking-wide text-foreground flex items-center gap-1.5">
+                  Ras
+                  <Badge variant="outline" className="text-[9px] py-0 px-1 bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-mono">
+                    Live Gemini
+                  </Badge>
+                </h3>
               </div>
             </div>
 
-            <CardContent className="p-4 space-y-4">
-              {activeInputTab === "canvas" && (
-                <div className="flex items-center gap-2 p-2.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono">
-                  <Shield className="w-4 h-4 shrink-0" />
-                  <span>
-                    {canvasRedactedCount > 0
-                      ? `Sensor Privasi Aktif: ${canvasRedactedCount} area data pribadi berhasil disensor sebelum analisis.`
-                      : "Pemrosesan Lokal: Tangkapan layar dianalisis 100% di browser tanpa kebocoran data."}
-                  </span>
-                </div>
-              )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => resetChatWithVerdict(aiStudy.summaryVerdict || "Analisis", aiStudy.dangerScore ?? 60, aiStudy.riskLevel || "HIGH", inputText)}
+              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground"
+              title="Reset Chat"
+            >
+              <RotateCcw className="w-3 h-3 mr-1" />
+              Reset
+            </Button>
+          </div>
 
-              {/* REAL-TIME AI FORENSIC STUDY CARD (Hero Intelligence) */}
-              <div className="p-3.5 bg-muted/40 border-2 border-primary/30 rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
-                      <Brain className="w-3.5 h-3.5" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold font-mono tracking-wide flex items-center gap-1.5 text-foreground">
-                        HASIL PEMBELAJARAN FORENSIK AI REAL-TIME
-                      </h4>
-                      <p className="text-[10px] text-muted-foreground">
-                        Mempelajari pola linguistik, bias kognitif, &amp; vektor teknis secara mendalam (Bukan Tebak Angka)
-                      </p>
-                    </div>
+          {/* Chat Messages Body */}
+          <div
+            ref={chatScrollRef}
+            className="flex-1 overflow-y-auto p-3.5 space-y-3 bg-background/50 text-xs"
+          >
+            {chatHistory.map((m) => (
+              <div
+                key={m.id}
+                className={`flex gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                {m.sender === "bot" && (
+                  <div className="w-6 h-6 rounded bg-primary/10 shrink-0 flex items-center justify-center text-primary mt-0.5 border border-primary/20">
+                    <Brain className="w-3.5 h-3.5" />
                   </div>
-                  <Badge variant="outline" className="text-[9px] font-mono py-0.5 px-2 bg-background border-primary/40 text-primary">
-                    {aiStudy.isLoading ? (
-                      <span className="flex items-center gap-1 text-amber-500">
-                        <Zap className="w-3 h-3 animate-spin" /> Mempelajari...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                        <ShieldCheck className="w-3 h-3" /> {aiStudy.source || "Gemini 3.6 Flash"}
-                      </span>
-                    )}
-                  </Badge>
-                </div>
+                )}
 
-                {/* Deep Forensic Reasoning Box */}
-                <div className="p-2.5 bg-background border border-border/70 rounded text-xs leading-relaxed space-y-1.5">
-                  <div className="text-[11px] font-bold text-primary flex items-center gap-1 font-mono uppercase">
-                    <Zap className="w-3 h-3" /> Uraian Pembuktian Bahaya:
-                  </div>
-                  <p className="text-foreground text-[11px] leading-relaxed">
-                    {aiStudy.deepForensicReasoning || analysisResult.summary}
-                  </p>
-                </div>
-
-                {/* Cognitive Bias & Technical Threat Chips */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
-                  {/* Exploited Biases */}
-                  <div className="p-2 bg-background/80 border border-border rounded space-y-1">
-                    <span className="font-mono text-muted-foreground uppercase text-[9px] block font-semibold">
-                      Bias Kognitif Target yang Dieksploitasi:
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {aiStudy.biasExploited && aiStudy.biasExploited.length > 0 ? (
-                        aiStudy.biasExploited.map((b, i) => (
-                          <span
-                            key={i}
-                            className="px-1.5 py-0.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 rounded font-medium"
-                          >
-                            ⚠️ {b}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-muted-foreground italic font-mono">Pola wajar / Tanpa manipulasi</span>
-                      )}
-                    </div>
+                <div
+                  className={`max-w-[85%] rounded p-2.5 space-y-1.5 leading-relaxed ${
+                    m.sender === "user"
+                      ? "bg-primary text-primary-foreground font-medium"
+                      : "bg-muted/70 border border-border text-foreground"
+                  }`}
+                >
+                  <div className="whitespace-pre-wrap leading-relaxed">
+                    {renderCleanMessage(m.text)}
                   </div>
 
-                  {/* Technical Threats */}
-                  <div className="p-2 bg-background/80 border border-border rounded space-y-1">
-                    <span className="font-mono text-muted-foreground uppercase text-[9px] block font-semibold">
-                      Vektor Ancaman Teknis Teridentifikasi:
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {aiStudy.technicalThreats && aiStudy.technicalThreats.length > 0 ? (
-                        aiStudy.technicalThreats.map((t, i) => (
-                          <span
-                            key={i}
-                            className="px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 rounded font-medium"
-                          >
-                            🛡️ {t}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-muted-foreground italic font-mono">Tidak ada ancaman teknis</span>
-                      )}
-                    </div>
+                  <div className="text-[9px] text-muted-foreground/80 font-mono text-right">
+                    {m.time}
                   </div>
                 </div>
 
-                {/* Recommended Mitigation from AI */}
-                {aiStudy.mitigationRecommendation && (
-                  <div className="p-2 bg-primary/5 border border-primary/20 rounded text-[11px] text-foreground flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="font-mono text-[10px] uppercase text-primary block">
-                        Rekomendasi Aksi Cepat:
-                      </strong>
-                      <span className="text-[11px] text-muted-foreground">
-                        {aiStudy.mitigationRecommendation}
-                      </span>
-                    </div>
+                {m.sender === "user" && (
+                  <div className="w-6 h-6 rounded bg-muted shrink-0 flex items-center justify-center text-foreground mt-0.5 border border-border">
+                    <User className="w-3.5 h-3.5" />
                   </div>
                 )}
               </div>
+            ))}
 
-              {/* Threat Vectors Bars */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs font-medium text-muted-foreground pb-1 border-b border-border">
-                  <span className="flex items-center gap-1.5 font-semibold text-foreground">
-                    <Layers className="w-3.5 h-3.5 text-primary" />
-                    <span>5 Vektor Ancaman (Threat Matrix)</span>
-                  </span>
-                  <span className="font-mono text-[10px]">Tingkat Risiko</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {analysisResult.vectors.map((vec) => (
-                    <div key={vec.id} className="p-2.5 bg-background border border-border space-y-1.5">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-foreground">{vec.name}</span>
-                        <span className={`font-mono text-xs font-bold ${vec.score >= 60 ? "text-rose-500" : vec.score >= 30 ? "text-amber-500" : "text-muted-foreground"}`}>
-                          {vec.score}%
-                        </span>
-                      </div>
-                      <Progress value={vec.score} className="h-1.5" />
-                      {vec.detectedClues.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 pt-0.5">
-                          {vec.detectedClues.slice(0, 3).map((clue, idx) => (
-                            <Badge key={idx} variant="outline" className="text-[9px] px-1 py-0 font-mono text-muted-foreground border-border truncate max-w-[140px]">
-                              {clue}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-[9px] text-muted-foreground italic font-mono block">Tidak terindikasi</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {isBotTyping && (
+              <div className="flex gap-2 items-center text-muted-foreground text-xs italic p-2 bg-muted/40 rounded border border-border">
+                <Zap className="w-3 h-3 text-primary animate-spin" />
+                <span>Menganalisis pertanyaan Anda...</span>
               </div>
+            )}
+          </div>
 
-              {/* URL Deconstruction */}
-              {analysisResult.urlAnalysis && analysisResult.urlAnalysis.isValid && (
-                <div className="p-3 border border-border bg-slate-950 text-slate-100 font-mono text-xs space-y-2">
-                  <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <span>Bedah Struktur Domain (Deconstructor)</span>
-                    </span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                  </div>
-                  <div className="text-[11px] space-y-1 bg-black/50 p-2 border border-slate-800">
-                    <div>
-                      <span className="text-slate-400">Host / Domain Pemilik:</span>{" "}
-                      <span className="text-amber-300 font-bold">{analysisResult.urlAnalysis.rootDomain}</span>
-                    </div>
-                    {analysisResult.urlAnalysis.subdomain && (
-                      <div>
-                        <span className="text-slate-400">Subdomain Tipuan:</span>{" "}
-                        <span className={analysisResult.urlAnalysis.isSpoofedSubdomain ? "text-rose-400 font-bold" : "text-slate-300"}>
-                          {analysisResult.urlAnalysis.subdomain}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-amber-200/90 pt-1 border-t border-slate-800 leading-relaxed">
-                    {analysisResult.urlAnalysis.explanation}
-                  </p>
-                </div>
-              )}
-
-              {/* BIG CALL TO ACTION: Direct Jump to WhatsApp Sandbox */}
-              <div className="p-3.5 bg-primary/10 border-2 border-primary/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="space-y-0.5">
-                  <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    Latih Intuisi: Masuk ke Simulasi WhatsApp
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    Uji langsung bagaimana pelaku membalas saat Anda bersikap kritis di Sandbox Interaktif.
-                  </p>
-                </div>
-
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (onSwitchToSandbox) {
-                      onSwitchToSandbox(selectedPresetId, inputText);
-                    }
-                  }}
-                  className="text-xs h-8 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 font-medium cursor-pointer"
-                >
-                  Buka di Sandbox WhatsApp
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Chat Input Bar */}
+          <div className="p-2.5 bg-muted/60 border-t border-border shrink-0">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendChatMessage();
+              }}
+              className="flex gap-1.5 items-center"
+            >
+              <Input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder="Tanyakan ke Ras..."
+                disabled={isBotTyping}
+                className="text-xs h-9 bg-background border-border"
+              />
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!chatInput.trim() || isBotTyping}
+                className="h-9 px-3 bg-primary text-primary-foreground font-medium cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

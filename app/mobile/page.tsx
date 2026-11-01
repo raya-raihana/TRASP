@@ -7,10 +7,8 @@ import {
   IconSearch,
   IconTerminal2,
   IconAlertTriangle,
-  IconUserX,
   IconShieldCheck,
   IconDeviceDesktop,
-  IconBrandGithub,
   IconDeviceMobile,
   IconFileText,
   IconReport,
@@ -18,17 +16,8 @@ import {
 import { RecognizeEngine } from "@/components/trasp/recognize-engine";
 import { LearnSandbox } from "@/components/trasp/learn-sandbox";
 import { ActContainment } from "@/components/trasp/act-containment";
-import { RedTeamSimulator } from "@/components/trasp/red-team-simulator";
-import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
 import { TeamInfoDialog } from "@/components/trasp/team-info-dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-const TOOL_TITLES: Record<string, string> = {
-  recognize: "Forensic Inspector",
-  learn: "Sandbox Simulasi",
-  act: "Mitigasi Darurat",
-  redteam: "Mode Red Team",
-};
 
 export default function MobilePage() {
   const router = useRouter();
@@ -36,9 +25,9 @@ export default function MobilePage() {
   const [activeScenarioId, setActiveScenarioId] = useState<string>("apk-kurir");
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const search = window.location.search || '';
-      window.location.replace('/' + search);
+    if (typeof window !== "undefined") {
+      const search = window.location.search || "";
+      window.location.replace("/" + search);
     }
   }, []);
 
@@ -133,8 +122,6 @@ export default function MobilePage() {
 
       {/* Main Container */}
       <main className="flex-1 p-3 space-y-4 max-w-2xl w-full mx-auto">
-        <EducationalDisclaimer />
-
         {/* Dynamic Tool Content */}
         <div className="space-y-4">
           {activeTool === "recognize" && (
@@ -153,36 +140,12 @@ export default function MobilePage() {
           )}
 
           {activeTool === "act" && <ActContainment initialScenarioId={activeScenarioId} />}
-
-          {activeTool === "redteam" && <RedTeamSimulator />}
         </div>
-
-        {/* Minimal Mobile Footer */}
-        <footer className="pt-6 pb-4 border-t border-border flex flex-col items-center justify-center gap-2 text-center text-xs text-muted-foreground">
-          <div className="font-mono text-[11px]">
-            <span>TRASP &middot; Tim Tiga Trio (MIT-010)</span>
-          </div>
-          <div className="flex items-center gap-3 font-mono text-[11px]">
-            <Link href="/?desktop=true" className="underline hover:text-foreground">
-              Mode Desktop
-            </Link>
-            <span>&middot;</span>
-            <a
-              href="https://github.com/raya-raihana/TRASP"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 hover:text-foreground"
-            >
-              <IconBrandGithub className="h-3 w-3" />
-              GitHub
-            </a>
-          </div>
-        </footer>
       </main>
 
-      {/* Fixed Sharp Bottom Navigation Bar */}
+      {/* Fixed Sharp Bottom Navigation Bar (3 Tools) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border shadow-none">
-        <div className="grid grid-cols-4 max-w-2xl mx-auto">
+        <div className="grid grid-cols-3 max-w-2xl mx-auto">
           <button
             type="button"
             onClick={() => setToolAndUrl("recognize")}
@@ -193,7 +156,7 @@ export default function MobilePage() {
             }`}
           >
             <IconSearch className="h-4 w-4 mb-0.5" />
-            <span className="text-[10px] tracking-tight">Kenali</span>
+            <span className="text-[10px] tracking-tight">Recognize</span>
           </button>
 
           <button
@@ -206,33 +169,20 @@ export default function MobilePage() {
             }`}
           >
             <IconTerminal2 className="h-4 w-4 mb-0.5" />
-            <span className="text-[10px] tracking-tight">Simulasi</span>
+            <span className="text-[10px] tracking-tight">Learn</span>
           </button>
 
           <button
             type="button"
             onClick={() => setToolAndUrl("act")}
-            className={`flex flex-col items-center justify-center py-2.5 transition-colors border-r border-border cursor-pointer ${
+            className={`flex flex-col items-center justify-center py-2.5 transition-colors cursor-pointer ${
               activeTool === "act"
                 ? "bg-primary text-primary-foreground font-bold"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
             }`}
           >
             <IconAlertTriangle className="h-4 w-4 mb-0.5" />
-            <span className="text-[10px] tracking-tight">Mitigasi</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setToolAndUrl("redteam")}
-            className={`flex flex-col items-center justify-center py-2.5 transition-colors cursor-pointer ${
-              activeTool === "redteam"
-                ? "bg-primary text-primary-foreground font-bold"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-            }`}
-          >
-            <IconUserX className="h-4 w-4 mb-0.5" />
-            <span className="text-[10px] tracking-tight">Red Team</span>
+            <span className="text-[10px] tracking-tight">Act</span>
           </button>
         </div>
       </nav>

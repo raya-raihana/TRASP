@@ -61,29 +61,14 @@ export function RedTeamSimulator() {
     <Card className="border-border shadow-none rounded-none">
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-          <div>
-            <CardTitle className="text-base font-serif font-bold tracking-tight flex items-center gap-2">
-              <UserX className="w-4 h-4 text-primary" />
-              <span>Simulasi Red Team</span>
-              <InfoHint
-                title="Mode Simulasi Red Team"
-                badge="Eksplorasi Pola Pikir Penipu"
-                description="Fitur edukatif untuk membedah psikologi rekayasa sosial dari sudut pandang penyerang (Red Team), sehingga Anda memahami bagaimana manipulasi emosi meruntuhkan pertahanan logika target."
-                howItWorks={[
-                  "Pilih taktik serangan sosial (Urgensi Waktu, Intimidasi Otoritas, atau Eksploitasi Empati).",
-                  "Lihat bagaimana tingkat skeptisisme target berkurang jika diserang pada titik lemah emosionalnya.",
-                  "Pahami celah psikologis tersebut agar Anda sendiri kebal saat dihadapkan pada situasi nyata."
-                ]}
-              />
-            </CardTitle>
-            <CardDescription className="text-xs mt-0.5">
-              Eksplorasi bagaimana manipulasi emosional digunakan untuk melemahkan kewaspadaan target.
-            </CardDescription>
-          </div>
+          <CardTitle className="text-base font-serif font-bold tracking-tight flex items-center gap-2">
+            <UserX className="w-4 h-4 text-primary" />
+            <span>Simulasi Red Team</span>
+          </CardTitle>
 
           <Button variant="outline" size="sm" onClick={handleReset} className="text-xs h-8 rounded-none">
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
-            Reset Uji Coba
+            Reset
           </Button>
         </div>
       </CardHeader>
@@ -101,20 +86,13 @@ export function RedTeamSimulator() {
             value={targetResistance}
             className="h-2 rounded-none"
           />
-          <p className="text-[11px] text-muted-foreground">
-            {targetResistance > 50
-              ? "Target masih waspada dan meragukan identitas Anda."
-              : targetResistance > 0
-              ? "Target mulai panik dan kehilangan akal sehat karena tekanan emosional."
-              : "Pertahanan target runtuh total! Korban bersiap menuruti instruksi berbahaya."}
-          </p>
         </div>
 
         {/* Tactic Selection Area */}
         {!isDone ? (
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-foreground">
-              Langkah {currentTurn + 1} dari 3: Pilih Taktik Manipulasi untuk Menembus Korban:
+              Pilih Taktik Manipulasi:
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {tactics.map((tactic, idx) => (
@@ -128,12 +106,9 @@ export function RedTeamSimulator() {
                       <Zap className="w-3.5 h-3.5 text-primary" />
                       {tactic.name}
                     </h5>
-                    <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                      {tactic.description}
-                    </p>
                   </div>
                   <span className="text-[10px] font-mono text-muted-foreground">
-                    Dampak Melemahkan: {tactic.effect}%
+                    Dampak: {tactic.effect}%
                   </span>
                 </button>
               ))}
@@ -142,16 +117,8 @@ export function RedTeamSimulator() {
         ) : (
           <div className="p-4 rounded-none bg-muted/30 border border-border space-y-2.5 text-center">
             <h4 className="text-sm font-serif font-bold text-foreground">
-              Evaluasi Red Team Selesai
+              Simulasi Selesai
             </h4>
-            <p className="text-xs text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Eksperimen membuktikan bahwa manipulasi siber berfokus pada kerentanan psikologis manusia (urgensi palsu, ketakutan, iming-iming instan), bukan kelemahan teknis perangkat.
-            </p>
-            <div className="pt-1">
-              <span className="inline-block bg-background px-3 py-1 rounded-none border border-border text-[11px] font-medium text-foreground">
-                Kesimpulan: Hindari mengambil keputusan saat berada dalam tekanan emosi atau kepanikan.
-              </span>
-            </div>
           </div>
         )}
 
@@ -159,12 +126,12 @@ export function RedTeamSimulator() {
         {history.length > 0 && (
           <div className="space-y-2 pt-2 border-t border-border">
             <h5 className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-bold">
-              Riwayat Trik Manipulasi:
+              Riwayat Trik:
             </h5>
             <div className="space-y-1.5">
               {history.map((h, i) => (
                 <div key={i} className="text-xs p-2 rounded-none bg-muted/40 flex items-center justify-between border border-border">
-                  <span><strong>{h.tactic}:</strong> {h.result}</span>
+                  <span><strong>{h.tactic}</strong></span>
                   <span className="font-mono text-accent font-bold shrink-0 ml-2">{h.resistanceChange}%</span>
                 </div>
               ))}

@@ -64,9 +64,6 @@ export function TeamInfoDialog({ trigger, open, onOpenChange }: TeamInfoDialogPr
                 )}
               </Button>
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              Kode tim dibutuhkan jika panitia memakai formulir cadangan.
-            </p>
           </div>
 
           <div className="border-t border-border pt-3 space-y-3">
