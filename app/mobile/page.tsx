@@ -36,16 +36,9 @@ export default function MobilePage() {
   const [activeScenarioId, setActiveScenarioId] = useState<string>("apk-kurir");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const toolParam = params.get("tool");
-      const presetParam = params.get("preset");
-      if (toolParam && TOOL_TITLES[toolParam]) {
-        setActiveTool(toolParam);
-      }
-      if (presetParam) {
-        setActiveScenarioId(presetParam);
-      }
+    if (typeof window !== 'undefined') {
+      const search = window.location.search || '';
+      window.location.replace('/' + search);
     }
   }, []);
 

@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   IconAlertTriangle,
+  IconBook,
   IconDeviceMobile,
   IconFileText,
   IconFolder,
@@ -192,9 +193,9 @@ export function AppSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="text-xs">
-                  <Link href="/mobile">
-                    <IconDeviceMobile className="h-4 w-4" />
-                    <span>Mode Tampilan Mobile (/mobile)</span>
+                  <Link href="/kompendium">
+                    <IconBook className="h-4 w-4 text-primary" />
+                    <span>Katalog & Regulasi Siber</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

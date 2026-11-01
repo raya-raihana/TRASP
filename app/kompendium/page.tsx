@@ -1,0 +1,639 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  ShieldAlert,
+  Search,
+  BookOpen,
+  ArrowLeft,
+  ExternalLink,
+  Scale,
+  AlertTriangle,
+  CheckCircle2,
+  PhoneCall,
+  FileText,
+  Sparkles,
+  Layers,
+  Lock,
+  Zap,
+  Globe,
+  Share2,
+  Copy,
+  Check
+} from "lucide-react";
+import {
+  IconDeviceMobile,
+  IconShieldCheck,
+  IconBrandGithub,
+  IconAlertTriangle,
+  IconReport,
+  IconTerminal2
+} from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
+import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  COMPENDIUM_CASES,
+  EMERGENCY_PROTOCOLS,
+  JURIDICAL_ANALYSIS,
+  OFFICIAL_AUTHORITY_LINKS,
+  ScamCaseItem
+} from "@/lib/trasp/compendium-data";
+
+export default function CompendiumPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
+  const [activeTab, setActiveTab] = useState<"katalog" | "protokol" | "yuridis" | "referensi">("katalog");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const categories = [
+    { id: "ALL", label: "Semua Modus (6)" },
+    { id: "Android Malware / Banking Trojan", label: "Malware APK" },
+    { id: "Phishing Kredensial & Social Engineering", label: "Impersonasi Otoritas" },
+    { id: "Penipuan Finansial Bertingkat / Task Fraud", label: "Task Scam (Loker)" },
+    { id: "Phishing Massal & SIM Card Box", label: "SMS Blast Bank" },
+    { id: "Penyusupan Akun & QR Code Tampering", label: "Begal OTP & Quishing" },
+    { id: "Kecerdasan Buatan Generatif / Audio Spoofing", label: "Deepfake AI / Vishing" }
+  ];
+
+  const filteredCases = COMPENDIUM_CASES.filter((c) => {
+    const matchesCategory = selectedCategory === "ALL" || c.category === selectedCategory;
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return matchesCategory;
+    const matchesSearch =
+      c.title.toLowerCase().includes(q) ||
+      c.modusOperandi.toLowerCase().includes(q) ||
+      c.realCasesIndonesia.toLowerCase().includes(q) ||
+      c.psychologicalBiases.some((b) => b.biasName.toLowerCase().includes(q) || b.description.toLowerCase().includes(q));
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleCopyText = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-background/95 backdrop-blur px-4 md:px-6">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Kembali ke Workbench</span>
+          </Link>
+          <div className="h-4 w-[1px] bg-border hidden sm:block" />
+          <div className="flex items-center gap-2">
+            <span className="font-serif font-bold text-sm tracking-tight text-foreground">
+              TRASP Kompendium
+            </span>
+            <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-mono border-primary/40 text-primary">
+              Riset Otoritas & Jurnal Ilmiah
+            </Badge>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <Badge
+            variant="outline"
+            className="hidden md:inline-flex text-[10px] border-border text-muted-foreground font-mono items-center gap-1"
+          >
+            <IconShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            Terverifikasi Regulasi RI
+          </Badge>
+          <a
+            href="https://github.com/raya-raihana/TRASP"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="GitHub"
+          >
+            <IconBrandGithub className="h-4 w-4" />
+          </a>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 space-y-6">
+        {/* Hero Section */}
+        <div className="border border-border bg-muted/20 p-5 md:p-6 space-y-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <Badge className="bg-primary text-primary-foreground font-mono text-[11px] rounded-none">
+              DOKUMEN RISET RESMI
+            </Badge>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground font-mono text-[11px]">
+              Bareskrim Polri • Satgas PASTI OJK (IASC) • Komdigi • Jurnal Hukum Forensik 2025
+            </span>
+          </div>
+
+          <h1 className="text-xl md:text-3xl font-serif font-black tracking-tight text-foreground">
+            Kompendium Forensik Digital: Ensiklopedia Kasus Penipuan Siber & Protokol Penanggulangan
+          </h1>
+
+          <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-4xl">
+            Panduan komprehensif bagi publik dan aparat untuk membedah anatomi rekayasa sosial (*social engineering*),
+            taktik manipulasi bias kognitif, celah keamanan teknis, serta standar operasional penanganan darurat
+            dalam kurun waktu kritis (*Golden Time 15–30 Menit*).
+          </p>
+
+          <EducationalDisclaimer />
+        </div>
+
+        {/* Statistical Highlights Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-3.5 border border-border bg-card">
+            <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+              Total Laporan Transaksi
+            </div>
+            <div className="text-lg md:text-2xl font-bold font-mono text-primary mt-1">405.000+</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Komdigi RI (2017–2024)</div>
+          </div>
+
+          <div className="p-3.5 border border-border bg-card">
+            <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+              Kerugian Finansial 3 Bln
+            </div>
+            <div className="text-lg md:text-2xl font-bold font-mono text-rose-500 mt-1">Rp700 Miliar</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">42.257 aduan OJK</div>
+          </div>
+
+          <div className="p-3.5 border border-border bg-card">
+            <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+              Rekening Pelaku Diblokir
+            </div>
+            <div className="text-lg md:text-2xl font-bold font-mono text-emerald-500 mt-1">33.857 Akun</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">IASC OJK (Rp133,2 M selamat)</div>
+          </div>
+
+          <div className="p-3.5 border border-border bg-card">
+            <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+              Golden Time Penyelamatan
+            </div>
+            <div className="text-lg md:text-2xl font-bold font-mono text-amber-500 mt-1">15–30 Menit</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5">Batas blokir kilat bank</div>
+          </div>
+        </div>
+
+        {/* Section Navigation Tabs */}
+        <div className="border-b border-border flex items-center justify-between gap-2 overflow-x-auto">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setActiveTab("katalog")}
+              className={`px-3 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "katalog"
+                  ? "border-primary text-foreground bg-muted/30"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-primary" />
+              <span>1. Katalog 6 Kasus Riil</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("protokol")}
+              className={`px-3 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "protokol"
+                  ? "border-primary text-foreground bg-muted/30"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <span>2. Protokol Darurat Resmi</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("yuridis")}
+              className={`px-3 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "yuridis"
+                  ? "border-primary text-foreground bg-muted/30"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Scale className="w-3.5 h-3.5 text-blue-500" />
+              <span>3. Tinjauan Yuridis & KUHP/UU ITE</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("referensi")}
+              className={`px-3 py-2 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                activeTab === "referensi"
+                  ? "border-primary text-foreground bg-muted/30"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-emerald-500" />
+              <span>4. Daftar Pustaka Otoritas</span>
+            </button>
+          </div>
+        </div>
+
+        {/* TAB 1: KATALOG 6 KASUS RIIL */}
+        {activeTab === "katalog" && (
+          <div className="space-y-4">
+            {/* Filter and Search Bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Cari kasus, modus, atau kata kunci (contoh: Coretax, APK, Deepfake, OJK, SMS)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 text-xs h-9 rounded-none border-border"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-2.5 py-1 rounded-none text-[11px] font-medium border whitespace-nowrap transition-colors cursor-pointer ${
+                      selectedCategory === cat.id
+                        ? "bg-foreground text-background border-foreground font-bold"
+                        : "bg-muted/40 text-muted-foreground border-border hover:text-foreground"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* List of Case Cards */}
+            <div className="space-y-4">
+              {filteredCases.length === 0 ? (
+                <div className="p-8 border border-border text-center space-y-2">
+                  <p className="text-sm font-semibold text-foreground">Tidak ditemukan kasus yang cocok</p>
+                  <p className="text-xs text-muted-foreground">Silakan ubah kata kunci pencarian atau kategori filter Anda.</p>
+                </div>
+              ) : (
+                filteredCases.map((item) => (
+                  <Card key={item.id} className="border-border shadow-none rounded-none overflow-hidden">
+                    <CardHeader className="bg-muted/20 border-b border-border pb-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge
+                              variant="outline"
+                              className={`text-[10px] font-mono border-border ${
+                                item.riskLevel === "CRITICAL"
+                                  ? "border-rose-500/40 text-rose-500 bg-rose-500/10"
+                                  : "border-amber-500/40 text-amber-500 bg-amber-500/10"
+                              }`}
+                            >
+                              TINGKAT BAHAYA: {item.riskLevel} ({item.dangerScore}/100)
+                            </Badge>
+                            <span className="text-[11px] font-mono text-muted-foreground">
+                              Kategori: {item.category}
+                            </span>
+                          </div>
+                          <CardTitle className="text-base font-serif font-bold text-foreground">
+                            {item.title}
+                          </CardTitle>
+                        </div>
+
+                        {item.workbenchPresetId && (
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 border-border hover:bg-primary hover:text-primary-foreground shrink-0 cursor-pointer"
+                          >
+                            <Link href={`/?tool=recognize&preset=${item.workbenchPresetId}`}>
+                              <Sparkles className="w-3 h-3 mr-1" />
+                              Uji di Workbench
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-4 md:p-5 space-y-4 text-xs">
+                      {/* Modus Operandi & Karakteristik */}
+                      <div className="space-y-2">
+                        <div className="font-bold text-foreground flex items-center gap-1.5 text-xs">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                          <span>Modus Operandi & Karakteristik Taktik Penipu:</span>
+                        </div>
+                        <p className="text-muted-foreground leading-relaxed pl-5">
+                          {item.modusOperandi}
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 text-muted-foreground pl-5">
+                          {item.characteristics.map((c, i) => (
+                            <li key={i}>{c}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Eksploitasi Bias Psikologis */}
+                      <div className="p-3 bg-muted/30 border border-border space-y-2">
+                        <div className="font-bold text-foreground flex items-center gap-1.5 text-xs">
+                          <Zap className="w-3.5 h-3.5 text-primary" />
+                          <span>Celah Bias Psikologis yang Dieksploitasi:</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
+                          {item.psychologicalBiases.map((b, idx) => (
+                            <div key={idx} className="space-y-0.5">
+                              <span className="font-semibold text-foreground text-[11px]">
+                                • {b.biasName}:
+                              </span>
+                              <p className="text-[11px] text-muted-foreground leading-normal">
+                                {b.description}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bukti Kasus Riil & Sumber Otoritas */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border">
+                        <div className="space-y-1">
+                          <span className="font-bold text-foreground text-[11px] flex items-center gap-1">
+                            <FileText className="w-3.5 h-3.5 text-slate-400" />
+                            Bukti Kasus Riil di Indonesia:
+                          </span>
+                          <p className="text-muted-foreground text-[11px] leading-relaxed">
+                            {item.realCasesIndonesia}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="font-bold text-foreground text-[11px] flex items-center gap-1">
+                            <Scale className="w-3.5 h-3.5 text-slate-400" />
+                            Pasal Pidana & Dasar Hukum:
+                          </span>
+                          <p className="text-muted-foreground text-[11px] leading-relaxed">
+                            {item.legalClauses}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Langkah Darurat Singkat */}
+                      <div className="p-3 bg-rose-500/5 border border-rose-500/20 space-y-1.5">
+                        <div className="text-[11px] font-bold text-rose-500 flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
+                            Tindakan Tangkal Cepat:
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleCopyText(
+                                item.emergencyActionSteps.join("\n"),
+                                item.id
+                              )
+                            }
+                            className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer"
+                          >
+                            {copiedId === item.id ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-500" />
+                                <span>Tersalin!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3" />
+                                <span>Salin Langkah</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <ul className="list-decimal list-inside space-y-0.5 text-[11px] text-muted-foreground">
+                          {item.emergencyActionSteps.map((st, sIdx) => (
+                            <li key={sIdx}>{st}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: PROTOKOL DARURAT RESMI (GOLDEN TIME) */}
+        {activeTab === "protokol" && (
+          <div className="space-y-6">
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 space-y-1">
+              <h3 className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
+                <Zap className="w-4 h-4" />
+                Konsep Golden Time (15–30 Menit Pertama Pasca Insiden)
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Regulator keuangan (OJK) dan penegak hukum (Polri) menegaskan bahwa batas waktu terpenting untuk
+                menyelamatkan dana dan mengisolasi malware adalah 15–30 menit pertama sebelum pelaku memecah dana ke
+                jaringan rekening penampung (*nominee mule accounts*).
+              </p>
+            </div>
+
+            {/* Sub-protokol Teknis APK */}
+            <Card className="border-border shadow-none rounded-none">
+              <CardHeader className="bg-muted/20 border-b border-border py-3">
+                <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <IconDeviceMobile className="w-4 h-4 text-primary" />
+                  {EMERGENCY_PROTOCOLS.technical.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                {EMERGENCY_PROTOCOLS.technical.steps.map((st) => (
+                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
+                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-primary text-primary-foreground font-mono font-bold text-xs shrink-0">
+                      {st.step}
+                    </span>
+                    <div className="space-y-1 text-xs">
+                      <div className="font-bold text-foreground">{st.title}</div>
+                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Sub-protokol Finansial */}
+            <Card className="border-border shadow-none rounded-none">
+              <CardHeader className="bg-muted/20 border-b border-border py-3">
+                <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-rose-500" />
+                  {EMERGENCY_PROTOCOLS.financial.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                {EMERGENCY_PROTOCOLS.financial.steps.map((st) => (
+                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
+                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-rose-600 text-white font-mono font-bold text-xs shrink-0">
+                      {st.step}
+                    </span>
+                    <div className="space-y-1 text-xs">
+                      <div className="font-bold text-foreground">{st.title}</div>
+                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Prosedur Pelaporan Kepolisian */}
+            <Card className="border-border shadow-none rounded-none">
+              <CardHeader className="bg-muted/20 border-b border-border py-3">
+                <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-blue-500" />
+                  {EMERGENCY_PROTOCOLS.policeReport.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                {EMERGENCY_PROTOCOLS.policeReport.steps.map((st) => (
+                  <div key={st.step} className="flex items-start gap-3 p-3 border border-border bg-card">
+                    <span className="flex items-center justify-center h-6 w-6 rounded-none bg-blue-600 text-white font-mono font-bold text-xs shrink-0">
+                      {st.step}
+                    </span>
+                    <div className="space-y-1 text-xs">
+                      <div className="font-bold text-foreground">{st.title}</div>
+                      <p className="text-muted-foreground leading-relaxed">{st.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* TAB 3: TINJAUAN YURIDIS & KENDALA FORENSIK */}
+        {activeTab === "yuridis" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-blue-500/40 text-blue-500">
+                  LEX GENERALI
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.lexGenerali.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.lexGenerali.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-500">
+                  LEX SPECIALIS DEROGAT LEGI GENERALI
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.lexSpecialis.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.lexSpecialis.desc}
+                </p>
+              </div>
+            </div>
+
+            {/* 4 Kendala Pembuktian Berdasarkan Jurnal Fuad Nur 2025 */}
+            <Card className="border-border shadow-none rounded-none">
+              <CardHeader className="bg-muted/20 border-b border-border py-3">
+                <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-primary" />
+                  4 Kendala Utama Pembuktian Forensik Digital (Kajian Jurnal Ilmiah Fuad Nur, 2025)
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Faktor-faktor teknis mengapa pelaku penipuan siber sulit ditindak tanpa bukti forensik digital terstandarisasi.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                {JURIDICAL_ANALYSIS.forensicChallenges.map((ch, idx) => (
+                  <div key={idx} className="p-3 border border-border bg-card space-y-1 text-xs">
+                    <div className="font-bold text-foreground flex items-center gap-1.5">
+                      <span className="font-mono text-primary font-bold">{idx + 1}.</span>
+                      <span>{ch.title}</span>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed pl-4">{ch.desc}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* TAB 4: DAFTAR PUSTAKA & KANAL RESMI */}
+        {activeTab === "referensi" && (
+          <div className="space-y-4">
+            <div className="p-4 border border-border bg-muted/20 space-y-1">
+              <h3 className="text-sm font-bold text-foreground font-serif">
+                Daftar Referensi Regulasi, Jurnal, & Portal Terverifikasi
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                Seluruh materi dalam kompendium ini bersumber langsung dari portal resmi kementerian, otoritas penegak hukum, dan publikasi ilmiah terindeks:
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {OFFICIAL_AUTHORITY_LINKS.map((link, idx) => (
+                <div key={idx} className="p-4 border border-border bg-card space-y-2 flex flex-col justify-between">
+                  <div className="space-y-1">
+                    <div className="font-bold text-xs text-foreground flex items-center justify-between">
+                      <span>{link.name}</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{link.desc}</p>
+                    <div className="font-mono text-[11px] text-primary">{link.portal}</div>
+                  </div>
+
+                  <div className="pt-2 border-t border-border">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline font-medium"
+                    >
+                      <span>Kunjungi Portal Resmi</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border p-4 bg-background text-center text-xs text-muted-foreground mt-8">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>TRASP Kompendium Forensik Siber • MIT-WEEK 2026 UNMUL</span>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="hover:text-foreground underline">
+              Buka Workbench
+            </Link>
+            <span>•</span>
+            <a
+              href="https://patrolisiber.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground underline"
+            >
+              Patroli Siber
+            </a>
+            <span>•</span>
+            <a
+              href="https://iasc.ojk.go.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground underline"
+            >
+              IASC OJK
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

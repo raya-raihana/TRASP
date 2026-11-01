@@ -382,7 +382,7 @@ export function LearnSandbox({
             className="text-[10px] font-mono border-emerald-500/30 text-emerald-400 bg-emerald-950/20 hidden sm:flex items-center gap-1"
           >
             <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
-            {lastSource === "gemini-ai" ? "Gemini 2.5 Flash Active" : "Forensik Lokal Aktif"}
+            {lastSource.includes("gemini") ? "Gemini AI Studio Active" : "Forensik Lokal Aktif"}
           </Badge>
 
           <Button
@@ -781,7 +781,7 @@ export function LearnSandbox({
                 Monolog Batin Pelaku (Isi Kepala Sindikat):
               </span>
               <span className="text-[9px] font-mono text-slate-500">
-                {lastSource === "gemini-ai" ? "Gemini AI" : "Heuristic"}
+                {lastSource.includes("gemini") ? "Gemini AI Studio" : "Heuristic"}
               </span>
             </div>
             <p className="text-xs leading-relaxed italic bg-black/60 p-3 border border-border text-slate-300">

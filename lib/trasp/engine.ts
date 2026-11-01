@@ -104,20 +104,21 @@ const LEET_MAP: Record<string, string> = {
 
 export function normalizeText(input: string): string {
   if (!input) return "";
-  
-  // 1. Lowercase
-  let text = input.toLowerCase();
 
-  // 2. Unmask zero-width / excessive spacing between characters: t . e . l . e . g . r . a . m
-  text = text.replace(/([a-z0-9])[\s\.\-_]{1,3}([a-z0-9])/gi, "$1$2");
+  // 1. Lowercase & strip zero-width characters
+  let text = input.replace(/[\u200B-\u200D\uFEFF]/g, "").toLowerCase();
 
-  // 3. Decode Leetspeak
+  // 2. Decode Leetspeak
   text = text
     .split("")
     .map((char) => LEET_MAP[char] || char)
     .join("");
 
-  return text;
+  // 3. Unmask spaced single letters like "t . e . l . e . g . r . a . m" or "w a"
+  text = text.replace(/(?<=\b[a-z0-9])[\s\.\-_]+(?=[a-z0-9]\b)/gi, "");
+
+  // 4. Normalize multiple whitespaces into a single space
+  return text.replace(/\s+/g, " ").trim();
 }
 
 // URL Anatomy Deconstructor
@@ -208,8 +209,8 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   // Vektor 1: Urgensi & Tekanan Waktu (Weight: 25)
   const urgencyClues: string[] = [];
   const urgencyKeywords = [
-    "segera", "cepat", "dalam waktu", "1x24 jam", "24 jam", "2 jam", "15 menit", "sekarang juga",
-    "hari ini terakhir", "sebelum diblokir", "diblokir total", "tertahan", "darurat", "peringatan terakhir"
+    "segera", "cepat", "dalam waktu", "1x24 jam", "24 jam", "2 jam", "15 menit", "sekarang juga", "sekarang",
+    "hari ini terakhir", "sebelum diblokir", "diblokir total", "tertahan", "darurat", "peringatan terakhir", "panik", "sebelum jam"
   ];
   urgencyKeywords.forEach((kw) => {
     if (norm.includes(kw)) urgencyClues.push(kw);
@@ -223,7 +224,7 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   const assetClues: string[] = [];
   const assetKeywords = [
     "otp", "pin", "password", "kode verifikasi", "transfer", "deposit", "saldo awal", "unduh",
-    ".apk", "install", "pasang aplikasi", "kirim saldo", "rekening bendahara", "kembalikan uang"
+    ".apk", "install", "pasang aplikasi", "kirim saldo", "rekening bendahara", "kembalikan uang", "transfer balik", "rekening saya", "rekening"
   ];
   assetKeywords.forEach((kw) => {
     if (norm.includes(kw)) assetClues.push(kw);
@@ -237,7 +238,7 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   const financialClues: string[] = [];
   const financialKeywords = [
     "cuan", "komisi", "like dan subscribe", "paruh waktu", "freelance", "gaji", "menang undian",
-    "hadiah", "gratis", "bonus", "jutaan", "cairkan"
+    "hadiah", "gratis", "bonus", "jutaan", "cairkan", "untung", "kelebihan transfer"
   ];
   financialKeywords.forEach((kw) => {
     if (norm.includes(kw)) financialClues.push(kw);
@@ -250,8 +251,8 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   // Vektor 4: Pencatutan Otoritas & Identitas Resmi (Weight: 15)
   const authorityClues: string[] = [];
   const authorityKeywords = [
-    "ditjen pajak", "bumn", "polri", "bea cukai", "bank bca", "bank bri", "bank mandiri",
-    "j&t", "jne", "pos indonesia", "ojk", "kementerian", "resmi"
+    "ditjen pajak", "bumn", "polri", "bea cukai", "bank bca", "bank bri", "bank mandiri", "m-banking bca", "m-banking",
+    "j&t", "jne", "pos indonesia", "ojk", "kementerian", "institusi resmi", "kurir"
   ];
   authorityKeywords.forEach((kw) => {
     if (norm.includes(kw)) authorityClues.push(kw);
@@ -300,17 +301,24 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   );
 
   let riskLevel: "HIGH" | "MEDIUM" | "LOW" = "LOW";
-  let statusLabel = "Indikator Kecurigaan Rendah";
-  let summary = "Tidak ditemukan kombinasi vektor manipulasi umum. Namun tetap selalu waspada terhadap nomor atau tautan yang belum dikenal.";
+  let statusLabel = "Indikator Kecurigaan Rendah (Aman)";
+  let summary = "Tidak ditemukan kombinasi pola manipulasi berbahaya. Namun tetap selalu waspada terhadap pesan dari pihak asing.";
 
-  if (calculatedScore >= 65 || (assetScore >= 60 && urgencyScore >= 60)) {
+  const isHighCondition =
+    calculatedScore >= 55 ||
+    (channelScore >= 80 && assetScore >= 35) ||
+    (urgencyScore >= 70 && assetScore >= 35) ||
+    (financialScore >= 60 && assetScore >= 35) ||
+    (channelScore >= 70 && urgencyScore >= 70);
+
+  if (isHighCondition) {
     riskLevel = "HIGH";
-    statusLabel = "Indikator Kecurigaan Tinggi (High Risk)";
-    summary = "Pesan ini memiliki pola ganda manipulasi psikologis (tekanan batas waktu + permintaan aset/pencatutan nama resmi). Sangat berbahaya untuk ditindaklanjuti!";
-  } else if (calculatedScore >= 35 || assetScore >= 35 || urgencyScore >= 35) {
+    statusLabel = "Indikator Bahaya Tinggi (High Risk)";
+    summary = "Pesan ini memiliki pola manipulasi psikologis tingkat tinggi dengan indikasi kuat serangan rekayasa sosial, pencurian dana, atau malware berbahaya!";
+  } else if (calculatedScore >= 25 || assetScore >= 35 || urgencyScore >= 35) {
     riskLevel = "MEDIUM";
-    statusLabel = "Waspada: Memuat Pola Manipulasi (Medium)";
-    summary = "Ditemukan beberapa indikator mencurigakan. Jangan klik tautan atau mentransfer uang sebelum verifikasi ke kanal resmi.";
+    statusLabel = "Indikator Waspada (Medium Risk)";
+    summary = "Ditemukan beberapa indikator kecurigaan. Verifikasi kanal resmi sebelum menanggapi atau mengklik tautan apa pun.";
   }
 
   const vectors: ThreatVector[] = [
@@ -360,7 +368,7 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     "Jangan pernah mengirimkan kode OTP atau PIN kepada siapa pun, termasuk pihak yang mengaku petugas resmi.",
     "Jangan mengunduh atau menginstal berkas berakhiran .APK di luar toko aplikasi resmi (Google Play Store).",
     "Lakukan verifikasi nomor rekening atau telepon melalui kanal resmi CekRekening.id atau call center resmi bank.",
-    "Beri jeda 15 menit dan konsultasikan pesan ini dengan teman atau keluarga sebelum mengambil tindakan apa pun."
+    "Beri jeda 15 menit dan konsultasikan pesan ini dengan rekan atau keluarga sebelum mengambil tindakan apa pun."
   ];
 
   return {
