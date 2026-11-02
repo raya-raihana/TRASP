@@ -126,6 +126,7 @@ export default function Home() {
                 initialPresetId={activeScenarioId}
                 onPresetChange={setActiveScenarioId}
                 onSwitchToSandbox={handleSwitchToSandbox}
+                onSwitchToAct={handleSwitchToAct}
               />
             )}
 

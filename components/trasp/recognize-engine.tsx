@@ -17,12 +17,12 @@ import {
   Send,
   RotateCcw,
   Sparkles,
-  User,
+  AlertTriangle,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -38,6 +38,7 @@ interface RecognizeEngineProps {
   initialPresetId?: string;
   onPresetChange?: (presetId: string) => void;
   onSwitchToSandbox?: (caseId: string, customMessage?: string) => void;
+  onSwitchToAct?: (scenarioId?: string) => void;
 }
 
 interface AIForensicStudy {
@@ -78,6 +79,8 @@ function renderCleanMessage(text: string) {
 export function RecognizeEngine({
   initialPresetId = "apk-kurir",
   onPresetChange,
+  onSwitchToSandbox,
+  onSwitchToAct,
 }: RecognizeEngineProps) {
   const [activeInputTab, setActiveInputTab] = useState<"text" | "url" | "canvas">("text");
 
@@ -94,6 +97,7 @@ export function RecognizeEngine({
   const [canvasRedactedCount, setCanvasRedactedCount] = useState(0);
 
   const [isScanning, setIsScanning] = useState(false);
+  const [hasScanned, setHasScanned] = useState(true);
 
   const [analysisResult, setAnalysisResult] = useState<ForensicResult>(() =>
     analyzeForensics(defaultPreset.rawText, defaultPreset.rawUrl)
@@ -104,7 +108,7 @@ export function RecognizeEngine({
     isLoading: false,
     source: "gemini-ai (gemini-3.6-flash)",
     summaryVerdict: "Penyusupan Trojan Perbankan (APK Sniffer)",
-    dangerScore: 61,
+    dangerScore: 95,
     riskLevel: "HIGH",
     biasExploited: ["Bias Urgensi Semu (Batas 2 Jam)", "Bias Otoritas Kurir Ekspedisi", "Kepanikan Paket Batal"],
     technicalThreats: ["Ekstensi APK Luar Toko Resmi", "IP Publik Mentah (Non-HTTPS)", "Penyadapan Izin Accessibility & SMS OTP"],
@@ -117,6 +121,104 @@ export function RecognizeEngine({
   const [chatInput, setChatInput] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Helper to add forensic scan message to Ras chatbot
+  const appendScanVerdictToChat = useCallback(
+    (verdict: string, score: number, level: string, reasoning: string, mitigation: string) => {
+      const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      const scanMessage: ChatMessage = {
+        id: "bot-scan-" + Date.now(),
+        sender: "bot",
+        text: `Saya telah memindai bukti yang Anda masukkan:\n\n• **Deteksi:** ${verdict}\n• **Tingkat Bahaya:** ${level} (${score}/100)\n• **Uraian Forensik:** ${reasoning}\n• **Rekomendasi:** ${mitigation}\n\nSilakan tanyakan pada saya jika butuh penjelasan atau langkah mitigasi lanjutan.`,
+        time,
+      };
+
+      setChatHistory((prev) => {
+        const next = [...prev, scanMessage];
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("trasp_recognize_chat", JSON.stringify(next));
+          } catch {}
+        }
+        return next;
+      });
+    },
+    []
+  );
+
+  const fallbackToLocal = useCallback(
+    (text: string, url: string) => {
+      const local = analyzeForensics(text, url);
+      const verdict = local.statusLabel;
+      const score = local.riskScore;
+      const level = local.riskLevel;
+      const reasoning = local.summary;
+      const mitigation = local.safeRecommendations?.[0] || "Jangan kirim data sensitif atau transfer dana.";
+
+      setAiStudy({
+        isLoading: false,
+        source: "Mesin Forensik Heuristik Lokal",
+        summaryVerdict: verdict,
+        dangerScore: score,
+        riskLevel: level,
+        biasExploited: local.detectedRedFlags.length > 0 ? local.detectedRedFlags : ["Pola Manipulasi Linguistik"],
+        technicalThreats: local.vectors.filter((v) => v.score > 0).map((v) => v.name),
+        deepForensicReasoning: reasoning,
+        mitigationRecommendation: mitigation,
+      });
+
+      appendScanVerdictToChat(verdict, score, level, reasoning, mitigation);
+    },
+    [appendScanVerdictToChat]
+  );
+
+  const runAIForensicStudy = useCallback(
+    async (text: string, url: string) => {
+      setIsScanning(true);
+      setAiStudy((prev) => ({ ...prev, isLoading: true }));
+
+      try {
+        const res = await fetch("/api/trasp/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, url }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok) {
+            const verdict = data.summaryVerdict || "Terindikasi Manipulasi Siber";
+            const score = typeof data.dangerScore === "number" ? data.dangerScore : 65;
+            const level = data.riskLevel || "HIGH";
+            const reasoning = data.deepForensicReasoning || "Pesan ini mengandung indikator manipulasi rekayasa sosial.";
+            const mitigation = data.mitigationRecommendation || "Jangan transfer uang atau serahkan data rahasia.";
+
+            setAiStudy({
+              isLoading: false,
+              source: data.source || "gemini-ai",
+              summaryVerdict: verdict,
+              dangerScore: score,
+              riskLevel: level,
+              biasExploited: data.biasExploited || [],
+              technicalThreats: data.technicalThreats || [],
+              deepForensicReasoning: reasoning,
+              mitigationRecommendation: mitigation,
+            });
+
+            appendScanVerdictToChat(verdict, score, level, reasoning, mitigation);
+            return;
+          }
+        }
+        fallbackToLocal(text, url);
+      } catch (err) {
+        console.error("AI Forensic study error, using fallback:", err);
+        fallbackToLocal(text, url);
+      } finally {
+        setIsScanning(false);
+      }
+    },
+    [appendScanVerdictToChat, fallbackToLocal]
+  );
 
   // Restore persistent state from localStorage on mount
   useEffect(() => {
@@ -134,10 +236,15 @@ export function RecognizeEngine({
           const parsed = JSON.parse(savedChat);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setChatHistory(parsed);
+          } else {
+            handleResetChat();
           }
+        } else {
+          handleResetChat();
         }
       } catch (e) {
         console.error("Failed to load recognized storage", e);
+        handleResetChat();
       }
     }
   }, []);
@@ -156,15 +263,14 @@ export function RecognizeEngine({
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
-  }, [chatHistory, isBotTyping]);
+  }, [chatHistory, isBotTyping, isScanning]);
 
-  // Initial welcome message from Chatbot based on forensic findings
-  const resetChatWithVerdict = useCallback((verdict: string, score: number, level: string, textSample: string) => {
+  const handleResetChat = () => {
     const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     const initialGreeting: ChatMessage = {
       id: "bot-init-" + Date.now(),
       sender: "bot",
-      text: `Halo! Saya Ras.\n\nSaya telah memindai bukti ini:\n• Deteksi: ${verdict}\n• Tingkat Bahaya: ${level} (${score}/100)\n\nSilakan tanyakan apa saja seputar bukti pesan ini.`,
+      text: `Halo! Saya Ras. Masukkan bukti pesan atau tautan mencurigakan di sebelah kiri, lalu klik "Pindai & Analisis" untuk memulai verifikasi forensik digital.`,
       time,
     };
     setChatHistory([initialGreeting]);
@@ -173,72 +279,6 @@ export function RecognizeEngine({
         localStorage.setItem("trasp_recognize_chat", JSON.stringify([initialGreeting]));
       } catch {}
     }
-  }, []);
-
-  const runAIForensicStudy = useCallback(async (text: string, url: string) => {
-    setAiStudy((prev) => ({ ...prev, isLoading: true }));
-    try {
-      const res = await fetch("/api/trasp/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, url }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const verdict = data.summaryVerdict || "Terindikasi Manipulasi Siber";
-        const score = data.dangerScore ?? 60;
-        const level = data.riskLevel || "HIGH";
-
-        setAiStudy({
-          isLoading: false,
-          source: data.source || "gemini-ai (gemini-3.6-flash)",
-          summaryVerdict: verdict,
-          dangerScore: score,
-          riskLevel: level,
-          biasExploited: data.biasExploited || [],
-          technicalThreats: data.technicalThreats || [],
-          deepForensicReasoning: data.deepForensicReasoning,
-          mitigationRecommendation: data.mitigationRecommendation,
-        });
-
-        resetChatWithVerdict(verdict, score, level, text);
-      } else {
-        setAiStudy((prev) => ({ ...prev, isLoading: false }));
-      }
-    } catch {
-      setAiStudy((prev) => ({ ...prev, isLoading: false }));
-    }
-  }, [resetChatWithVerdict]);
-
-  useEffect(() => {
-    if (initialPresetId) {
-      const p = PRESET_CASES.find((c) => c.id === initialPresetId);
-      if (p) {
-        setSelectedPresetId(p.id);
-        setInputText(p.rawText);
-        setInputUrl(p.rawUrl || "");
-        setAnalysisResult(analyzeForensics(p.rawText, p.rawUrl));
-        runAIForensicStudy(p.rawText, p.rawUrl || "");
-      }
-    }
-  }, [initialPresetId, runAIForensicStudy]);
-
-  const handleSelectPreset = (preset: PresetCase) => {
-    setSelectedPresetId(preset.id);
-    setInputText(preset.rawText);
-    setInputUrl(preset.rawUrl || "");
-    setIsScanning(true);
-    setTimeout(() => {
-      const res = analyzeForensics(preset.rawText, preset.rawUrl);
-      setAnalysisResult(res);
-      setIsScanning(false);
-      runAIForensicStudy(preset.rawText, preset.rawUrl || "");
-    }, 200);
-
-    if (activeInputTab === "canvas") {
-      setActiveInputTab("text");
-    }
-    onPresetChange?.(preset.id);
   };
 
   const handleRunAnalysis = () => {
@@ -253,28 +293,31 @@ export function RecognizeEngine({
       urlToAnalyze = canvasUrl;
     }
 
+    setHasScanned(true);
     setIsScanning(true);
-    setTimeout(() => {
-      const res = analyzeForensics(textToAnalyze, urlToAnalyze);
-      setAnalysisResult(res);
-      setIsScanning(false);
-      runAIForensicStudy(textToAnalyze, urlToAnalyze);
-    }, 200);
+
+    // 1. Instant local evaluation (<1ms) for zero-latency UI update
+    const localRes = analyzeForensics(textToAnalyze, urlToAnalyze);
+    setAnalysisResult(localRes);
+
+    setAiStudy({
+      isLoading: true,
+      source: "Mesin Forensik Cepat",
+      summaryVerdict: localRes.statusLabel,
+      dangerScore: localRes.riskScore,
+      riskLevel: localRes.riskLevel,
+      biasExploited: localRes.detectedRedFlags.length > 0 ? localRes.detectedRedFlags : ["Pola Manipulasi Linguistik"],
+      technicalThreats: localRes.vectors.filter((v) => v.score > 0).map((v) => v.name),
+      deepForensicReasoning: localRes.summary,
+      mitigationRecommendation: localRes.safeRecommendations?.[0] || "Jangan transfer uang atau berikan data pribadi.",
+    });
+
+    // 2. Trigger AI deep analysis (Gemini / Mistral / Local)
+    runAIForensicStudy(textToAnalyze, urlToAnalyze);
   };
 
   const handleTabChange = (val: "text" | "url" | "canvas") => {
     setActiveInputTab(val);
-    let t = inputText;
-    let u = inputUrl;
-    if (val === "canvas") {
-      t = canvasText;
-      u = canvasUrl;
-    } else if (val === "url") {
-      t = inputUrl || inputText;
-      u = inputUrl;
-    }
-    setAnalysisResult(analyzeForensics(t, u));
-    runAIForensicStudy(t, u);
   };
 
   const handleSendChatMessage = async (presetPrompt?: string) => {
@@ -300,7 +343,7 @@ export function RecognizeEngine({
     setChatInput("");
     setIsBotTyping(true);
 
-    const activeEvidence = `Sampel Bukti: "${activeInputTab === "url" ? inputUrl : activeInputTab === "canvas" ? canvasText : inputText}"\nStatus Deteksi: ${aiStudy.summaryVerdict || analysisResult.statusLabel}\nSkor Bahaya: ${aiStudy.dangerScore ?? analysisResult.riskScore}/100 (${aiStudy.riskLevel || analysisResult.riskLevel})`;
+    const activeEvidence = `Sampel Bukti: "${activeInputTab === "url" ? inputUrl : activeInputTab === "canvas" ? canvasText : inputText}"\nStatus Deteksi: ${aiStudy.summaryVerdict || analysisResult.statusLabel}\nSkor Bahaya: ${aiStudy.dangerScore ?? analysisResult.riskScore}/100 (${aiStudy.riskLevel || analysisResult.riskLevel})\nUraian: ${aiStudy.deepForensicReasoning || analysisResult.summary}\nMitigasi: ${aiStudy.mitigationRecommendation || analysisResult.safeRecommendations?.[0]}`;
 
     try {
       const res = await fetch("/api/trasp/chat", {
@@ -320,7 +363,7 @@ export function RecognizeEngine({
         const botMsg: ChatMessage = {
           id: "bot-" + Date.now(),
           sender: "bot",
-          text: data.assistantResponse || "Analisis terhadap pesan telah selesai.",
+          text: data.assistantResponse || "Analisis terhadap pesan telah diverifikasi.",
           time: botTime,
         };
         const updatedWithBot = [...nextHistory, botMsg];
@@ -356,64 +399,23 @@ export function RecognizeEngine({
   const getRiskColor = (level: "HIGH" | "MEDIUM" | "LOW") => {
     switch (level) {
       case "HIGH":
-        return "text-rose-600 dark:text-rose-400 border-border bg-rose-500/10";
+        return "text-rose-500 border-rose-500/40 bg-rose-500/10";
       case "MEDIUM":
-        return "text-amber-600 dark:text-amber-400 border-border bg-amber-500/10";
+        return "text-amber-500 border-amber-500/40 bg-amber-500/10";
       case "LOW":
-        return "text-emerald-600 dark:text-emerald-400 border-border bg-emerald-500/10";
+        return "text-emerald-500 border-emerald-500/40 bg-emerald-500/10";
     }
   };
 
-  // Live highlighted text tokens for instant X-Ray feedback
-  const highlightedTokens = useMemo(() => {
-    const raw = activeInputTab === "url" ? inputUrl : inputText;
-    if (!raw) return [];
-
-    const allClues: { clue: string; category: string }[] = [];
-    analysisResult.vectors.forEach((v) => {
-      v.detectedClues.forEach((c) => {
-        allClues.push({ clue: c.toLowerCase(), category: v.id });
-      });
-    });
-
-    if (allClues.length === 0) {
-      return [{ text: raw, isClue: false, category: "" }];
-    }
-
-    const sorted = [...allClues].sort((a, b) => b.clue.length - a.clue.length);
-    const regexPattern = new RegExp(
-      `(${sorted.map((s) => s.clue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
-      "gi"
-    );
-
-    const parts = raw.split(regexPattern);
-    return parts.map((part) => {
-      const match = sorted.find((s) => s.clue.toLowerCase() === part.toLowerCase());
-      return {
-        text: part,
-        isClue: !!match,
-        category: match ? match.category : "",
-      };
-    });
-  }, [inputText, inputUrl, activeInputTab, analysisResult]);
-
-  const quickPrompts = [
-    "Kenapa bukti ini berbahaya?",
-    "Bagaimana cara verifikasi resi asli?",
-    "Apa langkah jika telanjur klik?",
-    "Apa pasal hukum penipuan ini?",
-  ];
-
   return (
     <div className="space-y-4">
-
-      {/* Main Grid: Left (Inputs & Forensic Verdict) vs Right (Interactive AI Chatbot) */}
+      {/* Main Grid: Left (Input & Hasil Analisis Forensik) vs Right (Interactive AI Chatbot Ras) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         {/* ========================================================= */}
-        {/* LEFT COLUMN: INPUT PENIPU & HASIL ANALISIS DETEKSI AWAL */}
+        {/* LEFT COLUMN: INPUT PENIPU & HASIL ANALISIS FORENSIK        */}
         {/* ========================================================= */}
         <div className="lg:col-span-6 space-y-4 flex flex-col">
-          {/* Input Card */}
+          {/* 1. Input Card */}
           <Card className="border-border">
             <CardHeader className="p-3.5 pb-2 border-b border-border bg-muted/20">
               <div className="flex items-center justify-between">
@@ -447,7 +449,7 @@ export function RecognizeEngine({
 
                 <TabsContent value="text" className="space-y-2 mt-0">
                   <Textarea
-                    rows={4}
+                    rows={5}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Tempel pesan penipuan di sini..."
@@ -471,15 +473,12 @@ export function RecognizeEngine({
                     onSampleLoaded={(text, url) => {
                       setCanvasText(text);
                       setCanvasUrl(url);
-                      if (activeInputTab === "canvas") {
-                        setAnalysisResult(analyzeForensics(text, url));
-                        runAIForensicStudy(text, url);
-                      }
                     }}
                   />
                 </TabsContent>
               </Tabs>
 
+              {/* Tombol Pindai & Analisis */}
               <Button
                 onClick={handleRunAnalysis}
                 disabled={isScanning}
@@ -488,7 +487,7 @@ export function RecognizeEngine({
                 {isScanning ? (
                   <>
                     <Zap className="w-3.5 h-3.5 mr-1.5 animate-spin text-amber-300" />
-                    Memindai...
+                    Memindai &amp; Menganalisis...
                   </>
                 ) : (
                   <>
@@ -499,10 +498,94 @@ export function RecognizeEngine({
               </Button>
             </CardContent>
           </Card>
+
+          {/* 2. Hasil Analisis Forensik Card (Muncul saat dipindai) */}
+          {hasScanned && (
+            <Card className="border-border animate-in fade-in duration-200">
+              <CardHeader className="p-3.5 pb-2 border-b border-border bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xs font-bold font-mono tracking-wider uppercase flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                    Hasil Analisis Forensik
+                  </CardTitle>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] font-mono ${getRiskColor(aiStudy.riskLevel || analysisResult.riskLevel)}`}
+                  >
+                    {aiStudy.riskLevel || analysisResult.riskLevel} • {aiStudy.dangerScore ?? analysisResult.riskScore}/100
+                  </Badge>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-3.5 space-y-3 text-xs">
+                {/* Vonis Deteksi */}
+                <div>
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase font-bold">
+                    Vonis Deteksi:
+                  </span>
+                  <h4 className="font-serif font-bold text-sm text-foreground mt-0.5">
+                    {aiStudy.summaryVerdict || analysisResult.statusLabel}
+                  </h4>
+                </div>
+
+                {/* Uraian Forensik Kritis */}
+                <div className="p-2.5 bg-muted/40 border border-border rounded space-y-1">
+                  <span className="text-[10px] font-mono text-primary font-bold uppercase flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    Uraian Forensik Bukti:
+                  </span>
+                  <p className="text-muted-foreground leading-relaxed text-[11px]">
+                    {aiStudy.deepForensicReasoning || analysisResult.summary}
+                  </p>
+                </div>
+
+                {/* Celah / Taktik Terdeteksi */}
+                {aiStudy.biasExploited && aiStudy.biasExploited.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-muted-foreground font-bold uppercase">
+                      Celah / Taktik Terdeteksi:
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {aiStudy.biasExploited.map((bias, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 text-[10px] font-mono bg-muted border border-border rounded text-muted-foreground"
+                        >
+                          {bias}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Rekomendasi Tindakan Cepat */}
+                <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded space-y-1">
+                  <span className="text-[10px] font-mono text-rose-500 font-bold uppercase flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-rose-500" />
+                    Rekomendasi Tindakan Cepat:
+                  </span>
+                  <p className="text-foreground text-[11px] leading-relaxed">
+                    {aiStudy.mitigationRecommendation || analysisResult.safeRecommendations?.[0]}
+                  </p>
+                </div>
+
+                {/* Tombol ke Act */}
+                {onSwitchToAct && (
+                  <Button
+                    onClick={() => onSwitchToAct(selectedPresetId)}
+                    className="w-full text-xs h-8 bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 font-mono font-medium cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <span>Buka SOP Mitigasi &amp; Laporan (Act)</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* ========================================================= */}
-        {/* RIGHT COLUMN: INTERACTIVE AI FORENSIC CHATBOT */}
+        {/* RIGHT COLUMN: INTERACTIVE AI FORENSIC CHATBOT (Ras)        */}
         {/* ========================================================= */}
         <div className="lg:col-span-6 flex flex-col h-[600px] lg:h-auto min-h-[580px] bg-card border border-border">
           {/* Chatbot Header */}
@@ -524,9 +607,9 @@ export function RecognizeEngine({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => resetChatWithVerdict(aiStudy.summaryVerdict || "Analisis", aiStudy.dangerScore ?? 60, aiStudy.riskLevel || "HIGH", inputText)}
-              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground"
-              title="Reset Chat"
+              onClick={handleResetChat}
+              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground cursor-pointer font-mono"
+              title="Reset Chat Ras"
             >
               <RotateCcw className="w-3 h-3 mr-1" />
               Reset
@@ -534,23 +617,20 @@ export function RecognizeEngine({
           </div>
 
           {/* Chat Messages Body */}
-          <div
-            ref={chatScrollRef}
-            className="flex-1 overflow-y-auto p-3.5 space-y-3 bg-background/50 text-xs"
-          >
+          <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-3.5 space-y-3 bg-background/50 text-xs">
             {chatHistory.map((m) => (
               <div
                 key={m.id}
                 className={`flex gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {m.sender === "bot" && (
-                  <div className="w-6 h-6 rounded bg-primary/10 shrink-0 flex items-center justify-center text-primary mt-0.5 border border-primary/20">
+                  <div className="w-7 h-7 rounded bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center text-primary mt-0.5">
                     <Brain className="w-3.5 h-3.5" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded p-2.5 space-y-1.5 leading-relaxed ${
+                  className={`max-w-[85%] rounded p-2.5 space-y-1 leading-relaxed ${
                     m.sender === "user"
                       ? "bg-primary text-primary-foreground font-medium"
                       : "bg-muted/70 border border-border text-foreground"
@@ -564,19 +644,13 @@ export function RecognizeEngine({
                     {m.time}
                   </div>
                 </div>
-
-                {m.sender === "user" && (
-                  <div className="w-6 h-6 rounded bg-muted shrink-0 flex items-center justify-center text-foreground mt-0.5 border border-border">
-                    <User className="w-3.5 h-3.5" />
-                  </div>
-                )}
               </div>
             ))}
 
-            {isBotTyping && (
+            {(isBotTyping || isScanning) && (
               <div className="flex gap-2 items-center text-muted-foreground text-xs italic p-2 bg-muted/40 rounded border border-border">
                 <Zap className="w-3 h-3 text-primary animate-spin" />
-                <span>Menganalisis pertanyaan Anda...</span>
+                <span>{isScanning ? "Ras sedang memindai dan menganalisis bukti..." : "Ras sedang merangkai jawaban..."}</span>
               </div>
             )}
           </div>
@@ -593,14 +667,14 @@ export function RecognizeEngine({
               <Input
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Tanyakan ke Ras..."
-                disabled={isBotTyping}
+                placeholder="Tanyakan analisis atau mitigasi ke Ras..."
+                disabled={isBotTyping || isScanning}
                 className="text-xs h-9 bg-background border-border"
               />
               <Button
                 type="submit"
                 size="sm"
-                disabled={!chatInput.trim() || isBotTyping}
+                disabled={!chatInput.trim() || isBotTyping || isScanning}
                 className="h-9 px-3 bg-primary text-primary-foreground font-medium cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />

@@ -10,7 +10,7 @@ const CANDIDATE_GEMINI_MODELS = [
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const text = body.text || "";
     const url = body.url || "";
 
@@ -166,6 +166,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
       localVectors: localResult.vectors,
     });
   } catch (_err) {
+    console.error("DEBUG ANALYZE ERROR:", _err);
     return NextResponse.json({
       ok: false,
       error: "Gagal memproses analisis forensik.",
