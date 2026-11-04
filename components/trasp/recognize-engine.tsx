@@ -126,10 +126,15 @@ export function RecognizeEngine({
   const appendScanVerdictToChat = useCallback(
     (verdict: string, score: number, level: string, reasoning: string, mitigation: string) => {
       const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      const isClean = score <= 10 || level === "LOW";
+      const messageText = isClean
+        ? `Saya telah memverifikasi bukti yang Anda masukkan:\n\n• **Status:** ${verdict}\n• **Tingkat Bahaya:** AMAN (Skor: ${score}/100)\n• **Uraian:** ${reasoning}\n• **Keterangan:** ${mitigation}\n\nBukti ini bersih dan tidak memuat indikator kejahatan siber. Ada hal lain yang ingin Anda konsultasikan?`
+        : `Saya telah memindai bukti yang Anda masukkan:\n\n• **Deteksi:** ${verdict}\n• **Tingkat Bahaya:** ${level} (${score}/100)\n• **Uraian Forensik:** ${reasoning}\n• **Rekomendasi Tindakan:** ${mitigation}\n\nSilakan tanyakan pada saya jika butuh panduan isolasi atau pelaporan resmi.`;
+
       const scanMessage: ChatMessage = {
         id: "bot-scan-" + Date.now(),
         sender: "bot",
-        text: `Saya telah memindai bukti yang Anda masukkan:\n\n• **Deteksi:** ${verdict}\n• **Tingkat Bahaya:** ${level} (${score}/100)\n• **Uraian Forensik:** ${reasoning}\n• **Rekomendasi:** ${mitigation}\n\nSilakan tanyakan pada saya jika butuh penjelasan atau langkah mitigasi lanjutan.`,
+        text: messageText,
         time,
       };
 
@@ -558,16 +563,28 @@ export function RecognizeEngine({
                   </div>
                 )}
 
-                {/* Rekomendasi Tindakan Cepat */}
-                <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded space-y-1">
-                  <span className="text-[10px] font-mono text-rose-500 font-bold uppercase flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-rose-500" />
-                    Rekomendasi Tindakan Cepat:
-                  </span>
-                  <p className="text-foreground text-[11px] leading-relaxed">
-                    {aiStudy.mitigationRecommendation || analysisResult.safeRecommendations?.[0]}
-                  </p>
-                </div>
+                {/* Rekomendasi Tindakan / Status Keamanan */}
+                {(() => {
+                  const currentScore = aiStudy.dangerScore ?? analysisResult.riskScore;
+                  const isClean = currentScore <= 10;
+                  return (
+                    <div className={`p-2.5 rounded space-y-1 border ${
+                      isClean
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
+                        : "bg-rose-500/10 border-rose-500/30 text-foreground"
+                    }`}>
+                      <span className={`text-[10px] font-mono font-bold uppercase flex items-center gap-1 ${
+                        isClean ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"
+                      }`}>
+                        {isClean ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Zap className="w-3 h-3 text-rose-500" />}
+                        {isClean ? "Status Keamanan Sampel:" : "Rekomendasi Tindakan Darurat:"}
+                      </span>
+                      <p className="text-[11px] leading-relaxed">
+                        {aiStudy.mitigationRecommendation || analysisResult.safeRecommendations?.[0]}
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Tombol ke Act */}
                 {onSwitchToAct && (

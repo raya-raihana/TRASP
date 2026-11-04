@@ -184,7 +184,7 @@ export function CanvasRedactor({ onImageReady, onRedactedChange, onSampleLoaded 
         if (onRedactedChange) onRedactedChange(0);
         if (onSampleLoaded) {
           onSampleLoaded(
-            "Tangkapan layar percakapan telah disensor secara lokal melalui Canvas Privacy Scrubber. Mengandung indikator file tidak dikenal dan desakan waktu.",
+            `[Tangkapan Layar Unggahan Pengguna: ${file.name}]`,
             ""
           );
         }

@@ -33,32 +33,44 @@ export async function POST(req: NextRequest) {
     const localResult = analyzeForensics(text, url);
 
     // AI Forensic Prompt: Deep Semantic & Psychological Study
-    const forensicSystemPrompt = `Kamu adalah Sistem Analisis Forensik Siber AI TRASP (Cyber-Forensic & Behavioral Engine).
+    const forensicSystemPrompt = `Kamu adalah Sistem Analisis Forensik Siber AI TRASP (Cyber-Forensic & Behavioral Engine) untuk kompetisi Web Development MIT-WEEK 2026 UNMUL.
 Tugasmu adalah MEMPELAJARI secara mendalam sampel teks/tautan yang dikirimkan, bukan menebak angka semata. Lakukan pembuktian forensik digital, teliti pola bahasa manipulasi psikologis, rekayasa sosial (social engineering), serta ancaman teknisnya.
 
 SAMPEL YANG DIANALISIS:
 - Teks Pesan: "${text}"
 - Tautan / URL: "${url}"
 
-INSTRUKSI ANALISIS:
-1. Pelajari apakah pesan mengeksploitasi bias kognitif korban (urgensi semu, rasa takut, kepatuhan otoritas, iming-iming uang/cuan, atau rasa penasaran).
-2. Periksa ancaman teknis (ekstensi .apk mencurigakan, IP publik mentah, formulir phishing, permintaan OTP/transfer, pemendek tautan).
-3. Berikan skor bahaya ilmiah (0 - 100) dan klasifikasi:
-   - 0-25: LOW (Indikator Rendah / Relatif Aman, tetap waspada)
-   - 26-60: MEDIUM (Waspada: Memuat Pola Manipulasi)
-   - 61-100: HIGH (Indikator Bahaya Tinggi: Potensi Kejahatan Siber Serius)
-4. Tuliskan penjelasan forensik kritis (deepForensicReasoning) dalam 2-3 kalimat lugas yang membongkar trik pelaku.
-5. Sebutkan langkah mitigasi darurat spesifik.
+ATURAN PENTING DETEKSI KONTEN:
+1. JIKA INPUT ADALAH TAUTAN PLATFORM RESMI TERVERIFIKASI (seperti youtube.com, youtu.be, google.com, wikipedia.org, github.com, domain pemerintah .go.id, portal universitas .ac.id):
+   - Wajib berikan dangerScore: 0 dan riskLevel: "LOW".
+   - summaryVerdict: "Tautan Platform Resmi Sah (YouTube / Google / dsb)"
+   - biasExploited: []
+   - technicalThreats: []
+   - deepForensicReasoning: Jelaskan secara cerdas dan spesifik bahwa tautan ini mengarah ke infrastruktur resmi platform publik terkait (misal YouTube video streaming), bukan phishing, bukan malware APK, dan bukan formulir penipuan perbankan.
+   - mitigationRecommendation: "Tautan aman untuk dibuka sebagai konten publik biasa. Tidak diperlukan mitigasi darurat siber." (DILARANG memberikan peringatan OTP/PIN yang tidak nyambung).
+2. JIKA INPUT ADALAH KONTEN NETRAL / NON-ANCAMAN / MATEMATIKA / TUGAS SEKOLAH / GAMBAR NETRAL (seperti [Tangkapan Layar Unggahan Pengguna...], soal matematika, teks obrolan kerja biasa):
+   - Wajib berikan dangerScore: 0 dan riskLevel: "LOW".
+   - summaryVerdict: "Konten Netral / Non-Ancaman Siber"
+   - biasExploited: []
+   - technicalThreats: []
+   - deepForensicReasoning: "Sampel yang diperiksa adalah konten netral/umum yang tidak memuat pola rekayasa sosial, ancaman malware APK liar, maupun phishing penipuan finansial."
+   - mitigationRecommendation: "Tidak ada ancaman siber yang terdeteksi. Berkas/pesan aman."
+3. JIKA INPUT TERBUKTI KEJAHATAN SIBER / PHISHING / TROJAN APK / TASK SCAM:
+   - Berikan skor bahaya ilmiah (60-100) dan riskLevel: "HIGH" atau "MEDIUM".
+   - Sebutkan bias psikologis (Authority Bias, Urgency Bias, Sunk-Cost Fallacy, Greed Bait).
+   - Sebutkan ancaman teknis (Android Accessibility Trojan, Raw IP Address, Quishing QRIS, Form Phishing).
+   - deepForensicReasoning: Uraian ilmiah membongkar niat terselubung dan trik pelaku.
+   - mitigationRecommendation: Langkah darurat Golden Time 15 Menit (Air-Gap, Call Center Bank, dan lapor ke iasc.ojk.go.id).
 
 FORMAT OUTPUT WAJIB JSON PERSIS:
 {
-  "summaryVerdict": "Judul singkat vonis forensik (contoh: Trojan Malware APK Berbahaya / Phishing Akun Bank / Modus Task Scam / Pesan Komunikasi Wajar)",
+  "summaryVerdict": "Judul singkat vonis forensik",
   "dangerScore": angka 0-100,
   "riskLevel": "HIGH" | "MEDIUM" | "LOW",
-  "biasExploited": ["Nama bias 1", "Nama bias 2"],
-  "technicalThreats": ["Ancaman teknis 1", "Ancaman teknis 2"],
-  "deepForensicReasoning": "Uraian ilmiah alasan pesan ini berbahaya atau aman, menelusuri trik linguistik dan niat terselubung pelaku.",
-  "mitigationRecommendation": "Langkah mitigasi darurat 15 menit pertama bagi target."
+  "biasExploited": ["Nama bias 1"],
+  "technicalThreats": ["Ancaman teknis 1"],
+  "deepForensicReasoning": "Uraian ilmiah alasan pesan ini berbahaya atau aman.",
+  "mitigationRecommendation": "Langkah mitigasi yang kontekstual dan relevan."
 }`;
 
     // 1. Try Gemini AI Studio Models

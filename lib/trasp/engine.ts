@@ -20,6 +20,8 @@ export interface UrlDeconstruction {
   isSuspiciousTld: boolean;
   isPunycodeOrIp: boolean;
   isSpoofedSubdomain: boolean;
+  isTrustedPlatform?: boolean;
+  trustedPlatformName?: string;
   explanation: string;
 }
 
@@ -188,7 +190,49 @@ export function deconstructUrl(rawUrl: string): UrlDeconstruction {
     }
 
     if (!result.explanation) {
-      if (result.isSuspiciousTld) {
+      // Check Known Trusted Platforms
+      const trustedMap: Record<string, string> = {
+        "youtube.com": "YouTube (Google LLC)",
+        "youtu.be": "YouTube (Google LLC)",
+        "google.com": "Google Search / Services",
+        "google.co.id": "Google Indonesia",
+        "wikipedia.org": "Wikipedia Ensiklopedia Terbuka",
+        "github.com": "GitHub (Microsoft)",
+        "instagram.com": "Instagram (Meta)",
+        "facebook.com": "Facebook (Meta)",
+        "tiktok.com": "TikTok Resmi",
+        "twitter.com": "X (Twitter)",
+        "x.com": "X (Twitter)",
+        "whatsapp.com": "WhatsApp Resmi",
+        "linkedin.com": "LinkedIn Professional",
+        "spotify.com": "Spotify Music"
+      };
+
+      let isTrusted = false;
+      let trustedName = "";
+      for (const [domain, name] of Object.entries(trustedMap)) {
+        if (hostname === domain || hostname.endsWith("." + domain)) {
+          isTrusted = true;
+          trustedName = name;
+          break;
+        }
+      }
+
+      if (!isTrusted) {
+        if (hostname.endsWith(".go.id")) {
+          isTrusted = true;
+          trustedName = "Portal Resmi Pemerintah RI (.go.id)";
+        } else if (hostname.endsWith(".ac.id") || hostname.endsWith(".sch.id")) {
+          isTrusted = true;
+          trustedName = "Institusi Pendidikan Resmi Indonesia";
+        }
+      }
+
+      if (isTrusted) {
+        result.isTrustedPlatform = true;
+        result.trustedPlatformName = trustedName;
+        result.explanation = `Tautan mengarah ke domain resmi terverifikasi: ${trustedName}. Bukan tautan phishing, malware, atau penipuan perbankan.`;
+      } else if (result.isSuspiciousTld) {
         result.explanation = `Menggunakan domain tingkat atas (.${parts[parts.length - 1]}) berbiaya murah yang sering dimanfaatkan sindikat penipuan massal.`;
       } else {
         result.explanation = "Format URL secara teknis valid, namun tetap periksa tujuan tautannya.";
@@ -279,8 +323,10 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     } else if (urlAnalysis.isSuspiciousTld) {
       channelScore = 70;
       channelClues.push(`Ekstensi domain mencurigakan (${urlAnalysis.rootDomain})`);
+    } else if (urlAnalysis.isTrustedPlatform) {
+      channelScore = 0;
     } else {
-      channelScore = 20;
+      channelScore = 15;
     }
   } else if (norm.includes(".apk")) {
     channelScore = 90;
@@ -292,7 +338,7 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
   }
 
   // Multi-Vector Composite Score calculation (0 - 100)
-  const calculatedScore = Math.round(
+  let calculatedScore = Math.round(
     (urgencyScore * 0.25) +
     (assetScore * 0.30) +
     (financialScore * 0.20) +
@@ -311,7 +357,17 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     (financialScore >= 60 && assetScore >= 35) ||
     (channelScore >= 70 && urgencyScore >= 70);
 
-  if (isHighCondition) {
+  if (urlAnalysis?.isTrustedPlatform && redFlags.length === 0) {
+    calculatedScore = 0;
+    riskLevel = "LOW";
+    statusLabel = `Tautan Platform Resmi (${urlAnalysis.trustedPlatformName})`;
+    summary = `Tautan ini mengarah ke platform resmi publik (${urlAnalysis.trustedPlatformName}). Tidak ditemukan indikasi bahaya siber, phishing, maupun malware.`;
+  } else if (text.startsWith("[Tangkapan Layar Unggahan Pengguna") && redFlags.length === 0) {
+    calculatedScore = 0;
+    riskLevel = "LOW";
+    statusLabel = "Berkas / Gambar Netral (Bukan Ancaman)";
+    summary = "Gambar yang diunggah tidak memuat teks atau pola manipulasi rekayasa sosial, urgensi palsu, maupun ancaman siber berbahaya. Berkas netral dan aman.";
+  } else if (isHighCondition) {
     riskLevel = "HIGH";
     statusLabel = "Indikator Bahaya Tinggi (High Risk)";
     summary = "Pesan ini memiliki pola manipulasi psikologis tingkat tinggi dengan indikasi kuat serangan rekayasa sosial, pencurian dana, atau malware berbahaya!";
@@ -364,16 +420,29 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     }
   ];
 
-  const safeRecommendations = [
+  let safeRecommendations = [
     "Jangan pernah mengirimkan kode OTP atau PIN kepada siapa pun, termasuk pihak yang mengaku petugas resmi.",
     "Jangan mengunduh atau menginstal berkas berakhiran .APK di luar toko aplikasi resmi (Google Play Store).",
     "Lakukan verifikasi nomor rekening atau telepon melalui kanal resmi CekRekening.id atau call center resmi bank.",
     "Beri jeda 15 menit dan konsultasikan pesan ini dengan rekan atau keluarga sebelum mengambil tindakan apa pun."
   ];
 
+  if (urlAnalysis?.isTrustedPlatform && redFlags.length === 0) {
+    safeRecommendations = [
+      `Tautan ini terverifikasi aman mengarah ke ${urlAnalysis.trustedPlatformName}.`,
+      "Aman untuk diakses sebagai konten publik biasa.",
+      "Tetap waspada untuk tidak membuka tautan mencurigakan di kolom deskripsi atau komentar jika ada pihak asing yang menyematkan link eksternal."
+    ];
+  } else if (text.startsWith("[Tangkapan Layar Unggahan Pengguna") && redFlags.length === 0) {
+    safeRecommendations = [
+      "Tidak ada indikator ancaman siber yang terdeteksi pada gambar ini.",
+      "Jika gambar ini merupakan bukti chat penipuan, ketikkan isi percakapan pada tab Teks agar dapat dibedah secara forensik."
+    ];
+  }
+
   return {
     riskLevel,
-    riskScore: Math.min(99, Math.max(5, calculatedScore)),
+    riskScore: calculatedScore === 0 ? 0 : Math.min(99, Math.max(5, calculatedScore)),
     statusLabel,
     summary,
     vectors,
