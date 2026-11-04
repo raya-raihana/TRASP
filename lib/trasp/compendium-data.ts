@@ -345,28 +345,52 @@ export const EMERGENCY_PROTOCOLS = {
 export const JURIDICAL_ANALYSIS = {
   lexGenerali: {
     article: "Pasal 378 KUHP (Kitab Undang-Undang Hukum Pidana)",
-    desc: "Mengatur tindak pidana penipuan konvensional dengan ancaman pidana penjara paling lama 4 (empat) tahun."
+    desc: "Mengatur tindak pidana penipuan konvensional menggunakan nama palsu, martabat palsu, tipu muslihat, atau rangkaian kebohongan dengan ancaman pidana penjara paling lama 4 (empat) tahun."
   },
   lexSpecialis: {
     article: "Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU No. 1 Tahun 2024 (Revisi Kedua UU ITE)",
-    desc: "Mengatur perbuatan sengaja menyebarkan berita bohong dan menyesatkan yang mengakibatkan kerugian konsumen dalam transaksi elektronik, dengan ancaman pidana penjara maksimal 6 (enam) tahun dan/atau denda maksimal Rp1.000.000.000 (satu miliar rupiah)."
+    desc: "Menjerat perbuatan sengaja dan tanpa hak menyebarkan informasi bohong / menyesatkan yang mengakibatkan kerugian materiil konsumen dalam transaksi elektronik. Ancaman pidana penjara maksimal 6 (enam) tahun dan/atau denda maksimal Rp1.000.000.000 (satu miliar rupiah)."
+  },
+  illegalAccess: {
+    article: "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access & Trojan Sideloading)",
+    desc: "Menjerat pelaku yang menyusupkan malware berkas .APK atau menembus sistem keamanan gawai/perbankan tanpa hak. Ancaman pidana penjara hingga 8 (delapan) tahun dan denda hingga Rp800.000.000."
+  },
+  dataInterception: {
+    article: "Pasal 32 jo. Pasal 48 UU ITE (Penyadapan & Intersepsi SMS OTP)",
+    desc: "Menjerat aksi intersepsi atau penyadapan transmisi data elektronik secara diam-diam (seperti pembacaan SMS token perbankan melalui Accessibility Service Android). Ancaman pidana penjara hingga 10 (sepuluh) tahun dan denda hingga Rp3.000.000.000."
+  },
+  dataForgery: {
+    article: "Pasal 35 jo. Pasal 51 ayat (1) UU ITE (Pemalsuan Dokumen & Phishing)",
+    desc: "Menjerat manipulasi, penciptaan, perubahan, atau perusakan informasi elektronik agar dianggap seolah-olah otentik (seperti portal DJP Coretax palsu, resi ekspedisi palsu, atau bukti transfer editan). Ancaman pidana penjara hingga 12 (dua belas) tahun dan denda hingga Rp12.000.000.000."
+  },
+  moneyLaundering: {
+    article: "UU No. 8 Tahun 2010 tentang Tindak Pidana Pencucian Uang (TPPU)",
+    desc: "Menjerat pemegang dan sindikat penyedia 'Rekening Nominee / Mule Accounts' yang menampung serta mengaburkan aliran dana hasil kejahatan siber (layering). Ancaman pidana penjara hingga 20 (dua puluh) tahun dan denda hingga Rp10.000.000.000."
+  },
+  bankingRegulation: {
+    article: "Peraturan OJK (POJK) No. 22 Tahun 2023 & Protokol Satgas PASTI",
+    desc: "Mewajibkan Penyelenggara Jasa Keuangan (Bank dan PJP) untuk melakukan Enhanced Due Diligence (EDD), pemblokiran transaksi kilat atas instruksi Indonesia Anti-Scam Centre (IASC), serta penelusuran aliran dana antar-bank secara terkoordinasi."
+  },
+  privacyLaw: {
+    article: "UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)",
+    desc: "Menjamin hak privasi data warga negara dan menjerat pelaku penyalahgunaan data kependudukan (NIK, nama ibu kandung, nomor rekening) secara ilegal dengan sanksi pidana hingga 5 tahun dan denda hingga Rp5.000.000.000."
   },
   forensicChallenges: [
     {
-      title: "Kompleksitas Bukti Digital",
-      desc: "Jejak log digital dan cache chat mudah terhapus atau dirusak jika korban panik tanpa melakukan pengamanan forensik yang terstandarisasi."
+      title: "Jaringan Rekening Nominee (Mule Accounts Layering)",
+      desc: "Sindikat penipu memanfaatkan rekening bank lapis ketiga yang dibeli dari warga dengan harga murah (Rp500rb - Rp1jt), lalu memecah dana ke dompet digital dan aset kripto dalam waktu kurang dari 15 menit."
     },
     {
-      title: "Teknologi Penyamaran Pelaku",
-      desc: "Pelaku secara sistematis menggunakan Virtual Private Network (VPN), server proxy luar negeri, dan Virtual Phone Number lintas yurisdiksi negara."
+      title: "Kompleksitas Bukti Digital & Anti-Forensik",
+      desc: "Pelaku memanfaatkan fitur Disappearing Messages WhatsApp, pemendek tautan bersarang (nested shortlinks), dan server Command & Control (C2) bulletproof yang berlokasi di luar yurisdiksi Indonesia."
     },
     {
-      title: "Jaringan Rekening Nominee (Mule Accounts)",
-      desc: "Pelaku memanfaatkan rekening milik pihak ketiga yang dibeli secara ilegal, lalu memecah aliran dana dalam hitungan menit (layering)."
+      title: "Eksploitasi Celah Aksesibilitas Android",
+      desc: "Malware APK dropper menyamarkan diri sebagai layanan pembantu disabilitas (Accessibility Services) sehingga memiliki izin tak terbatas untuk merekam ketikan layar, membaca SMS OTP, dan menekan tombol konfirmasi perbankan secara gaib."
     },
     {
-      title: "Ketimpangan Sanksi vs Kerugian Finansial",
-      desc: "Ancaman pidana seringkali tidak proporsional dibandingkan kerugian finansial korban yang mencapai ratusan juta hingga miliaran rupiah."
+      title: "Kesenjangan Golden Time Korban",
+      desc: "Sebagian besar korban baru menyadari rekeningnya terkuras setelah 2-4 jam, melampaui jendela emas 15-30 menit di mana penundaan transaksi oleh IASC OJK memiliki peluang keberhasilan tertinggi (hingga 90%)."
     }
   ]
 };
