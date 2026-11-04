@@ -481,23 +481,111 @@ export default function CompendiumPage() {
         {/* TAB 3: TINJAUAN YURIDIS & KENDALA FORENSIK */}
         {activeTab === "yuridis" && (
           <div className="space-y-6">
+            <div className="p-4 bg-muted/30 border border-border space-y-1">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5 font-serif">
+                <Scale className="w-4 h-4 text-primary" />
+                Matriks Regulasi & Payung Hukum Penipuan Siber Indonesia (2024–2026)
+              </h3>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Penanganan kejahatan siber di Indonesia menggunakan asas <em>Lex Specialis Derogat Legi Generali</em>, di mana tindak pidana transaksi elektronik diadili menggunakan UU ITE Terbaru No. 1/2024 dan UU TPPU, didukung regulasi penundaan transaksi POJK No. 22/2023.
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 border border-border bg-card space-y-1">
+              <div className="p-4 border border-border bg-card space-y-2">
                 <Badge variant="outline" className="text-[10px] font-mono border-blue-500/40 text-blue-500">
-                  LEX GENERALI
+                  LEX GENERALI (PIDANA UMUM)
                 </Badge>
                 <h4 className="text-sm font-bold text-foreground font-serif">
                   {JURIDICAL_ANALYSIS.lexGenerali.article}
                 </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.lexGenerali.desc}
+                </p>
               </div>
 
-              <div className="p-4 border border-border bg-card space-y-1">
+              <div className="p-4 border border-border bg-card space-y-2">
                 <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-500">
-                  LEX SPECIALIS DEROGAT LEGI GENERALI
+                  LEX SPECIALIS (UU ITE UTAMA)
                 </Badge>
                 <h4 className="text-sm font-bold text-foreground font-serif">
                   {JURIDICAL_ANALYSIS.lexSpecialis.article}
                 </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.lexSpecialis.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-rose-500/40 text-rose-500">
+                  AKSES ILEGAL / MALWARE
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.illegalAccess.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.illegalAccess.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-purple-500/40 text-purple-500">
+                  INTERSEPSI DATA / SADAP OTP
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.dataInterception.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.dataInterception.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-amber-500/40 text-amber-500">
+                  PEMALSUAN DOKUMEN / PHISHING
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.dataForgery.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.dataForgery.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-cyan-500/40 text-cyan-500">
+                  REKENING PENAMPUNG / MULE
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.moneyLaundering.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.moneyLaundering.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-500">
+                  REGULASI PERBANKAN & IASC
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.bankingRegulation.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.bankingRegulation.desc}
+                </p>
+              </div>
+
+              <div className="p-4 border border-border bg-card space-y-2">
+                <Badge variant="outline" className="text-[10px] font-mono border-indigo-500/40 text-indigo-500">
+                  PELINDUNGAN DATA PRIBADI
+                </Badge>
+                <h4 className="text-sm font-bold text-foreground font-serif">
+                  {JURIDICAL_ANALYSIS.privacyLaw.article}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {JURIDICAL_ANALYSIS.privacyLaw.desc}
+                </p>
               </div>
             </div>
 
@@ -506,16 +594,24 @@ export default function CompendiumPage() {
               <CardHeader className="bg-muted/20 border-b border-border py-3">
                 <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
                   <Scale className="w-4 h-4 text-primary" />
-                  4 Kendala Pembuktian Forensik Digital
+                  4 Kendala Utama Pembuktian Forensik Digital di Indonesia
                 </CardTitle>
+                <CardDescription className="text-xs">
+                  Tantangan teknis dan yuridis yang dihadapi penyelidik siber serta alasan mengapa TRASP dirancang untuk deteksi dini.
+                </CardDescription>
               </CardHeader>
-              <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {JURIDICAL_ANALYSIS.forensicChallenges.map((ch, idx) => (
-                  <div key={idx} className="p-3 border border-border bg-card text-xs">
+                  <div key={idx} className="p-3.5 border border-border bg-card text-xs space-y-1.5">
                     <div className="font-bold text-foreground flex items-center gap-1.5">
-                      <span className="font-mono text-primary font-bold">{idx + 1}.</span>
+                      <span className="flex items-center justify-center h-5 w-5 rounded-none bg-primary text-primary-foreground font-mono font-bold text-[10px] shrink-0">
+                        {idx + 1}
+                      </span>
                       <span>{ch.title}</span>
                     </div>
+                    <p className="text-muted-foreground text-[11px] leading-relaxed pl-6.5">
+                      {ch.desc}
+                    </p>
                   </div>
                 ))}
               </CardContent>
