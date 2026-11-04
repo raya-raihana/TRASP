@@ -15,6 +15,7 @@ import { SiteHeader } from "@/components/site-header";
 import { RecognizeEngine } from "@/components/trasp/recognize-engine";
 import { LearnSandbox } from "@/components/trasp/learn-sandbox";
 import { ActContainment } from "@/components/trasp/act-containment";
+import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
 
 const TOOL_TITLES: Record<string, string> = {
   recognize: "Recognize",
@@ -78,6 +79,7 @@ export default function Home() {
           activeToolName={TOOL_TITLES[activeTool] || "TRASP"}
           onNavigateTool={(tool) => setActiveTool(tool)}
         />
+        <EducationalDisclaimer />
 
         <div className="flex flex-1 flex-col p-4 md:p-6 space-y-5 max-w-6xl w-full mx-auto">
           {/* Compact Mobile-Only Tool Switcher (3 Tools Only) */}

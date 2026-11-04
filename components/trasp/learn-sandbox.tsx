@@ -170,6 +170,17 @@ export function LearnSandbox({
   const [victimInput, setVictimInput] = useState("");
   const [isScammerTyping, setIsScammerTyping] = useState(false);
   const [isVictimGameFinished, setIsVictimGameFinished] = useState(false);
+  const [scammerTelemetry, setScammerTelemetry] = useState<{
+    activeTactic: string;
+    scammerMood: string;
+    internalThought: string;
+    source: string;
+  }>({
+    activeTactic: "Manipulasi Urgensi Semu",
+    scammerMood: "PUSHING",
+    internalThought: "Target harus dipaksa panik agar membuka berkas APK dalam 2 jam.",
+    source: "gemini-ai",
+  });
 
   // ============================================
   // STATE MODE 2: USER = PENIPU, LAWAN = TARGET AI
@@ -186,6 +197,9 @@ export function LearnSandbox({
   const [redteamInput, setRedteamInput] = useState("");
   const [isTargetTyping, setIsTargetTyping] = useState(false);
   const [isRedteamFinished, setIsRedteamFinished] = useState(false);
+  const [victimThought, setVictimThought] = useState<string>(
+    "Pesan ini datang dari nomor tidak dikenal. Saya tidak boleh sembarangan percaya."
+  );
 
   const victimChatRef = useRef<HTMLDivElement | null>(null);
   const redteamChatRef = useRef<HTMLDivElement | null>(null);
@@ -387,16 +401,27 @@ export function LearnSandbox({
       if (res.ok) {
         const data = await res.json();
         const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+        const delta = typeof data.vulnerabilityDelta === "number" ? data.vulnerabilityDelta : match.vulnerabilityDelta;
+
+        if (data.activeTactic || data.internalThought) {
+          setScammerTelemetry({
+            activeTactic: data.activeTactic || "Manipulasi Taktis Siber",
+            scammerMood: data.scammerMood || "PUSHING",
+            internalThought: data.internalThought || "Target memberikan respons yang patut diwaspadai.",
+            source: data.source || "gemini-ai",
+          });
+        }
+
         const botMsg: GameChatMessage = {
           id: "v-b-" + Date.now(),
           sender: "bot",
-          text: data.assistantResponse || match.scammerResponse,
+          text: data.scammerResponse || data.assistantResponse || match.scammerResponse,
           time: botTime,
-          delta: match.vulnerabilityDelta,
+          delta,
         };
         const updatedHistory = [...nextHistory, botMsg];
         setVictimChatHistory(updatedHistory);
-        const newVuln = Math.max(0, Math.min(100, vulnerability + match.vulnerabilityDelta));
+        const newVuln = Math.max(0, Math.min(100, vulnerability + delta));
         setVulnerability(newVuln);
         if (newVuln >= 85 || newVuln <= 15 || updatedHistory.length >= 7) {
           setIsVictimGameFinished(true);
@@ -458,20 +483,16 @@ export function LearnSandbox({
       if (res.ok) {
         const data = await res.json();
         const botTime = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-        const lower = text.toLowerCase();
-        let delta = 0;
-        if (lower.includes("resi") || lower.includes("bca") || lower.includes("djp") || lower.includes("pt")) {
-          delta = -20;
-        } else if (lower.includes("transfer") || lower.includes("uang") || lower.includes("otp")) {
-          delta = 10;
-        } else {
-          delta = -10;
+        const delta = typeof data.skepticismDelta === "number" ? data.skepticismDelta : -15;
+
+        if (data.victimThought) {
+          setVictimThought(data.victimThought);
         }
 
         const botMsg: GameChatMessage = {
           id: "rt-b-" + Date.now(),
           sender: "bot",
-          text: data.assistantResponse || "Hmm... Anda yakin dari pihak resmi? Saya minta bukti identitas dan nomor surat tugasnya.",
+          text: data.victimResponse || data.assistantResponse || "Hmm... Anda yakin dari pihak resmi? Saya minta bukti identitas dan nomor surat tugasnya.",
           time: botTime,
         };
         const updatedHistory = [...nextHistory, botMsg];
@@ -1009,6 +1030,61 @@ export function LearnSandbox({
                       ? `Pertahankan HP Anda di atas 50% dari gempuran ${activeLevel.bossName}. Jangan klik berkas atau transfer uang!`
                       : `Gunakan trik rekayasa sosial untuk menurunkan kewaspadaan ${activeLevel.targetName} hingga di bawah 20%!` }
                   </p>
+                </div>
+
+                {/* LIVE SCAMMER TELEMETRY X-RAY / TARGET INTEL */}
+                <div className="p-3 bg-card border border-border space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-border/60 pb-1.5">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                      {gameRole === "victim_game" ? "LIVE SCAMMER TELEMETRY X-RAY" : "TARGET INTEL MONITOR"}
+                    </span>
+                    <Badge variant="outline" className="text-[9px] font-mono">
+                      {scammerTelemetry.source || "gemini-ai"}
+                    </Badge>
+                  </div>
+                  
+                  {gameRole === "victim_game" ? (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Taktik Aktif:</span>
+                        <span className="font-semibold text-rose-500 dark:text-rose-400">
+                          {scammerTelemetry.activeTactic || "Manipulasi Taktis Siber"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Mood Penipu:</span>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-mono">
+                          {scammerTelemetry.scammerMood || "PUSHING"}
+                        </Badge>
+                      </div>
+                      <div className="pt-1 border-t border-border/40">
+                        <span className="text-[10px] font-mono text-muted-foreground block mb-0.5">
+                          Monolog Batin Pelaku:
+                        </span>
+                        <p className="text-[11px] italic text-foreground/90 bg-muted/40 p-2 border-l-2 border-primary">
+                          &quot;{scammerTelemetry.internalThought || "Target merespons di luar skenario. Harus ditekan lagi agar buru-buru menuruti perintah."}&quot;
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Status Kewaspadaan:</span>
+                        <span className="font-semibold text-amber-500">
+                          {targetSkepticism >= 70 ? "Sangat Waspada" : targetSkepticism >= 35 ? "Mulai Goyah" : "Termakan Umpan"}
+                        </span>
+                      </div>
+                      <div className="pt-1 border-t border-border/40">
+                        <span className="text-[10px] font-mono text-muted-foreground block mb-0.5">
+                          Monolog Batin Korban:
+                        </span>
+                        <p className="text-[11px] italic text-foreground/90 bg-muted/40 p-2 border-l-2 border-amber-500">
+                          &quot;{victimThought || "Saya agak curiga, nomor ini tidak dikenal dan mendesak tindakan mendadak."}&quot;
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Game Completion Box */}
