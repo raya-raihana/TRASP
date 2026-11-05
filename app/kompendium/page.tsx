@@ -51,13 +51,13 @@ export default function CompendiumPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const categories = [
-    { id: "ALL", label: "Semua Modus (6)" },
-    { id: "Android Malware / Banking Trojan", label: "Malware APK" },
-    { id: "Phishing Kredensial & Social Engineering", label: "Impersonasi Otoritas" },
-    { id: "Penipuan Finansial Bertingkat / Task Fraud", label: "Task Scam (Loker)" },
-    { id: "Phishing Massal & SIM Card Box", label: "SMS Blast Bank" },
-    { id: "Penyusupan Akun & QR Code Tampering", label: "Begal OTP & Quishing" },
-    { id: "Kecerdasan Buatan Generatif / Audio Spoofing", label: "Deepfake AI / Vishing" }
+    { id: "ALL", label: "Semua Modus" },
+    { id: "Penipuan Aplikasi Ponsel", label: "Aplikasi Palsu (.APK)" },
+    { id: "Penipuan Halaman Website", label: "Situs Tiruan" },
+    { id: "Penipuan Tawaran Kerja", label: "Lowongan Kerja Palsu" },
+    { id: "Penipuan Pesan Singkat (SMS)", label: "SMS Catut Bank" },
+    { id: "Pencurian Akun Percakapan", label: "Begal WhatsApp & Barcode" },
+    { id: "Penipuan Rekayasa Suara AI", label: "Kloning Suara AI" }
   ];
 
   const filteredCases = COMPENDIUM_CASES.filter((c) => {

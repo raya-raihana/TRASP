@@ -27,205 +27,205 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
   {
     id: "apk-sniffer",
     number: 1,
-    title: "Malware APK Sniffer (Kurir Resi, Undangan Nikah, Tilang ETLE)",
-    shortName: "Malware .APK Sniffer",
-    category: "Android Malware / Banking Trojan",
+    title: "Pencurian Kode SMS via File Palsu (.APK)",
+    shortName: "File Aplikasi Palsu (.APK)",
+    category: "Penipuan Aplikasi Ponsel",
     riskLevel: "CRITICAL",
     dangerScore: 95,
     modusOperandi:
-      "Pengiriman file berekstensi ganda (.apk) berkedok foto/dokumen resmi, seperti LIHAT_FOTO_PAKET.apk, Surat_Undangan_Pernikahan.apk, atau Surat_Tilang_ETLE.apk melalui WhatsApp.",
+      "Pelaku menyamar sebagai kurir paket, pengirim undangan nikah, atau polisi lalu lintas yang mengirim file aplikasi jahat untuk menyadap kode rahasia perbankan di ponsel korban.",
     characteristics: [
-      "Berkas berakhiran .apk dengan ikon menyerupai gambar dokumen atau logo ekspedisi",
-      "Mendesak korban segera membuka file dalam tenggat waktu 1-2 jam",
-      "Meminta izin Accessibility Services dan Read SMS saat dipasang di ponsel Android",
-      "Menyadap notifikasi dan kode OTP perbankan tanpa memunculkan tanda di layar"
+      "File berakhiran .apk dengan gambar yang sengaja diubah menyerupai foto paket atau dokumen surat",
+      "Pesan mendesak korban untuk segera membuka file dalam waktu 1 hingga 2 jam",
+      "Saat dipasang, aplikasi meminta izin khusus membaca layar dan pesan SMS masuk",
+      "Kode rahasia perbankan (OTP) dicuri diam-diam tanpa ada pemberitahuan di layar ponsel"
     ],
     psychologicalBiases: [
       {
-        biasName: "Panic & Urgency Bias",
-        description: "Diancam denda tilang hangus atau paket penting diretur dalam 2 jam agar korban panik dan buru-buru mengklik."
+        biasName: "Tekanan Panik & Rasa Takut",
+        description: "Korban ditakut-takuti paketnya akan hilang atau terkena denda tilang bila tidak segera membuka file dalam 2 jam."
       },
       {
-        biasName: "Curiosity Bias",
-        description: "Rasa penasaran tinggi terhadap foto paket yang tertahan atau siapa pihak yang mengirim surat undangan nikah."
+        biasName: "Rasa Penasaran Tinggi",
+        description: "Rasa ingin tahu siapa yang mengundang ke pernikahan atau paket apa yang tertahan di gudang ekspedisi."
       }
     ],
     technicalMechanism:
-      "Aplikasi Android liar (sideloaded APK) memanfaatkan Android Accessibility Services untuk membaca pohon aksesibilitas (AccessibilityNodeInfo), mencuri SMS masuk melalui BroadcastReceiver SMS_RECEIVED, dan mengirimkan token perbankan ke server Command & Control (C2) penipu secara terenkripsi.",
+      "Aplikasi palsu ini meminta izin khusus di layar ponsel, lalu secara diam-diam membaca pesan SMS berisi kode rahasia perbankan tanpa disadari pemilik ponsel.",
     realCasesIndonesia:
-      "Kasus kurir J&T Express palsu (LIHAT_FOTO_PAKET.apk); Sindikat penipuan surat tilang elektronik ETLE palsu mencatut Korlantas Polri; Jurnal Innovative FH UHO (Fuad Nur, 2025).",
+      "Banyak terjadi pada modus kurir J&T Express tiruan (LIHAT_FOTO_PAKET.apk), surat undangan pernikahan berformat aplikasi, dan surat tilang elektronik kepolisian palsu.",
     emergencyActionSteps: [
-      "Aktifkan Mode Pesawat (Airplane Mode) seketika & matikan Wi-Fi serta cabut kartu SIM.",
-      "Buka Pengaturan Android > Aksesibilitas > Aplikasi Terinstal > Matikan toggle izin aplikasi mencurigakan.",
-      "Hapus Data & Cache, lakukan Uninstal aplikasi, atau Factory Reset jika ikon aplikasi disembunyikan.",
-      "Ganti kata sandi email dan PIN Mobile Banking melalui perangkat lain yang aman."
+      "Nyalakan Mode Pesawat (Airplane Mode) seketika untuk memutus seluruh koneksi internet ponsel.",
+      "Segera hubungi Call Center resmi bank Anda untuk memblokir sementara rekening dan mobile banking.",
+      "Buka Pengaturan ponsel > Aksesibilitas, cabut izin aplikasi yang mencurigakan, lalu hapus file aplikasinya.",
+      "Ganti kata sandi email dan PIN perbankan menggunakan perangkat lain yang aman."
     ],
     legalClauses:
-      "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access), Pasal 32 UU ITE (Pencurian/Penyadapan Data), serta Pasal 378 KUHP (Penipuan Konvensional). Ancaman hukuman pidana hingga 8 tahun penjara dan denda Rp800 juta.",
+      "Melanggar Pasal 30 jo. Pasal 46 UU ITE (Pengaksesan Sistem Tanpa Hak) dan Pasal 32 UU ITE (Penyadapan Data), dengan ancaman hukuman penjara hingga 8 tahun dan denda Rp800 juta.",
     officialSourceCitation:
-      "Bareskrim Polri (Direktorat Tindak Pidana Siber), CekFakta ANTARA, & Fuad Nur (2025) Innovative Journal.",
+      "Bareskrim Polri (Direktorat Tindak Pidana Siber) & CekFakta ANTARA.",
     workbenchPresetId: "apk-kurir"
   },
   {
     id: "authority-impersonation",
     number: 2,
-    title: "Impersonasi Otoritas Resmi (Coretax DJP, BSSN, OJK/IASC)",
-    shortName: "Impersonasi Otoritas & Coretax",
-    category: "Phishing Kredensial & Social Engineering",
+    title: "Situs Tiruan Kantor Pajak & Lembaga Resmi",
+    shortName: "Situs Tiruan Lembaga Negara",
+    category: "Penipuan Halaman Website",
     riskLevel: "HIGH",
     dangerScore: 88,
     modusOperandi:
-      "Membuat situs tiruan menggunakan alamat IP mentah (misal: 194.233.164.88) atau domain berbiaya murah (.xyz, .top) yang menyerupai portal pemerintah/bank. Penipu mengaku sebagai call center atau petugas verifikasi pajak.",
+      "Pelaku menyebarkan tautan situs tiruan yang menyerupai kantor pajak atau lembaga negara resmi agar korban panik dan memasukkan data rekening perbankan.",
     characteristics: [
-      "Mencatut nama instansi negara: Ditjen Pajak (DJP), BSSN, OJK, atau bank swasta/BUMN",
-      "Menggunakan logo resmi dan kop surat berstempel digital palsu",
-      "Ancaman pemblokiran rekening 1x24 jam atau denda progresif jika tidak melakukan verifikasi data",
-      "Formulir login meminta nomor kartu debit, PIN ATM, atau kode OTP"
+      "Menggunakan logo resmi instansi negara seperti Ditjen Pajak (DJP), BSSN, atau OJK",
+      "Alamat website berakhiran aneh seperti .top, .site, atau deretan angka, bukan .go.id resmi",
+      "Berisi ancaman denda besar atau pemblokiran rekening jika korban tidak segera memasukkan data",
+      "Formulir website meminta nomor kartu ATM, nomor PIN, dan kode rahasia"
     ],
     psychologicalBiases: [
       {
-        biasName: "Authority Bias",
-        description: "Korban tunduk dan segan pada figur otoritas hukum/pajak negara karena takut disanksi denda atau pemblokiran rekening."
+        biasName: "Rasa Takut pada Otoritas",
+        description: "Masyarakat cenderung patuh dan cemas ketika diancam sanksi hukum atau denda dari instansi pemerintah."
       },
       {
-        biasName: "Fear of Sanction",
-        description: "Ketakutan akan konsekuensi hukum atau pembekuan NPWP/aset finansial secara mendadak."
+        biasName: "Kepanikan Pemblokiran Aset",
+        description: "Khawatir rekening bank dibekukan secara mendadak sehingga terburu-buru mengisi formulir tanpa memeriksa alamat situs."
       }
     ],
     technicalMechanism:
-      "Penipu menyusun domain phishing dengan teknik Subdomain Spoofing (contoh: djp-pajak.klikbca.pembayaran-denda.top) dan menampung input kredensial ke bot API Telegram tertutup secara real-time.",
+      "Pelaku membuat alamat website palsu yang tampilannya sangat mirip situs resmi pemerintah, sehingga ketika korban mengetikkan nomor kartu atau sandi, data tersebut langsung terkirim ke komputer pelaku.",
     realCasesIndonesia:
-      "Siaran Pers Kementerian Komunikasi dan Digital (19 November 2025) terkait situs tiruan layanan perpajakan Coretax DJP; Rilis Satgas PASTI OJK (SP 3/STPASTI/III/2025) mengenai website palsu mengatasnamakan IASC.",
+      "Situs tiruan layanan perpajakan Coretax DJP yang diumumkan Kementerian Komunikasi dan Digital, serta tautan palsu mencatut Indonesia Anti-Scam Centre (IASC) OJK.",
     emergencyActionSteps: [
-      "Periksa domain utama di bilah alamat peramban (portal resmi pemerintah selalu berakhiran .go.id, BUKAN .top, .xyz, atau .site).",
-      "Jangan pernah mengisikan kode OTP atau PIN ke formulir web apa pun.",
-      "Konfirmasi langsung ke kanal resmi instansi terkait (Kring Pajak 1500200 atau Kontak OJK 157)."
+      "Periksa alamat website di bagian atas peramban; situs resmi pemerintah selalu berakhiran .go.id, bukan domain umum.",
+      "Jangan pernah memasukkan nomor kartu ATM, PIN, atau kode rahasia ke dalam formulir tautan internet.",
+      "Lakukan konfirmasi langsung ke nomor resmi instansi terkait, seperti Kring Pajak 1500200 atau OJK 157."
     ],
     legalClauses:
-      "Pasal 35 jo. Pasal 51 ayat (1) UU ITE (Pemalsuan Dokumen Elektronik dengan ancaman 12 tahun penjara & denda Rp12 miliar) serta Pasal 378 KUHP.",
+      "Melanggar Pasal 35 jo. Pasal 51 ayat (1) UU ITE tentang Pemalsuan Informasi dan Dokumen Elektronik dengan ancaman pidana penjara hingga 12 tahun dan denda maksimal Rp12 miliar.",
     officialSourceCitation:
-      "Kementerian Komunikasi dan Digital RI (Komdigi) & Satgas PASTI Otoritas Jasa Keuangan (2025).",
+      "Kementerian Komunikasi dan Digital RI & Satgas PASTI Otoritas Jasa Keuangan.",
     workbenchPresetId: "phishing-pajak"
   },
   {
     id: "task-scam",
     number: 3,
-    title: "Loker Freelance & Task Scam (Misi Like & Komisi Harian)",
-    shortName: "Task Scam (Loker Freelance)",
-    category: "Penipuan Finansial Bertingkat / Task Fraud",
+    title: "Penipuan Kerja Sampingan & Setor Modal",
+    shortName: "Kerja Sampingan Berbayar",
+    category: "Penipuan Tawaran Kerja",
     riskLevel: "HIGH",
     dangerScore: 90,
     modusOperandi:
-      "Penawaran kerja paruh waktu mudah (like video YouTube, follow medsos, ulasan produk e-commerce). Di awal komisi kecil puluhan ribu benar-benar dicairkan, lalu korban dipaksa deposit jutaan rupiah berdalih 'Misi VIP'.",
+      "Pelaku menawarkan gaji mudah hanya dengan menyukai video atau memberi ulasan, tetapi kemudian memeras korban untuk menyetor uang modal yang tidak pernah dikembalikan.",
     characteristics: [
-      "Iming-iming gaji 50rb-500rb per hari tanpa kualifikasi pendidikan",
-      "Pencairan komisi awal berhasil untuk membangun kepercayaan semu (Foot-in-the-Door)",
-      "Peralihan ke grup Telegram khusus dengan anggota bot yang memamerkan bukti penarikan palsu",
-      "Kewajiban transfer deposit berjenjang dengan ancaman modal hangus jika tugas tidak selesai"
+      "Menjanjikan komisi puluhan hingga ratusan ribu rupiah per hari hanya dengan pekerjaan ringan",
+      "Pada tugas awal komisi kecil benar-benar dibayarkan untuk memancing rasa percaya korban",
+      "Korban diarahkan ke grup percakapan tertutup yang berisi akun anggota palsu",
+      "Korban diwajibkan menyetor uang deposit bernilai jutaan rupiah dengan dalih misi bertaraf VIP"
     ],
     psychologicalBiases: [
       {
-        biasName: "Greed & Reciprocity Bias",
-        description: "Tergiur keuntungan instan dan merasa berhutang budi karena sebelumnya sudah diberi komisi gratis."
+        biasName: "Terpancing Keuntungan Instan",
+        description: "Korban tergiur uang jajan mudah dan merasa aman karena di awal sudah pernah menerima pembayaran komisi kecil."
       },
       {
-        biasName: "Sunk Cost Fallacy",
-        description: "Korban merasa sudah menyetor modal awal jutaan rupiah, sehingga terdorong menyetor lagi agar uang sebelumnya tidak hilang."
+        biasName: "Jebakan Modal Tertahan",
+        description: "Korban sudah telanjur menyetor uang ratusan ribu, sehingga rela menyetor lagi demi menyelamatkan uang modal sebelumnya."
       }
     ],
     technicalMechanism:
-      "Jaringan sindikat memanfaatkan grup perpesanan tertutup (Telegram Channels) dengan sistem multi-tier bot akun nominee. Rekening tujuan deposit adalah rekening bank sewaan (mule accounts) yang langsung di-layering ke rekening lain dalam hitungan menit.",
+      "Pelaku mengelabui korban dengan memberi sedikit uang hadiah di awal, lalu memasukkan korban ke grup obrolan rekayasa agar korban yakin dan bersedia mentransfer uang tabungan dalam jumlah besar.",
     realCasesIndonesia:
-      "Data penanganan satgas perbankan Indonesia Anti-Scam Centre (IASC - OJK); Laporan aduan transaksi nominee masyarakat pada portal Patroli Siber Bareskrim Polri.",
+      "Modus lowongan kerja freelance ulas produk e-commerce dan like video media sosial yang marak dilaporkan ke layanan aduan OJK dan kepolisian.",
     emergencyActionSteps: [
-      "Hentikan segera transfer tambahan apa pun dalih admin (jangan percaya janji pencairan).",
-      "Kumpulkan bukti mutasi transfer dan nomor rekening penampung pelaku.",
-      "Laporkan nomor rekening penipu ke portal iasc.ojk.go.id dan CekRekening.id (Komdigi)."
+      "Hentikan segera seluruh pengiriman uang tambahan; jangan pernah memercayai janji bahwa modal akan kembali.",
+      "Simpan bukti percakapan dan mutasi transfer rekening tujuan penipu.",
+      "Laporkan nomor rekening penampung penipu ke situs resmi iasc.ojk.go.id dan CekRekening.id."
     ],
     legalClauses:
-      "Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU ITE No. 1/2024 (Penyebaran Berita Bohong yang Menyebabkan Kerugian Konsumen) dan Pasal 378 KUHP.",
+      "Melanggar Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU ITE No. 1/2024 tentang Penyebaran Berita Bohong yang Merugikan Konsumen dan Pasal 378 KUHP tentang Penipuan.",
     officialSourceCitation:
-      "Otoritas Jasa Keuangan (IASC) & Satgas PASTI.",
+      "Indonesia Anti-Scam Centre (IASC - OJK 157) & Bareskrim Polri.",
     workbenchPresetId: "loker-bumn"
   },
   {
     id: "sms-blast-phishing",
     number: 4,
-    title: "SMS Blast Phishing Bank (Kuras Rekening Skala Massal)",
-    shortName: "SMS Blast Phishing Perbankan",
-    category: "Phishing Massal & SIM Card Box",
+    title: "Pesan Singkat Palsu Mengatasnamakan Bank",
+    shortName: "Pesan Singkat Catut Nama Bank",
+    category: "Penipuan Pesan Singkat (SMS)",
     riskLevel: "CRITICAL",
     dangerScore: 92,
     modusOperandi:
-      "Mengirimkan pesan singkat (SMS) secara massal mencatut nama bank swasta/BUMN ternama, menyertakan link phishing pembaruan tarif transfer menjadi Rp150.000/bulan atau pemblokiran kartu debit.",
+      "Pelaku menyebarkan pesan SMS massal yang menakut-nakuti nasabah tentang kenaikan biaya admin bank agar korban membuka tautan pembatalan palsu.",
     characteristics: [
-      "Pesan masuk melalui SMS menggunakan nomor GSM biasa atau sender ID tiruan",
-      "Isu perubahan tarif transaksi drastis yang membuat nasabah emosi atau cemas",
-      "Tautan mengarah ke halaman web tiruan login m-Banking / Internet Banking",
-      "Meminta memasukkan nomor kartu debit, expired date, CVV, dan kode OTP masuk"
+      "Pesan masuk melalui SMS dengan dalih perubahan tarif transaksi drastis (misal naik jadi Rp150.000 per bulan)",
+      "Menyertakan tautan web yang tampilannya dirancang menyerupai halaman login bank resmi",
+      "Membatasi waktu pembatalan sangat singkat agar korban cemas dan tidak sempat bertanya ke bank",
+      "Meminta nasabah memasukkan nomor kartu debit, masa berlaku, dan kode SMS rahasia"
     ],
     psychologicalBiases: [
       {
-        biasName: "Fear of Loss",
-        description: "Khawatir saldo tabungan terpotong biaya administrasi siluman Rp150.000 jika tidak segera membatalkan via tautan."
+        biasName: "Kecemasan Biaya Siluman",
+        description: "Nasabah panik membayangkan uang tabungannya akan dipotong setiap bulan bila tidak segera membatalkan tarif."
       },
       {
-        biasName: "Urgency Pressure",
-        description: "Batas waktu pembatalan dibuat singkat (1 jam) agar nasabah bertindak tanpa sempat menelepon bank resmi."
+        biasName: "Tekanan Waktu Singkat",
+        description: "Penipu membatasi waktu hanya 1 jam sehingga korban terburu-buru mengklik tautan tanpa berpikir jernih."
       }
     ],
     technicalMechanism:
-      "Sindikat menggunakan perangkat keras SIM Card Box / Modem Pool ilegal dengan ribuan kartu SIM perdana yang menembakkan jutaan SMS phishing per hari. Data yang dimasukkan korban ditangkap otomatis oleh script backend penipu dan langsung digunakan untuk transaksi online.",
+      "Pelaku menggunakan alat pemancar pesan massal untuk mengirim ribuan SMS sekaligus. Tautan di dalam SMS mengarahkan korban ke formulir tiruan yang mencuri nomor kartu ATM dan kode rahasia.",
     realCasesIndonesia:
-      "Pengungkapan Bareskrim Polri (24 Maret 2025) atas sindikat SMS blast phishing bank dengan kerugian 12 nasabah mencapai Rp473 juta.",
+      "Sindikat pengirim SMS massal mencatut bank besar nasional yang berhasil diungkap oleh Dittipidsiber Bareskrim Polri dengan total kerugian ratusan juta rupiah.",
     emergencyActionSteps: [
-      "Segera telepon hotline resmi bank penerbit kartu debit (Halo BCA 1500888, Mandiri 14000, BRI 1500017, BNI 1500046).",
-      "Minta pemblokiran kartu debit dan akun mobile banking secara darurat.",
-      "Ganti seluruh kredensial perbankan dan buat laporan ke kantor cabang terdekat."
+      "Hubungi segera kontak resmi bank Anda (BCA 1500888, Mandiri 14000, BRI 1500017, BNI 1500046).",
+      "Minta petugas bank untuk memblokir kartu ATM dan akun mobile banking Anda sekarang juga.",
+      "Ganti kata sandi dan amankan bukti pesan untuk pelaporan ke kantor bank terdekat."
     ],
     legalClauses:
-      "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access) serta UU No. 3 Tahun 2011 tentang Transfer Dana. Ancaman pidana penjara 8 tahun.",
+      "Melanggar Pasal 30 jo. Pasal 46 UU ITE serta Undang-Undang Nomor 3 Tahun 2011 tentang Transfer Dana, dengan ancaman hukuman penjara hingga 8 tahun.",
     officialSourceCitation:
-      "Direktorat Tindak Pidana Siber Bareskrim Polri (Pengungkapan Sindikat SMS Blast Maret 2025).",
+      "Direktorat Tindak Pidana Siber Bareskrim Polri.",
     workbenchPresetId: "phishing-pajak"
   },
   {
     id: "account-takeover-quishing",
     number: 5,
-    title: "Account Takeover (ATO) & Quishing (Begal OTP & QR Palsu)",
-    shortName: "Begal OTP & QR Code Palsu (Quishing)",
-    category: "Penyusupan Akun & QR Code Tampering",
+    title: "Pencurian Akun WhatsApp via Barcode & Kode Rahasia",
+    shortName: "Begal Akun & Barcode Palsu",
+    category: "Pencurian Akun Percakapan",
     riskLevel: "HIGH",
     dangerScore: 85,
     modusOperandi:
-      "Pelaku mengaku salah kirim voucher belanja/pulsa lalu mendesak korban mengirimkan 6 digit angka SMS masuk; atau menempelkan stiker QRIS/QR code palsu di lokasi publik untuk menyusupkan tautan berbahaya.",
+      "Pelaku berpura-pura salah kirim voucher atau menempelkan stiker barcode palsu di toko demi memancing korban menyerahkan 6 digit kode keamanan akun.",
     characteristics: [
-      "Pelaku memelas minta tolong karena keliru memasukkan nomor korban",
-      "Mendesak memberikan 6 digit kode yang masuk ke SMS korban (sebenarnya kode OTP WhatsApp/e-wallet)",
-      "Stiker kode QRIS di meja resto/kotak amal yang menimpa kode QRIS resmi pemilik toko",
-      "Begitu akun berpindah tangan, penipu meminjam uang ke semua kontak kontak darurat korban"
+      "Pelaku memohon bantuan karena mengaku keliru memasukkan nomor ponsel saat bertransaksi",
+      "Mendesak korban menyebutkan 6 digit angka yang baru saja masuk melalui SMS",
+      "Stiker barcode pembayaran di toko publik yang sengaja ditimpa dengan barcode palsu",
+      "Setelah akun berhasil diambil alih, penipu akan meminjam uang ke seluruh teman korban"
     ],
     psychologicalBiases: [
       {
-        biasName: "Helpfulness & Empathy Trap",
-        description: "Niat tulus menolong orang lain yang mengaku keliru atau panik salah transaksi."
+        biasName: "Rasa Iba dan Ingin Menolong",
+        description: "Korban berniat baik menolong orang lain yang memelas mengaku keliru mengirimkan kode transaksi."
       },
       {
-        biasName: "Blind Trust in Technology",
-        description: "Menganggap semua kode QR yang tercetak di ruang publik adalah resmi dan aman dipindai."
+        biasName: "Kepercayaan Buta pada Barcode",
+        description: "Masyarakat sering menganggap setiap stiker barcode yang tertempel di kasir atau tempat umum pasti resmi."
       }
     ],
     technicalMechanism:
-      "Penyerang memicu request login dari perangkat penipu, lalu memanfaatkan kelengahan korban untuk membacakan kode 2-Factor Authentication (2FA). Untuk Quishing, QR code memuat payload deep-link yang mengarahkan peramban korban ke halaman pencuri token OAuth.",
+      "Penipu mencoba masuk ke akun WhatsApp milik korban dari perangkat lain, lalu memanipulasi rasa iba korban agar mau membacakan kode keamanan masuk yang dikirimkan oleh sistem.",
     realCasesIndonesia:
-      "Modus pengambilalihan akun WhatsApp dan dompet digital massal yang dicatat Bareskrim Polri; Panduan Keamanan Siber SeaBank ID & OJK (2025).",
+      "Banyaknya kasus akun WhatsApp warga yang dibajak untuk meminjam uang secara massal ke grup keluarga dan kontak kerja.",
     emergencyActionSteps: [
-      "Jangan pernah menyerahkan 6 digit kode OTP masuk kepada siapa pun dengan alasan apa pun.",
-      "Jika akun WhatsApp terlanjur dibajak: Kirim email darurat ke support@whatsapp.com dengan subjek 'Hilang/Dicuri: Silakan nonaktifkan akun saya'.",
-      "Periksa nama merchant resmi setiap kali memindai kode QRIS sebelum menekan tombol bayar."
+      "Jangan pernah membagikan 6 digit kode yang masuk melalui SMS kepada siapa pun, termasuk keluarga atau teman.",
+      "Jika akun WhatsApp terlanjur dibajak, segera kirim email darurat ke support@whatsapp.com dengan subjek 'Hilang/Dicuri: Silakan nonaktifkan akun saya'.",
+      "Periksa nama toko penerima pembayaran setiap kali memindai barcode sebelum menekan tombol bayar."
     ],
     legalClauses:
-      "Pasal 32 UU ITE (Perusakan dan Pemindahan Dokumen/Akun Elektronik) dan Pasal 378 KUHP.",
+      "Melanggar Pasal 32 UU ITE tentang Pemindahan dan Pengrusakan Akun Elektronik serta Pasal 378 KUHP tentang Penipuan.",
     officialSourceCitation:
       "Patroli Siber Bareskrim Polri & Panduan Edukasi Keamanan Perbankan Digital.",
     workbenchPresetId: "m-banking-palsu"
@@ -233,81 +233,81 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
   {
     id: "deepfake-vishing",
     number: 6,
-    title: "Deepfake & Voice Phishing (Vishing) (Kloning Suara & Video AI)",
-    shortName: "Deepfake & Voice Vishing AI",
-    category: "Kecerdasan Buatan Generatif / Audio Spoofing",
+    title: "Tiruan Suara Kerabat & Atasan Berbasis AI",
+    shortName: "Kloning Suara Panggilan Telepon",
+    category: "Penipuan Rekayasa Suara AI",
     riskLevel: "CRITICAL",
     dangerScore: 94,
     modusOperandi:
-      "Penggunaan teknologi AI generatif untuk mengkloning suara pejabat, atasan kantor, atau anak/kerabat dalam panggilan telepon, atau video klarifikasi palsu pengumuman bansos dan dana hibah.",
+      "Pelaku menelepon dengan menirukan suara keluarga atau atasan kantor yang sedang tertimpa musibah untuk meminta transfer uang bantuan secara mendadak.",
     characteristics: [
-      "Panggilan telepon dari nomor tidak dikenal dengan suara yang persis menyerupai suara kerabat",
-      "Skenario darurat dramatis: anak menangis tertangkap polisi, kecelakaan, atau atasan butuh transfer dana talangan segera",
-      "Latar belakang suara dibuat bising menyerupai kantor polisi atau IGD rumah sakit",
-      "Penipu melarang korban mematikan telepon atau menghubungi anggota keluarga lain"
+      "Panggilan telepon dari nomor tak dikenal tetapi suaranya sangat mirip dengan orang yang kita kenal",
+      "Menceritakan musibah darurat: anak kecelakaan di rumah sakit atau atasan butuh dana talangan proyek",
+      "Latar belakang suara dibuat bising seperti suasana kantor polisi atau ruang gawat darurat",
+      "Penelepon melarang korban menutup telepon atau menghubungi anggota keluarga yang lain"
     ],
     psychologicalBiases: [
       {
-        biasName: "Social Proof & Familiarity",
-        description: "Korban mendengar suara yang sangat identik dengan sosok yang dipercaya sehingga logika kritis langsung lumpuh."
+        biasName: "Kepanikan Mendengar Suara Orang Dekat",
+        description: "Suara yang terdengar sangat akrab membuat korban langsung panik dan tidak sempat berpikir logis."
       },
       {
-        biasName: "Cognitive Overload",
-        description: "Rasa panik dan syok mendengar kerabat tertimpa musibah membuat korban langsung menuruti permintaan uang."
+        biasName: "Kondisi Pikiran Tertekan",
+        description: "Kabar musibah mendadak membuat korban ingin segera menyelesaikan masalah dengan mentransfer uang."
       }
     ],
     technicalMechanism:
-      "Pelaku menggunakan model AI Voice Synthesis (seperti RVC atau VITS) yang dilatih dengan sampel audio korban dari media sosial publik (TikTok/Instagram) hanya dalam 3-5 detik. Model lalu digabungkan dengan soundboard real-time saat melakukan panggilan VoIP spoofed.",
+      "Pelaku mengambil rekaman suara korban dari video media sosial, lalu mengolahnya dengan program komputer pintar (AI) sehingga menghasilkan rekaman suara tiruan yang terdengar sangat mirip aslinya.",
     realCasesIndonesia:
-      "Kajian akademis arXiv:2601.20184 (Securing AI Agents & Deepfake Threats); Kasus vishing penipuan kloning suara ASN di Magetan dengan kerugian Rp105 juta (Maret 2025).",
+      "Kasus telepon darurat palsu menirukan suara keluarga yang meminta tebusan kecelakaan, serta penipuan transfer dana proyek kantor di beberapa daerah.",
     emergencyActionSteps: [
-      "Gunakan 'Kata Sandi Rahasia Keluarga' (Family Safe Word) untuk memverifikasi keaslian penelepon.",
-      "Tutup panggilan telepon segera dan hubungi nomor telepon utama kerabat yang bersangkutan secara terpisah.",
-      "Hubungi kantor kepolisian atau rumah sakit terdekat untuk mengonfirmasi kebenaran peristiwa sebelum mentransfer dana."
+      "Buat kata sandi rahasia keluarga untuk memastikan keaslian anggota keluarga saat menelepon dalam kondisi darurat.",
+      "Tutup panggilan telepon tersebut dan hubungi langsung nomor ponsel kerabat yang bersangkutan.",
+      "Konfirmasi ke pihak sekolah, rumah sakit, atau kepolisian sebelum mentransfer uang apa pun."
     ],
     legalClauses:
-      "Pasal 35 UU ITE (Manipulasi Informasi Elektronik Mengakibatkan Dokumen Otentik Palsu) jo. Pasal 51 ayat (1) serta Pasal 378 KUHP.",
+      "Melanggar Pasal 35 jo. Pasal 51 ayat (1) UU ITE tentang Manipulasi Dokumen Elektronik Otentik serta Pasal 378 KUHP.",
     officialSourceCitation:
-      "Kajian Ilmiah arXiv:2601.20184 (Hatami et al., 2026) & Laporan Penipuan AI Siber Bareskrim Polri.",
+      "Kajian Ilmiah arXiv:2601.20184 & Laporan Penipuan AI Siber Bareskrim Polri.",
     workbenchPresetId: "m-banking-palsu"
   },
   {
     id: "romance-pig-butchering",
     number: 7,
-    title: "Romance Scam & Pig Butchering (Sha Zhu Pan / Investasi Bodong)",
-    shortName: "Romance Scam & Love Bait",
-    category: "Manipulasi Emosional & Investasi Fiktif",
+    title: "Penipuan Asmara Berkedok Investasi Online",
+    shortName: "Jebakan Asmara & Investasi",
+    category: "Penipuan Hubungan Online",
     riskLevel: "CRITICAL",
     dangerScore: 93,
     modusOperandi:
-      "Pelaku membangun hubungan asmara palsu secara intensif di media sosial/aplikasi kencan (Love Bombing) selama berminggu-minggu, lalu secara halus mengajak korban 'investasi bersama' di website kripto/trading fiktif yang tampilannya dapat dimanipulasi.",
+      "Pelaku mendekati korban di media sosial dengan perhatian penuh selama berminggu-minggu, lalu membujuk korban menaruh uang di platform investasi bodong.",
     characteristics: [
-      "Profil media sosial berpenampilan sangat mapan, menarik, dan perhatian penuh",
-      "Selalu menolak melakukan panggilan video (video call) dengan dalih kamera rusak atau sinyal buruk",
-      "Mengaku memiliki 'orang dalam' atau sistem rahasia trading dengan keuntungan pasti",
-      "Pada awal deposit, korban diizinkan mencairkan keuntungan kecil untuk memancing setoran modal jutaan rupiah"
+      "Profil media sosial berpenampilan sangat mapan, menarik, dan memberikan perhatian intensif setiap hari",
+      "Selalu menolak melakukan panggilan video dengan alasan kamera rusak atau koneksi buruk",
+      "Mengaku memiliki informasi rahasia atau sistem perdagangan yang pasti menghasilkan untung besar",
+      "Saat korban ingin mencairkan uangnya, akun mendadak dikunci dan diminta membayar biaya pajak fiktif"
     ],
     psychologicalBiases: [
       {
-        biasName: "Love Bombing & Emotional Attachment",
-        description: "Memanfaatkan kesepian dan rasa percaya korban melalui perhatian emosional harian yang intensif."
+        biasName: "Jebakan Perhatian Berlebih",
+        description: "Pelaku memanfaatkan rasa percaya dan kedekatan emosional korban yang dibangun secara konsisten."
       },
       {
-        biasName: "Sunk-Cost Fallacy",
-        description: "Ketika saldo tertahan, korban terus menyetor uang pajak/biaya pencairan fiktif demi menyelamatkan uang modal sebelumnya."
+        biasName: "Takut Modal Hilang",
+        description: "Korban terus menuruti permintaan biaya pencairan palsu karena berharap uang tabungannya bisa kembali."
       }
     ],
     technicalMechanism:
-      "Sindikat mengoperasikan platform web trading palsu (MetaTrader tiruan atau bursa kripto custom) yang angkanya diatur manual oleh penipu. Ketika korban ingin menarik dana (withdraw), sistem mengunci akun dan menuntut biaya 'verifikasi pajak internasional' hingga korban kehabisan dana.",
+      "Pelaku membuat akun profil fiktif yang terlihat mapan dan menampilkan grafik keuntungan palsu di situs investasi buatan mereka sendiri agar korban terus menyetor uang.",
     realCasesIndonesia:
-      "Laporan Satgas PASTI OJK (2025) terkait kerugian warga akibat love scam berkedok bursa kripto palsu di aplikasi kencan.",
+      "Laporan Satgas PASTI OJK terkait kerugian warga akibat penipuan hubungan asmara yang berujung pada penyetoran uang ke platform trading palsu.",
     emergencyActionSteps: [
-      "Hentikan segera seluruh transfer dana tambahan, jangan pernah membayar 'biaya pencairan pajak'.",
-      "Simpan seluruh riwayat percakapan, nomor rekening, dan alamat dompet kripto pelaku.",
-      "Laporkan nomor rekening ke portal iasc.ojk.go.id dan buat Laporan Polisi di SPKT/patrolisiber.id."
+      "Hentikan segera seluruh pengiriman uang; jangan pernah membayar biaya tambahan apa pun dengan dalih pencairan.",
+      "Simpan seluruh bukti percakapan, nomor rekening, dan tautan platform pelaku.",
+      "Laporkan nomor rekening ke portal resmi iasc.ojk.go.id dan buat laporan ke kantor polisi terdekat."
     ],
     legalClauses:
-      "Pasal 28 ayat (1) UU ITE No. 1/2024 (Kerugian Konsumen Transaksi Elektronik), Pasal 378 KUHP (Penipuan), dan UU TPPU No. 8/2010.",
+      "Melanggar Pasal 28 ayat (1) UU ITE No. 1/2024 tentang Kerugian Konsumen Transaksi Elektronik dan Pasal 378 KUHP.",
     officialSourceCitation:
       "Satgas PASTI OJK & Direktorat Tindak Pidana Siber Bareskrim Polri.",
     workbenchPresetId: "loker-bumn"
@@ -315,81 +315,44 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
   {
     id: "sextortion-blackmail",
     number: 8,
-    title: "Sextortion & Pemerasan Digital (Video Call Trap & Rekayasa AI)",
-    shortName: "Sextortion & Pemerasan Digital",
-    category: "Pemerasan Siber & Manipulasi Privasi",
+    title: "Pemerasan Foto Pribadi di Media Sosial",
+    shortName: "Pemerasan Foto Pribadi",
+    category: "Pemerasan Siber & Privasi",
     riskLevel: "CRITICAL",
     dangerScore: 96,
     modusOperandi:
-      "Pelaku memancing korban melakukan panggilan video asusila atau merekayasa foto wajah korban dengan kecerdasan buatan, lalu mengancam menyebarkan rekaman ke daftar kontak keluarga, teman sekolah, atau media sosial jika tidak mentransfer sejumlah uang.",
+      "Pelaku memancing korban melakukan panggilan video pribadi atau merekayasa foto korban dengan AI, lalu mengancam menyebarkannya jika tidak diberi uang.",
     characteristics: [
-      "Ajakan video call yang intens dari akun baru dengan foto profil menarik",
-      "Tiba-tiba mengirim rekaman tangkapan layar video dan daftar follower/kontak korban",
-      "Batas waktu ancaman sangat mendesak (10-30 menit) disertai intimidasi verbal",
-      "Permintaan uang ditransfer via dompet digital (e-wallet) tanpa verifikasi identitas"
+      "Ajakan panggilan video dari akun baru yang berpenampilan menarik di media sosial",
+      "Tiba-tiba mengirimkan rekaman tangkapan layar dan daftar teman sekolah atau keluarga korban",
+      "Memberikan batas waktu ancaman yang sangat singkat disertai intimidasi verbal",
+      "Meminta uang ditransfer ke dompet digital tanpa verifikasi identitas"
     ],
     psychologicalBiases: [
       {
-        biasName: "Extreme Shame & Panic Bias",
-        description: "Rasa malu dan takut reputasi hancur di depan keluarga/sekolah melumpuhkan pertimbangan logis korban."
+        biasName: "Rasa Takut dan Malu Ekstrem",
+        description: "Korban merasa cemas reputasinya hancur di depan keluarga dan teman sekolah sehingga menuruti pemerasan."
       },
       {
-        biasName: "Blackmail Compliance",
-        description: "Korban mengira membayar sekali akan menyelesaikan masalah, padahal pelaku akan terus memeras berulang kali."
+        biasName: "Harapan Semu Masalah Selesai",
+        description: "Korban mengira membayar sekali akan menyelesaikan masalah, padahal pelaku akan terus meminta uang lagi."
       }
     ],
     technicalMechanism:
-      "Pelaku menggunakan aplikasi screen recorder saat video call atau model face-swap AI untuk menempelkan wajah korban ke rekaman orang lain. Daftar kontak korban biasanya dikumpulkan sebelumnya melalui phishing tautan Instagram atau scraping data publik.",
+      "Pelaku merekam layar saat panggilan video berlangsung atau menempelkan wajah korban ke rekaman orang lain menggunakan kecerdasan buatan, lalu memeras korban dengan ancaman menyebarkannya.",
     realCasesIndonesia:
-      "Peringatan BSSN & Bareskrim Polri mengenai sindikat pemerasan seksual digital lintas negara yang menyasar pelajar dan remaja.",
+      "Peringatan BSSN dan kepolisian mengenai maraknya sindikat pemerasan foto pribadi yang menyasar pelajar dan remaja di media sosial.",
     emergencyActionSteps: [
-      "JANGAN PERNAH mentransfer uang sepeser pun! Membayar hanya membuat pelaku menuntut jumlah yang lebih besar.",
-      "Ambil tangkapan layar ancaman, nomor telepon, dan nomor rekening penipu untuk bukti hukum.",
-      "Kunci akun media sosial menjadi private, aktifkan 2FA, dan segera ceritakan kepada orang tua/konselor terpercaya.",
-      "Laporkan ke portal aduankonten.id (Komdigi) dan patrolisiber.id Bareskrim Polri."
+      "JANGAN PERNAH mengirimkan uang sepeser pun; membayar uang tidak akan menghentikan ancaman pelaku.",
+      "Ambil tangkapan layar bukti ancaman, nomor telepon, dan nomor rekening penipu untuk bukti laporan polisi.",
+      "Kunci akun media sosial Anda menjadi privat dan segera ceritakan kepada orang tua atau pihak sekolah terpercaya.",
+      "Laporkan ke portal aduankonten.id Kementerian Komdigi dan patrolisiber.id Bareskrim Polri."
     ],
     legalClauses:
-      "Pasal 27B ayat (2) jo. Pasal 45 ayat (10) UU ITE No. 1/2024 (Pemerasan dan Pengancaman melalui Elektronik, pidana 6 tahun) serta Pasal 368 KUHP.",
+      "Melanggar Pasal 27B ayat (2) UU ITE No. 1/2024 tentang Pemerasan dan Pengancaman Digital serta Pasal 368 KUHP.",
     officialSourceCitation:
-      "Kementerian Komunikasi dan Digital (Komdigi) & Bareskrim Polri.",
+      "Badan Siber dan Sandi Negara (BSSN) & Patroli Siber Bareskrim Polri.",
     workbenchPresetId: "m-banking-palsu"
-  },
-  {
-    id: "game-social-phishing",
-    number: 9,
-    title: "Phishing Akun Game & Media Sosial (Diamond Gratis & Centang Biru)",
-    shortName: "Phishing Akun Game & Sosmed",
-    category: "Pencurian Akun & Kredensial",
-    riskLevel: "HIGH",
-    dangerScore: 82,
-    modusOperandi:
-      "Penyebaran tautan di kolom komentar TikTok/YouTube yang menjanjikan skin senjata Free Fire, diamond Mobile Legends gratis, atau formulir verifikasi centang biru Instagram dengan meminta login akun media sosial.",
-    characteristics: [
-      "Domain menggunakan ekstensi tidak lazim (misal: claim-diamond-mlbb.xyz atau verifikasi-ig-badge.top)",
-      "Tampilan halaman web dibuat sangat mirip dengan portal login resmi Google, Facebook, atau Moonton",
-      "Meminta kata sandi dan kode OTP masuk akun",
-      "Setelah data dikirim, kata sandi dan email pemulihan langsung diganti oleh bot penipu"
-    ],
-    psychologicalBiases: [
-      {
-        biasName: "Greed & Freebie Bias",
-        description: "Keinginan mendapatkan item digital mahal secara cuma-cuma mengabaikan kewaspadaan alamat website."
-      }
-    ],
-    technicalMechanism:
-      "Halaman phishing meniru form OAuth login dan langsung mengirimkan string username serta password ke webhook Telegram atau database penipu. Akun korban lalu dijual di forum gelap atau digunakan untuk mengirimkan spam ke kontak korban.",
-    realCasesIndonesia:
-      "Laporan literasi keamanan siber Komdigi mengenai maraknya pencurian akun gamer pelajar melalui turnamen fiktif dan web klaim skin gratis.",
-    emergencyActionSteps: [
-      "Segera buka halaman pemulihan akun resmi (accounts.google.com atau facebook.com/hacked) untuk ganti kata sandi.",
-      "Periksa sesi perangkat yang aktif dan pilih 'Keluar dari semua perangkat'.",
-      "Aktifkan Google Authenticator / Two-Factor Authentication (2FA) berbasis aplikasi, hindari 2FA via SMS biasa."
-    ],
-    legalClauses:
-      "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access) dan Pasal 35 UU ITE (Manipulasi Dokumen Otentik).",
-    officialSourceCitation:
-      "Direktorat Tata Kelola Aplikasi Informatika Komdigi & BSSN.",
-    workbenchPresetId: "phishing-pajak"
   }
 ];
 

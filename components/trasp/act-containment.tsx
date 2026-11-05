@@ -339,12 +339,12 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </Button>
           </div>
 
-          {/* Grid Katalog Kasus (6 Cards) - Clean & Scannable */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* Grid Katalog Kasus - Clean, Scannable & Neutral */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {COMPENDIUM_CASES.map((item) => {
               const meta = CASE_META[item.id] || {
                 icon: Shield,
-                tags: ["Forensik Siber", "UU ITE"],
+                tags: [],
               };
               const IconComp = meta.icon;
 
@@ -352,57 +352,34 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 <div
                   key={item.id}
                   onClick={() => handleOpenDetail(item.id)}
-                  className="group relative border border-border bg-card hover:border-primary/60 transition-all duration-200 p-5 rounded-lg flex flex-col justify-between cursor-pointer hover:shadow-xs space-y-4"
+                  className="group relative border border-border/80 bg-card hover:border-foreground/40 transition-all duration-200 p-4 sm:p-5 rounded-lg flex flex-col justify-between cursor-pointer hover:shadow-xs space-y-3"
                 >
-                  <div className="space-y-3">
-                    {/* Top Row: Case Code (#01) & Severity Badge */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary group-hover:scale-105 transition-transform">
-                          <IconComp className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="text-xs font-mono font-bold text-muted-foreground group-hover:text-primary transition-colors">
-                          #{String(item.number).padStart(2, "0")}
-                        </span>
+                  <div className="space-y-2.5">
+                    {/* Top Row: Case Code (#01) & Neutral Badge */}
+                    <div className="flex items-center justify-between pb-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <IconComp className="w-3.5 h-3.5" />
+                        <span className="text-xs font-mono font-medium">#{String(item.number).padStart(2, "0")}</span>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] font-mono px-2 py-0.5 ${
-                          item.riskLevel === "CRITICAL"
-                            ? "border-rose-500/30 text-rose-500 bg-rose-500/10"
-                            : "border-amber-500/30 text-amber-500 bg-amber-500/10"
-                        }`}
-                      >
-                        {item.riskLevel}
-                      </Badge>
+                      <span className="text-[10px] font-mono text-muted-foreground/80 px-2 py-0.5 rounded border border-border/60 bg-muted/20">
+                        {item.riskLevel === "CRITICAL" ? "Bahaya Tinggi" : "Bahaya Sedang"}
+                      </span>
                     </div>
 
-                    {/* Case Title (Max 1-2 lines, bold) */}
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                    {/* Case Title (Max 1-2 lines, clean & bold) */}
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground group-hover:underline transition-all line-clamp-2 leading-snug">
                       {item.title}
                     </h3>
 
-                    {/* Case Modus Description (Max 1 ringkas sentence / line-clamp-2) */}
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                    {/* Case Modus Description (1 clean sentence) */}
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                       {item.modusOperandi}
                     </p>
-
-                    {/* Tags: Max 1-2 tags */}
-                    <div className="flex flex-wrap gap-1.5 pt-0.5">
-                      {meta.tags.slice(0, 2).map((tag, tIdx) => (
-                        <span
-                          key={tIdx}
-                          className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted/60 text-muted-foreground border border-border/50"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
                   </div>
 
                   {/* Subtle Action Link */}
-                  <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
-                    <span className="font-medium">Lihat Mitigasi</span>
+                  <div className="pt-2 border-t border-border/40 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-foreground transition-colors">
+                    <span className="font-medium">Lihat Panduan</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -412,7 +389,6 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
         </div>
       )}
 
-      {/* ========================================================= */}
       {/* VIEW 2: DETAIL KHUSUS MITIGASI & INFORMASI KASUS           */}
       {/* ========================================================= */}
       {currentView === "detail" && (
@@ -443,17 +419,17 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </Button>
           </div>
 
-          {/* Continuous Investigative Document Sheet */}
-          <div className="bg-card border border-border p-5 sm:p-8 space-y-8 rounded-lg shadow-xs">
+          {/* Continuous Investigative Document Sheet (Editorial Max-w-3xl Centered Layout) */}
+          <div className="bg-card border border-border p-5 sm:p-8 space-y-8 rounded-lg shadow-xs max-w-3xl mx-auto">
 
             {/* ========================================================= */}
-            {/* 1. HEADER DOKUMEN & METADATA                              */}
+            {/* 1. HEADER DOKUMEN & SUB-HEADER METADATA                   */}
             {/* ========================================================= */}
-            <header className="space-y-4 pb-6 border-b border-border">
+            <header className="space-y-3 pb-6 border-b border-border">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                    LAPORAN INVESTIGASI FORENSIK #{String(activeCase.number).padStart(2, "0")}
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+                    KASUS #{String(activeCase.number).padStart(2, "0")}
                   </span>
                   <span className="text-xs font-mono text-muted-foreground">
                     {activeCase.category}
@@ -464,109 +440,69 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 </h1>
               </div>
 
-              {/* Baris Metadata Ringkas */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
-                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
-                    Tingkat Risiko
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] font-mono px-2 py-0.5 font-bold ${
-                        activeCase.riskLevel === "CRITICAL"
-                          ? "border-rose-500/40 text-rose-500 bg-rose-500/10"
-                          : "border-amber-500/40 text-amber-500 bg-amber-500/10"
-                      }`}
-                    >
-                      {activeCase.riskLevel} ({activeCase.dangerScore}/100)
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
-                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
-                    Vektor Serangan
-                  </span>
-                  <span className="text-xs font-mono font-bold text-foreground line-clamp-1">
-                    {activeCase.id === "apk-sniffer"
-                      ? "Accessibility & SMS Dropper"
-                      : activeCase.id === "authority-impersonation"
-                      ? "Domain Spoofing & Phishing"
-                      : activeCase.id === "task-scam"
-                      ? "Multi-Tier Ponzi Deposit"
-                      : activeCase.id === "sms-blast-phishing"
-                      ? "SIM Card Box & SMS Masking"
-                      : activeCase.id === "account-takeover-quishing"
-                      ? "QR Tampering & Begal OTP"
-                      : "Voice Cloning Generatif AI"}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
-                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
-                    Respons Kritis
-                  </span>
-                  <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    ≤ 15 Menit Pertama
-                  </span>
-                </div>
-
-                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
-                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
-                    Rujukan Otoritatif
-                  </span>
-                  <span className="text-xs font-mono text-muted-foreground line-clamp-1" title={activeCase.officialSourceCitation}>
-                    {activeCase.officialSourceCitation}
-                  </span>
-                </div>
+              {/* Sub-header minimalis biasa di bawah judul utama */}
+              <div className="text-xs text-muted-foreground font-mono flex items-center gap-2 flex-wrap pt-1 leading-relaxed">
+                <span>Status: <strong className="text-foreground">{activeCase.riskLevel === "CRITICAL" ? "Bahaya Tinggi" : "Bahaya Sedang"}</strong></span>
+                <span>|</span>
+                <span>Kategori: <strong className="text-foreground">{activeCase.category}</strong></span>
+                <span>|</span>
+                <span>Rujukan: <strong className="text-foreground">{activeCase.officialSourceCitation}</strong></span>
               </div>
             </header>
 
             {/* ========================================================= */}
-            {/* 2. BEDAH KASUS & ANATOMI MODUS OPERANDI (NARATIF)         */}
+            {/* 2. BABAK 1: APA KASUSNYA? (ANATOMI & BAHAYA UTAMA)        */}
             {/* ========================================================= */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
-                <span className="text-xs font-mono font-bold text-primary">BAGIAN I.</span>
+                <span className="text-xs font-mono font-bold text-muted-foreground">BABAK I.</span>
                 <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
-                  Bedah Kasus &amp; Anatomi Modus Operandi
+                  Apa Kasusnya? (Modus Operandi &amp; Bahaya Utama)
                 </h2>
               </div>
 
-              {/* Narasi Esai Latar Belakang */}
-              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+              <div className="space-y-4 text-sm sm:text-base leading-relaxed text-foreground/90 font-sans">
                 <p>
-                  Tindak kejahatan digital dengan modus <strong>{activeCase.shortName}</strong> merefleksikan pergeseran taktik sindikat siber dari serangan acak menuju penargetan presisi yang mengeksploitasi celah kognitif manusia (*human cognitive vulnerabilities*). Alih-alih meretas server perbankan dengan sistem pertahanan berlapis, penyerang memanfaatkan korban sebagai jembatan pembobol otorisasi melalui serangkaian manipulasi psikologis terstruktur.
+                  Kejahatan digital dengan modus <strong>{activeCase.title}</strong> merupakan taktik penipuan di mana pelaku mendekati korban melalui pesan sehari-hari yang tampak wajar. Pelaku biasanya menyamar sebagai kurir paket ekspedisi, teman yang mengirim undangan pernikahan, petugas tilang kepolisian, kantor pajak, atau pihak perusahaan yang menawarkan pekerjaan mudah.
                 </p>
 
                 <p>
-                  {activeCase.modusOperandi} Serangan umumnya diawali melalui kanal perpesanan instan personal dengan membangun legitimasi palsu. Sindikat kerap menyamar sebagai representasi institusi formal atau entitas berwenang—mulai dari kurir pengantar paket logistik, panitia undangan pernikahan digital, notifikasi tilang elektronik ETLE Korlantas Polri, petugas Ditjen Pajak (Coretax), hingga pengelola tawaran kerja paruh waktu. Pelaku menyisipkan tenggat waktu semu yang sangat ketat (1 hingga 2 jam) guna menekan target agar segera mengambil tindakan tanpa sempat memverifikasi keabsahan pesan.
+                  {activeCase.modusOperandi} Pelaku sengaja menciptakan suasana panik atau mendesak—misalnya dengan batas waktu 1 hingga 2 jam—agar korban tidak sempat berpikir jernih atau bertanya kepada orang lain.
                 </p>
 
                 <p>
-                  Secara teknis, {activeCase.technicalMechanism} Dalam skema berkas aplikasi, manipulasi ekstensi ganda diterapkan untuk mengaburkan muatan trojan di hadapan pengguna awam. Begitu izin sistem operasi yang diminta (seperti izin layanan aksesibilitas atau pembacaan SMS masuk) diberikan oleh korban, malware segera menjalankan fungsi mata-mata (*surveillance*): mencegat kode *One-Time Password* (OTP) m-Banking, menyadap notifikasi transaksi dua arah, dan mentransmisikan kredensial akun secara terenkripsi ke server *Command & Control* (C2) penipu.
+                  Secara sederhana, {activeCase.technicalMechanism} Korban yang tidak menaruh curiga sering kali baru menyadari bahaya ini setelah saldo tabungan mereka berkurang atau akun percakapan mereka tidak bisa lagi dibuka.
                 </p>
               </div>
 
-              {/* Editorial Callout: Studi Kasus Riil di Indonesia */}
-              <div className="p-4 bg-muted/30 border-l-3 border-l-primary rounded-r space-y-1.5 my-3">
-                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-primary uppercase">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Studi Kasus &amp; Bukti Empiris di Indonesia
+              {/* Catatan Studi Kasus Nyata di Indonesia */}
+              <div className="p-4 bg-muted/30 border-l-2 border-l-foreground/30 rounded-r space-y-1 my-3">
+                <div className="text-xs font-mono font-bold text-foreground uppercase">
+                  Contoh Kasus Nyata di Indonesia
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {activeCase.realCasesIndonesia} Kasus-kasus tersebut membuktikan bahwa kerentanan fatal kerap terjadi pada fase interaksi awal, di mana korban tidak menyadari bahwa berkas atau tautan yang diakses telah mengambil alih sesi otentikasi gawai.
+                  {activeCase.realCasesIndonesia}
                 </p>
               </div>
 
-              {/* Analisis Bias Psikologis & Anomali Serangan */}
+              {/* Tanda-Tanda Utama & Jebakan Pikiran */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                <div className="p-3.5 bg-muted/20 border border-border/80 rounded space-y-2">
+                <div className="p-4 bg-muted/20 border border-border rounded space-y-2">
                   <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                    Celah Eksploitasi Psikologis Target
+                    <AlertTriangle className="w-3.5 h-3.5 text-muted-foreground" />
+                    Ciri-Ciri Utama Pesan Penipuan
+                  </span>
+                  <ul className="space-y-1.5 text-xs text-muted-foreground list-disc list-inside leading-relaxed">
+                    {activeCase.characteristics.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="p-4 bg-muted/20 border border-border rounded space-y-2">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                    Jebakan Pikiran yang Dimanfaatkan Pelaku
                   </span>
                   <div className="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
                     {activeCase.psychologicalBiases.map((b, i) => (
@@ -576,38 +512,26 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                     ))}
                   </div>
                 </div>
-
-                <div className="p-3.5 bg-muted/20 border border-border/80 rounded space-y-2">
-                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-emerald-500" />
-                    Indikator Teknis Anomali Serangan
-                  </span>
-                  <ul className="space-y-1 text-xs text-muted-foreground list-disc list-inside leading-relaxed">
-                    {activeCase.characteristics.map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
-                </div>
               </div>
             </section>
 
             {/* ========================================================= */}
-            {/* 3. PROSEDUR TANGGAP DARURAT & ESKALASI LAPORAN            */}
+            {/* 3. BABAK 2: APA YANG HARUS SEGERA DILAKUKAN?              */}
             {/* ========================================================= */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
-                <span className="text-xs font-mono font-bold text-rose-500">BAGIAN II.</span>
+                <span className="text-xs font-mono font-bold text-muted-foreground">BABAK II.</span>
                 <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
-                  Prosedur Tanggap Darurat &amp; Eskalasi Laporan
+                  Apa yang Harus Segera Dilakukan? (Tindakan Darurat Praktis)
                 </h2>
               </div>
 
-              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+              <div className="space-y-4 text-sm sm:text-base leading-relaxed text-foreground/90 font-sans">
                 <p>
-                  Kecepatan eksekusi pada rentang waktu <strong>Golden Time (15 hingga 30 menit pertama)</strong> pasca-insiden merupakan penentu mutlak terselamatkannya saldo dan identitas perbankan korban. Sebelum penipu menyelesaikan proses *layering* dana ke rekening penampung (*mule accounts*), korban atau pendamping wajib menjalankan mitigasi teknis dan alur eskalasi pelaporan secara berkesinambungan.
+                  Jika Anda atau orang terdekat telanjur mengklik tautan atau menginstal file yang mencurigakan, jangan panik. Lakukan langkah-langkah darurat penyelamatan berikut secara berurutan dalam waktu 15 hingga 30 menit pertama:
                 </p>
 
-                {/* Panduan Runtut Langkah Mitigasi */}
+                {/* Checklist Langkah Darurat Interaktif */}
                 <div className="space-y-2.5 font-sans pt-1">
                   {activeCase.emergencyActionSteps.map((step, idx) => {
                     const isChecked = !!completedSteps[step];
@@ -615,16 +539,16 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                       <div
                         key={idx}
                         onClick={() => toggleStep(step)}
-                        className={`p-3 rounded border transition-all cursor-pointer flex items-start gap-3 ${
+                        className={`p-3.5 rounded border transition-all cursor-pointer flex items-start gap-3 ${
                           isChecked
-                            ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
-                            : "bg-muted/20 border-border hover:border-muted-foreground/30"
+                            ? "bg-muted/50 border-border text-foreground"
+                            : "bg-muted/20 border-border hover:border-foreground/30"
                         }`}
                       >
                         <div className="shrink-0 mt-0.5">
                           <div
                             className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
-                              isChecked ? "bg-emerald-600 border-emerald-600 text-white" : "border-border bg-background"
+                              isChecked ? "bg-foreground text-background border-foreground" : "border-border bg-background"
                             }`}
                           >
                             {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -634,12 +558,12 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                         <div className="text-xs leading-relaxed">
                           <strong className="text-foreground block font-mono text-[11px] mb-0.5">
                             {idx === 0
-                              ? "Langkah 1: Isolasi Fisik & Pemutusan Koneksi (Air-Gap)"
+                              ? "Langkah 1: Matikan Internet Ponsel (Mode Pesawat)"
                               : idx === 1
-                              ? "Langkah 2: Pencabutan Hak Akses & Penonaktifan Layanan Ilegal"
+                              ? "Langkah 2: Hubungi Bank untuk Blokir Rekening"
                               : idx === 2
-                              ? "Langkah 3: Eliminasi Malware & Pemulihan Sistem Operasi"
-                              : "Langkah 4: Pergantian Kredensial & Remediasi Akun Keuangan"}
+                              ? "Langkah 3: Cabut Izin Khusus & Hapus Aplikasi"
+                              : "Langkah 4: Ganti Sandi Akun & Buat Laporan Resmi"}
                           </strong>
                           <span className={isChecked ? "line-through text-muted-foreground" : "text-foreground/90"}>
                             {step}
@@ -651,15 +575,15 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 </div>
               </div>
 
-              {/* Callout Box Editorial: Kontak Darurat Call Center Perbankan */}
-              <div className="p-4 bg-muted/40 border border-border rounded space-y-3">
+              {/* Call Center Darurat Bank */}
+              <div className="p-4 bg-muted/30 border border-border rounded space-y-3">
                 <div className="flex items-center justify-between flex-wrap gap-1">
-                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5 uppercase">
-                    <PhoneCall className="w-3.5 h-3.5 text-emerald-500" />
-                    Panggilan Darurat Pemblokiran Rekening Bank &amp; OJK (24 Jam)
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
+                    <PhoneCall className="w-3.5 h-3.5 text-muted-foreground" />
+                    Nomor Telepon Darurat Bank Resmi (24 Jam)
                   </span>
-                  <span className="text-[10px] font-mono text-rose-600 dark:text-rose-400 font-bold">
-                    Hubungi Dalam 15 Menit Pertama
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    Langsung Telepon untuk Blokir Saldo
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -670,56 +594,56 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                       className="p-2.5 border border-border bg-background hover:bg-muted/60 transition-colors rounded flex flex-col justify-between"
                     >
                       <span className="text-xs font-bold text-foreground">{h.name}</span>
-                      <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">{h.number}</span>
+                      <span className="text-xs font-mono font-bold text-foreground/80 mt-1">{h.number}</span>
                     </a>
                   ))}
                 </div>
               </div>
 
-              {/* Alur Eskalasi Resmi ke Lembaga Negara */}
+              {/* Alur Laporan Resmi ke Pemerintah */}
               <div className="space-y-2.5">
                 <h4 className="text-xs font-mono font-bold text-foreground uppercase tracking-wider">
-                  Alur Eskalasi Pelaporan ke Institusi Otoritas Resmi:
+                  Alur Pelaporan Resmi ke Lembaga Negara:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <a
                     href="https://iasc.ojk.go.id"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3.5 bg-background border border-border hover:border-primary rounded-lg flex items-center justify-between transition-colors group"
+                    className="p-3.5 bg-background border border-border hover:border-foreground/40 rounded-lg flex items-center justify-between transition-colors group"
                   >
                     <div>
-                      <div className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
+                      <div className="font-bold text-xs text-foreground group-hover:underline">
                         Indonesia Anti-Scam Centre (IASC - OJK 157)
                       </div>
                       <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                        Pusat penanganan penipuan transaksi keuangan terintegrasi OJK dan perbankan nasional untuk percepatan pemblokiran rekening penampung.
+                        Layanan resmi OJK bersama bank nasional untuk mempercepat pemblokiran rekening bank milik penipu.
                       </p>
-                      <span className="text-[10px] font-mono text-primary font-bold mt-1 inline-block">
-                        iasc.ojk.go.id / Hotline 157
+                      <span className="text-[10px] font-mono text-muted-foreground font-bold mt-1 inline-block">
+                        iasc.ojk.go.id / Telepon 157
                       </span>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
+                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground shrink-0 ml-2" />
                   </a>
 
                   <a
                     href="https://patrolisiber.id"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3.5 bg-background border border-border hover:border-primary rounded-lg flex items-center justify-between transition-colors group"
+                    className="p-3.5 bg-background border border-border hover:border-foreground/40 rounded-lg flex items-center justify-between transition-colors group"
                   >
                     <div>
-                      <div className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                        Patroli Siber Polri (Dittipidsiber Bareskrim)
+                      <div className="font-bold text-xs text-foreground group-hover:underline">
+                        Patroli Siber Polri (Bareskrim Polri)
                       </div>
                       <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                        Penerbitan Surat Tanda Terima Laporan Polisi (STTLP) elektronik secara sah guna penyidikan pro-justitia dan pelacakan digital forensik.
+                        Portal resmi Kepolisian RI untuk membuat Laporan Polisi elektronik atas tindak pidana siber.
                       </p>
-                      <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold mt-1 inline-block">
+                      <span className="text-[10px] font-mono text-muted-foreground font-bold mt-1 inline-block">
                         patrolisiber.id
                       </span>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
+                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground shrink-0 ml-2" />
                   </a>
                 </div>
               </div>
@@ -728,44 +652,44 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
               <div className="pt-3 border-t border-border/60 grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div className="lg:col-span-7 space-y-2.5">
                   <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-blue-500" />
-                    Generator Draf Laporan Resmi Bank &amp; Kepolisian
+                    <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                    Generator Draf Laporan Resmi Bank &amp; Polisi
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <Input
                       className="h-8 text-xs font-medium"
                       value={reportData.incidentType}
                       onChange={(e) => setReportData({ ...reportData, incidentType: e.target.value })}
-                      placeholder="Jenis Insiden"
+                      placeholder="Jenis Kejadian"
                     />
                     <Input
                       className="h-8 text-xs font-mono"
                       value={reportData.scammerContact}
                       onChange={(e) => setReportData({ ...reportData, scammerContact: e.target.value })}
-                      placeholder="Kontak Penipu"
+                      placeholder="Nomor Telepon Penipu"
                     />
                   </div>
                   <Input
                     className="h-8 text-xs font-mono"
                     value={reportData.scammerBankDetails}
                     onChange={(e) => setReportData({ ...reportData, scammerBankDetails: e.target.value })}
-                    placeholder="Rekening Penampung Pelaku"
+                    placeholder="Nomor Rekening Bank Penipu"
                   />
                   <Textarea
                     rows={2}
                     className="text-xs font-mono resize-none leading-relaxed"
                     value={reportData.chronology}
                     onChange={(e) => setReportData({ ...reportData, chronology: e.target.value })}
-                    placeholder="Kronologi Singkat Kejadian"
+                    placeholder="Ceritakan singkat kejadian yang dialami"
                   />
                   <Button
                     onClick={handleCopyReport}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-bold text-xs h-8 cursor-pointer"
+                    className="w-full bg-foreground text-background hover:bg-foreground/90 font-mono font-bold text-xs h-8 cursor-pointer"
                   >
                     {copiedReport ? (
                       <>
                         <Check className="w-3.5 h-3.5 mr-1.5" />
-                        Draf Laporan Tersalin ke Clipboard!
+                        Draf Laporan Tersalin!
                       </>
                     ) : (
                       <>
@@ -779,7 +703,7 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 <div className="lg:col-span-5 space-y-2.5">
                   <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
                     <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
-                    Draf Edukasi Peringatan Grup / Keluarga
+                    Pesan Peringatan untuk Keluarga &amp; Teman
                   </div>
                   <div className="p-2.5 bg-muted/40 border border-border rounded text-[11px] font-mono leading-relaxed whitespace-pre-line text-foreground/90 max-h-36 overflow-y-auto">
                     {vaccineText}
@@ -798,7 +722,7 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5 mr-1.5" />
-                        Salin Pesan Edukasi Grup
+                        Salin Pesan Peringatan
                       </>
                     )}
                   </Button>
@@ -807,64 +731,73 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </section>
 
             {/* ========================================================= */}
-            {/* 4. TINJAUAN YURIDIS & LANDASAN HUKUM                      */}
+            {/* 4. BABAK 3: ATURAN HUKUM RESMI (DASAR HUKUM NEGARA)       */}
             {/* ========================================================= */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
-                <span className="text-xs font-mono font-bold text-amber-500">BAGIAN III.</span>
+                <span className="text-xs font-mono font-bold text-muted-foreground">BABAK III.</span>
                 <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
-                  Tinjauan Yuridis &amp; Landasan Hukum (Legal Framework)
+                  Aturan Hukum Resmi &amp; Perlindungan Korban
                 </h2>
               </div>
 
-              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+              <div className="space-y-4 text-sm sm:text-base leading-relaxed text-foreground/90 font-sans">
                 <p>
-                  Dalam kerangka hukum positif Indonesia, tindak pidana siber bermodus <strong>{activeCase.shortName}</strong> memenuhi unsur perbuatan melawan hukum yang diancam pidana secara kumulatif maupun alternatif (*concursus realis*). Pelaku tidak semata-mata dapat dijerat dengan pasal penipuan konvensional, melainkan tunduk pada regulasi khusus mengenai transaksi elektronik dan perlindungan data pribadi.
+                  Perlu dipahami bahwa perbuatan penipuan dan pencurian data pribadi ini merupakan <strong>tindak pidana kejahatan siber yang melanggar hukum resmi negara Republik Indonesia</strong>. Pelaku tidak dapat berlindung di balik anonimitas internet karena jejak digital transaksi dan nomor ponsel dapat dilacak oleh penegak hukum.
                 </p>
 
-                {/* Callout Rujukan Regulasi Formal */}
-                <div className="p-4 bg-muted/30 border border-border rounded-lg space-y-2.5 font-sans">
-                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5 uppercase">
-                    <Scale className="w-3.5 h-3.5 text-amber-500" />
-                    Konstruksi Pasal &amp; Ketentuan Hukum Terkait
+                {/* Callout Rujukan Pasal */}
+                <div className="p-4 bg-muted/30 border border-border rounded space-y-2 font-sans">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
+                    <Scale className="w-3.5 h-3.5 text-muted-foreground" />
+                    Pasal-Pasal Hukum yang Dilanggar Pelaku
                   </span>
-                  <div className="p-3 bg-background border border-border rounded text-xs leading-relaxed space-y-2">
+                  <div className="p-3 bg-background border border-border rounded text-xs leading-relaxed space-y-1.5">
                     <p className="font-semibold text-foreground">
                       {activeCase.legalClauses}
                     </p>
                     <p className="text-muted-foreground text-[11px]">
-                      Rujukan Dokumen Otoritatif: <em>{activeCase.officialSourceCitation}</em>
+                      Rujukan Resmi: <em>{activeCase.officialSourceCitation}</em>
                     </p>
                   </div>
                 </div>
 
-                <p>
-                  Berdasarkan instrumen <strong>UU ITE No. 1 Tahun 2024 (Perubahan Kedua atas UU No. 11/2008)</strong>:
-                </p>
-                <ul className="list-disc list-inside space-y-1.5 pl-2 font-sans text-xs text-foreground/90 leading-relaxed">
-                  <li>
-                    <strong>Pasal 30 jo. Pasal 46 UU ITE:</strong> Mengatur perbuatan pengaksesan sistem elektronik dan gawai tanpa hak (*Illegal Access*), diancam pidana penjara paling lama 8 tahun dan/atau denda paling banyak Rp800 juta.
-                  </li>
-                  <li>
-                    <strong>Pasal 32 jo. Pasal 48 UU ITE:</strong> Menjerat intersepsi data, penyadapan pesan SMS OTP, dan pemindahan dokumen elektronik tanpa izin, dengan sanksi penjara hingga 8 tahun dan denda hingga Rp2 miliar.
-                  </li>
-                  <li>
-                    <strong>Pasal 35 jo. Pasal 51 ayat (1) UU ITE:</strong> Dikenakan pada pembuatan dokumen atau situs elektronik manipulatif (seperti domain tiruan Coretax atau situs phishing bank), diancam pidana penjara hingga 12 tahun dan denda maksimal Rp12 miliar.
-                  </li>
-                  <li>
-                    <strong>Pasal 378 KUHP &amp; UU Perlindungan Data Pribadi (UU No. 27/2022):</strong> Melindungi hak subjek data dari pemanfaatan identitas secara melawan hukum serta mempidanakan penipuan bermotif keuntungan finansial melawan hukum.
-                  </li>
-                </ul>
+                <div className="space-y-2.5 text-xs text-muted-foreground leading-relaxed">
+                  <p className="font-semibold text-foreground text-xs">
+                    Poin Utama Berdasarkan Undang-Undang Informasi dan Transaksi Elektronik (UU ITE No. 1 Tahun 2024):
+                  </p>
+                  <ul className="list-disc list-inside space-y-1.5 pl-2">
+                    <li>
+                      <strong>Pencurian Akses Ponsel (Pasal 30 jo. Pasal 46):</strong> Membuka atau mengendalikan ponsel orang lain tanpa izin diancam pidana penjara paling lama 8 tahun dan denda hingga Rp800 juta.
+                    </li>
+                    <li>
+                      <strong>Penyadapan Pesan Rahasia (Pasal 32 jo. Pasal 48):</strong> Mengambil kode SMS OTP atau data pribadi secara diam-diam diancam pidana penjara hingga 8 tahun dan denda hingga Rp2 miliar.
+                    </li>
+                    <li>
+                      <strong>Pembuatan Website atau Surat Palsu (Pasal 35 jo. Pasal 51):</strong> Memalsukan identitas bank atau lembaga negara diancam pidana penjara hingga 12 tahun dan denda maksimal Rp12 miliar.
+                    </li>
+                    <li>
+                      <strong>Penipuan Finansial (Pasal 378 KUHP):</strong> Mengelabui orang demi mendapatkan uang diancam hukuman penjara hingga 4 tahun.
+                    </li>
+                  </ul>
+                </div>
 
-                <p>
-                  <strong>Hak Perlindungan Hukum Bagi Korban:</strong> Korban penipuan siber memiliki hak mutlak untuk mengajukan permohonan pemblokiran rekening penampung kepada bank terkait berdasarkan Peraturan OJK (POJK), memperoleh ganti rugi atau restitusi aset melalui mekanisme pengadilan tindak pidana siber, serta mendapatkan pemulihan nama baik apabila data identitas kependudukan (NIK) disalahgunakan oleh sindikat untuk pembukaan rekening nominee.
-                </p>
+                <div className="p-3.5 bg-muted/20 border border-border rounded space-y-1.5 text-xs">
+                  <strong className="text-foreground block font-mono text-[11px]">
+                    Hak Perlindungan Hukum Bagi Korban:
+                  </strong>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Sebagai korban, Anda memiliki hak resmi untuk meminta bank segera membekukan rekening penampung milik penipu melalui laporan ke OJK (IASC 157). Anda juga berhak mendapatkan perlindungan data kependudukan (NIK) agar tidak disalahgunakan untuk transaksi pinjaman daring fiktif.
+                  </p>
+                </div>
               </div>
             </section>
-
           </div>
         </article>
-      )}      {/* ========================================================= */}
+      )}
+
+
+      {/* ========================================================= */}
       {/* FLOATING CHATBOT WIDGET (POJOK KANAN BAWAH)                */}
       {/* ========================================================= */}
       {!isChatOpen ? (
