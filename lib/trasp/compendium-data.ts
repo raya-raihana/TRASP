@@ -55,13 +55,13 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
     realCasesIndonesia:
       "Banyak terjadi pada modus kurir J&T Express tiruan (LIHAT_FOTO_PAKET.apk), surat undangan pernikahan berformat aplikasi, dan surat tilang elektronik kepolisian palsu.",
     emergencyActionSteps: [
-      "Nyalakan Mode Pesawat (Airplane Mode) seketika untuk memutus seluruh koneksi internet ponsel.",
-      "Segera hubungi Call Center resmi bank Anda untuk memblokir sementara rekening dan mobile banking.",
-      "Buka Pengaturan ponsel > Aksesibilitas, cabut izin aplikasi yang mencurigakan, lalu hapus file aplikasinya.",
-      "Ganti kata sandi email dan PIN perbankan menggunakan perangkat lain yang aman."
+      "Putus Koneksi Ponsel — Segera nyalakan Mode Pesawat (Airplane Mode) dan matikan Wi-Fi agar ponsel tidak bisa mengirim data rahasia ke pelaku.",
+      "Hapus Aplikasi Berbahaya — Masuk ke Pengaturan Ponsel > Aplikasi, lalu copot (uninstall) aplikasi yang mencurigakan tersebut.",
+      "Amankan Akun Bank & Sandi — Gunakan HP lain yang aman untuk segera mengubah PIN mobile banking dan kata sandi email Anda.",
+      "Hubungi Bank — Telepon pusat bantuan resmi bank Anda untuk meminta pemblokiran rekening sementara."
     ],
     legalClauses:
-      "Melanggar Pasal 30 jo. Pasal 46 UU ITE (Pengaksesan Sistem Tanpa Hak) dan Pasal 32 UU ITE (Penyadapan Data), dengan ancaman hukuman penjara hingga 8 tahun dan denda Rp800 juta.",
+      "Pelaku penipuan ini melanggar hukum pencurian data dan penipuan digital (UU ITE & KUHP) dengan ancaman hukuman penjara hingga 8 tahun serta denda ratusan juta rupiah. Korban berhak melapor ke polisi dan bank untuk memblokir rekening penerima uang curian.",
     officialSourceCitation:
       "Bareskrim Polri (Direktorat Tindak Pidana Siber) & CekFakta ANTARA.",
     workbenchPresetId: "apk-kurir"
@@ -359,67 +359,67 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
 export const EMERGENCY_PROTOCOLS = {
   goldenTime: "15–30 Menit Pertama Pasca Insiden",
   technical: {
-    title: "A. Protokol Tindakan Teknis Jika Terlanjur Mengklik / Menginstal File .APK",
+    title: "A. Protokol Tindakan Cepat Jika Terlanjur Mengklik / Memasang File .APK",
     steps: [
       {
         step: 1,
-        title: "Putus Koneksi Jaringan Seketika (Air-Gap)",
-        desc: "Segera aktifkan Mode Pesawat (Airplane Mode), matikan Wi-Fi, dan cabut kartu SIM ponsel. Hal ini memutus jalur transmisi data antara malware trojan dan server pengendali penipu (Command & Control)."
+        title: "Putus Koneksi Ponsel (Mode Pesawat)",
+        desc: "Segera nyalakan Mode Pesawat (Airplane Mode) dan matikan Wi-Fi agar ponsel tidak bisa mengirim data rahasia ke pelaku penipuan."
       },
       {
         step: 2,
-        title: "Cabut Izin Aksesibilitas Android",
-        desc: "Masuk ke menu Pengaturan (Settings) > Aksesibilitas (Accessibility) > Aplikasi Terinstal. Cari nama aplikasi mencurigakan dan segera nonaktifkan toggle izinnya agar malware tidak bisa membaca layar atau menekan tombol secara otomatis."
+        title: "Hapus Aplikasi Berbahaya",
+        desc: "Masuk ke Pengaturan Ponsel > Aplikasi, lalu copot (uninstall) aplikasi yang mencurigakan tersebut dari perangkat Anda."
       },
       {
         step: 3,
-        title: "Hapus Cache & Copot Pemasangan (Uninstall)",
-        desc: "Masuk ke Pengaturan > Manajemen Aplikasi, pilih aplikasi jahat, lakukan Hapus Data & Cache, lalu klik Uninstall. Jika aplikasi menyembunyikan ikonnya atau menolak dihapus, lakukan pencadangan data bersih lalu jalankan Reset ke Setelan Pabrik (Factory Reset)."
+        title: "Amankan Akun Bank & Sandi",
+        desc: "Gunakan HP lain yang aman untuk segera mengubah PIN mobile banking dan kata sandi email utama Anda."
       },
       {
         step: 4,
-        title: "Rotasi Kredensial Menyeluruh",
-        desc: "Melalui perangkat lain yang bersih dan aman, segera ganti kata sandi email utama, PIN/password Mobile Banking, dan kunci akun media sosial yang terhubung."
+        title: "Hubungi Bank untuk Blokir",
+        desc: "Telepon pusat bantuan resmi bank Anda untuk meminta pemblokiran rekening sementara sebelum saldo terkuras."
       }
     ]
   },
   financial: {
-    title: "B. Protokol Mitigasi Finansial Jika Terlanjur Transfer atau Menyerahkan Kode OTP",
+    title: "B. Tindakan Penyelamatan Jika Terlanjur Transfer Uang atau Memberi Kode Rahasia",
     steps: [
       {
         step: 1,
-        title: "Hubungi Call Center Resmi Bank Terkait (Menit 0–15)",
-        desc: "Laporkan transaksi penipuan ke hotline resmi bank nasabah untuk meminta penghentian sementara transaksi, pemblokiran rekening sendiri, dan penerbitan tiket aduan darurat."
+        title: "Telepon Call Center Bank Resmi",
+        desc: "Laporkan transaksi penipuan ke hotline resmi bank Anda untuk meminta penghentian sementara transaksi dan pembekuan rekening."
       },
       {
         step: 2,
-        title: "Lapor ke Indonesia Anti-Scam Centre (IASC - OJK)",
-        desc: "Segera akses portal iasc.ojk.go.id atau hubungi Kontak OJK 157 (WhatsApp: 081 157 157 157). IASC menghubungkan laporan korban secara langsung ke bank penampung untuk pemblokiran kilat rekening pelaku (mule account). Hingga Maret 2025, IASC telah memproses 78.041 rekening terlapor dan memblokir 33.857 rekening dengan dana terselamatkan Rp133,2 miliar."
+        title: "Lapor ke Indonesia Anti-Scam Centre (IASC - OJK 157)",
+        desc: "Kunjungi portal iasc.ojk.go.id atau hubungi Kontak OJK 157. OJK menghubungkan laporan korban secara langsung ke bank penerima untuk membekukan rekening penampung penipu."
       },
       {
         step: 3,
-        title: "Verifikasi & Cek Rekening Terduga",
-        desc: "Periksa status rekening pelaku melalui CekRekening.id milik Komdigi guna memperkuat bukti rekam jejak kriminal."
+        title: "Cek & Daftarkan Rekening di CekRekening.id",
+        desc: "Periksa dan daftarkan nomor rekening penipu melalui portal resmi CekRekening.id milik Kementerian Komdigi agar ditandai merah secara nasional."
       }
     ]
   },
   policeReport: {
-    title: "C. Prosedur Pembuatan Laporan Resmi ke Bareskrim Polri (Patroli Siber)",
+    title: "C. Prosedur Pembuatan Laporan Resmi ke Kepolisian (Patroli Siber)",
     steps: [
       {
         step: 1,
-        title: "Pengumpulan Bukti Digital Utuh",
-        desc: "Amankan tangkapan layar percakapan lengkap tanpa terpotong, rekaman panggilan/suara, nomor HP/WhatsApp pelaku, bukti mutasi transfer m-banking (memuat jam, tanggal, rekening asal, dan rekening tujuan), serta tautan/file APK yang diterima."
+        title: "Simpan Barang Bukti Lengkap",
+        desc: "Amankan tangkapan layar percakapan chat, nomor telepon penipu, bukti transfer bank, serta file atau tautan yang diterima."
       },
       {
         step: 2,
-        title: "Pengajuan Laporan Siber Daring",
-        desc: "Buat aduan secara daring di portal patrolisiber.id/submit-report/ dengan kronologi sistematis (Kapan, Siapa, Di mana, Bagaimana kejadiannya)."
+        title: "Buat Pengaduan Daring di patrolisiber.id",
+        desc: "Buat aduan secara daring di portal resmi Patroli Siber Bareskrim Polri (patrolisiber.id) dengan kronologi kejadian yang jelas."
       },
       {
         step: 3,
-        title: "Penerbitan STTLP di Kantor Polisi",
-        desc: "Bawa dokumen fisik dan berkas digital ke kantor kepolisian terdekat (Polres/Polda) untuk diterbitkan Surat Tanda Terima Laporan Polisi (STTLP). Surat ini merupakan syarat legal mutlak bagi pihak perbankan dalam membuka data transaksi atau memproses pengembalian sisa dana sitaan."
+        title: "Terbitkan Surat Laporan Resmi (STTLP)",
+        desc: "Bawa bukti ke kantor kepolisian terdekat untuk diterbitkan Surat Tanda Terima Laporan Polisi (STTLP) sebagai syarat legal pihak perbankan dalam memproses sisa dana sitaan."
       }
     ]
   }
@@ -427,53 +427,53 @@ export const EMERGENCY_PROTOCOLS = {
 
 export const JURIDICAL_ANALYSIS = {
   lexGenerali: {
-    article: "Pasal 378 KUHP (Kitab Undang-Undang Hukum Pidana)",
-    desc: "Mengatur tindak pidana penipuan konvensional menggunakan nama palsu, martabat palsu, tipu muslihat, atau rangkaian kebohongan dengan ancaman pidana penjara paling lama 4 (empat) tahun."
+    article: "Pasal 378 KUHP (Tindak Pidana Penipuan)",
+    desc: "Menjerat pelaku penipuan yang memakai nama palsu, tipu muslihat, atau rangkaian kebohongan untuk menguntungkan diri sendiri. Ancaman hukuman penjara paling lama 4 tahun."
   },
   lexSpecialis: {
-    article: "Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU No. 1 Tahun 2024 (Revisi Kedua UU ITE)",
-    desc: "Menjerat perbuatan sengaja dan tanpa hak menyebarkan informasi bohong / menyesatkan yang mengakibatkan kerugian materiil konsumen dalam transaksi elektronik. Ancaman pidana penjara maksimal 6 (enam) tahun dan/atau denda maksimal Rp1.000.000.000 (satu miliar rupiah)."
+    article: "Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU ITE No. 1/2024",
+    desc: "Menjerat perbuatan menyebarkan informasi bohong atau menyesatkan yang mengakibatkan kerugian finansial konsumen secara elektronik. Ancaman pidana penjara hingga 6 tahun dan denda hingga Rp1.000.000.000."
   },
   illegalAccess: {
-    article: "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access & Trojan Sideloading)",
-    desc: "Menjerat pelaku yang menyusupkan malware berkas .APK atau menembus sistem keamanan gawai/perbankan tanpa hak. Ancaman pidana penjara hingga 8 (delapan) tahun dan denda hingga Rp800.000.000."
+    article: "Pasal 30 jo. Pasal 46 UU ITE (Pembobolan & Akses Ilegal)",
+    desc: "Menjerat pelaku yang menyusupkan aplikasi berbahaya atau mengakses ponsel dan akun perbankan orang lain tanpa izin. Ancaman pidana penjara hingga 8 tahun dan denda hingga Rp800.000.000."
   },
   dataInterception: {
-    article: "Pasal 32 jo. Pasal 48 UU ITE (Penyadapan & Intersepsi SMS OTP)",
-    desc: "Menjerat aksi intersepsi atau penyadapan transmisi data elektronik secara diam-diam (seperti pembacaan SMS token perbankan melalui Accessibility Service Android). Ancaman pidana penjara hingga 10 (sepuluh) tahun dan denda hingga Rp3.000.000.000."
+    article: "Pasal 32 jo. Pasal 48 UU ITE (Penyadapan Kode OTP & Pesan Rahasia)",
+    desc: "Menjerat aksi penyadapan atau pengambilan transmisi data elektronik secara diam-diam (seperti kode SMS OTP). Ancaman pidana penjara hingga 8 tahun dan denda hingga Rp2.000.000.000."
   },
   dataForgery: {
-    article: "Pasal 35 jo. Pasal 51 ayat (1) UU ITE (Pemalsuan Dokumen & Phishing)",
-    desc: "Menjerat manipulasi, penciptaan, perubahan, atau perusakan informasi elektronik agar dianggap seolah-olah otentik (seperti portal DJP Coretax palsu, resi ekspedisi palsu, atau bukti transfer editan). Ancaman pidana penjara hingga 12 (dua belas) tahun dan denda hingga Rp12.000.000.000."
+    article: "Pasal 35 jo. Pasal 51 UU ITE (Pemalsuan Dokumen & Website)",
+    desc: "Menjerat pembuatan situs tiruan, dokumen palsu, atau bukti transfer palsu yang menyerupai instansi resmi. Ancaman pidana penjara hingga 12 tahun dan denda hingga Rp12.000.000.000."
   },
   moneyLaundering: {
-    article: "UU No. 8 Tahun 2010 tentang Tindak Pidana Pencucian Uang (TPPU)",
-    desc: "Menjerat pemegang dan sindikat penyedia 'Rekening Nominee / Mule Accounts' yang menampung serta mengaburkan aliran dana hasil kejahatan siber (layering). Ancaman pidana penjara hingga 20 (dua puluh) tahun dan denda hingga Rp10.000.000.000."
+    article: "UU No. 8 Tahun 2010 (Tindak Pidana Pencucian Uang / TPPU)",
+    desc: "Menjerat pemegang dan sindikat penyedia rekening bank yang digunakan untuk menampung atau memindahkan uang hasil penipuan siber. Ancaman pidana penjara hingga 20 tahun dan denda hingga Rp10.000.000.000."
   },
   bankingRegulation: {
-    article: "Peraturan OJK (POJK) No. 22 Tahun 2023 & Protokol Satgas PASTI",
-    desc: "Mewajibkan Penyelenggara Jasa Keuangan (Bank dan PJP) untuk melakukan Enhanced Due Diligence (EDD), pemblokiran transaksi kilat atas instruksi Indonesia Anti-Scam Centre (IASC), serta penelusuran aliran dana antar-bank secara terkoordinasi."
+    article: "Peraturan OJK No. 22 Tahun 2023 & Protokol IASC",
+    desc: "Mewajibkan pihak perbankan segera membekukan rekening penampung milik penipu atas instruksi Indonesia Anti-Scam Centre (IASC) demi menyelamatkan dana korban."
   },
   privacyLaw: {
     article: "UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP)",
-    desc: "Menjamin hak privasi data warga negara dan menjerat pelaku penyalahgunaan data kependudukan (NIK, nama ibu kandung, nomor rekening) secara ilegal dengan sanksi pidana hingga 5 tahun dan denda hingga Rp5.000.000.000."
+    desc: "Melindungi data kependudukan (KTP/NIK) dan rekening warga dari pencurian data dengan ancaman sanksi pidana hingga 5 tahun dan denda maksimal Rp5.000.000.000."
   },
   forensicChallenges: [
     {
-      title: "Jaringan Rekening Nominee (Mule Accounts Layering)",
-      desc: "Sindikat penipu memanfaatkan rekening bank lapis ketiga yang dibeli dari warga dengan harga murah (Rp500rb - Rp1jt), lalu memecah dana ke dompet digital dan aset kripto dalam waktu kurang dari 15 menit."
+      title: "Jaringan Rekening Penampung Kejahatan",
+      desc: "Sindikat penipu memindahkan uang curian ke berbagai rekening bank dan dompet digital dalam hitungan menit agar sulit dilacak sebelum ditarik tunai."
     },
     {
-      title: "Kompleksitas Bukti Digital & Anti-Forensik",
-      desc: "Pelaku memanfaatkan fitur Disappearing Messages WhatsApp, pemendek tautan bersarang (nested shortlinks), dan server Command & Control (C2) bulletproof yang berlokasi di luar yurisdiksi Indonesia."
+      title: "Pesan yang Dihapus Otomatis",
+      desc: "Pelaku memanfaatkan fitur hapus pesan otomatis di aplikasi chat untuk menghilangkan rekam jejak percakapan dengan korban."
     },
     {
-      title: "Eksploitasi Celah Aksesibilitas Android",
-      desc: "Malware APK dropper menyamarkan diri sebagai layanan pembantu disabilitas (Accessibility Services) sehingga memiliki izin tak terbatas untuk merekam ketikan layar, membaca SMS OTP, dan menekan tombol konfirmasi perbankan secara gaib."
+      title: "Penyalahgunaan Izin Khusus Ponsel",
+      desc: "Aplikasi palsu menyamarkan diri agar diberi izin membaca layar ponsel dan menyadap kode rahasia perbankan tanpa disadari pemilik ponsel."
     },
     {
-      title: "Kesenjangan Golden Time Korban",
-      desc: "Sebagian besar korban baru menyadari rekeningnya terkuras setelah 2-4 jam, melampaui jendela emas 15-30 menit di mana penundaan transaksi oleh IASC OJK memiliki peluang keberhasilan tertinggi (hingga 90%)."
+      title: "Waktu Tanggap Kritis (Golden Time)",
+      desc: "Kecepatan korban melapor ke bank dan OJK dalam 15–30 menit pertama sangat menentukan keberhasilan pemblokiran rekening sebelum dana berpindah."
     }
   ]
 };

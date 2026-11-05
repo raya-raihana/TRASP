@@ -63,7 +63,7 @@ ATURAN PENTING DETEKSI KONTEKSTUAL (INTENT & FORENSIC CONTEXT):
    - Sebutkan bias psikologis (Authority Bias, Urgency Bias, Sunk-Cost Fallacy, Greed Bait, Isolation Tactic).
    - Sebutkan ancaman teknis (Android Accessibility Trojan, Raw IP Address, Quishing QRIS, Form Phishing, Credential Harvester).
    - deepForensicReasoning: Uraian ilmiah membongkar niat terselubung dan trik psikologis pelaku.
-   - mitigationRecommendation: Langkah darurat Golden Time 15 Menit (Air-Gap, Call Center Bank, dan lapor ke iasc.ojk.go.id / patrolisiber.id).
+   - mitigationRecommendation: Langkah darurat Golden Time 15 Menit (Mode Pesawat / Airplane Mode, Call Center Bank, dan lapor ke iasc.ojk.go.id / patrolisiber.id).
 
 FORMAT OUTPUT WAJIB JSON PERSIS:
 {

@@ -554,7 +554,7 @@ export default function CompendiumPage() {
 
               <div className="p-4 border border-border bg-card space-y-2">
                 <Badge variant="outline" className="text-[10px] font-mono border-cyan-500/40 text-cyan-500">
-                  REKENING PENAMPUNG / MULE
+                  REKENING PENAMPUNG KEJAHATAN
                 </Badge>
                 <h4 className="text-sm font-bold text-foreground font-serif">
                   {JURIDICAL_ANALYSIS.moneyLaundering.article}

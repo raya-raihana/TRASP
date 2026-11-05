@@ -173,7 +173,7 @@ export function RecognizeEngine({
     biasExploited: ["Bias Urgensi Semu (Batas 2 Jam)", "Bias Otoritas Kurir Ekspedisi", "Kepanikan Paket Batal"],
     technicalThreats: ["Ekstensi APK Luar Toko Resmi", "IP Publik Mentah (Non-HTTPS)", "Penyadapan Izin Accessibility & SMS OTP"],
     deepForensicReasoning: "Pesan ini mengeksploitasi kepanikan batas waktu 2 jam agar korban tidak sempat verifikasi. Berkas .apk disamarkan sebagai foto resi untuk menyusupkan malware pencuri kode OTP m-Banking saat izin aksesibilitas diberikan.",
-    mitigationRecommendation: "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitas gawai.",
+    mitigationRecommendation: "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Airplane Mode) dan hapus aplikasi berbahaya tersebut.",
   });
 
   // Chatbot State
@@ -199,7 +199,7 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
       95,
       "HIGH",
       "Pesan ini mengeksploitasi kepanikan batas waktu 2 jam agar korban tidak sempat memverifikasi ke kurir asli. Berkas .apk disamarkan sebagai foto resi paket untuk menyusupkan malware pencuri kode OTP m-Banking saat izin aksesibilitas (Accessibility Services) diberikan pengguna.",
-      "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitas gawai.",
+      "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Airplane Mode) dan hapus aplikasi berbahaya tersebut.",
       [
         "Bias Urgensi Semu (Batas 2 Jam)",
         "Bias Otoritas Kurir Ekspedisi Resmi",

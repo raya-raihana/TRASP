@@ -101,7 +101,7 @@ function createFallbackAssistantResponse(userMessage: string) {
   let reply = "Halo! Saya Ras. Berdasarkan analisis pola digital deception, selalu waspadai berkas asing (.apk) dan tautan yang mendesak tindakan finansial atau kode OTP.";
 
   if (lower.includes("apk") || lower.includes("kurir") || lower.includes("resi") || lower.includes("undangan")) {
-    reply = "Berkas berekstensi .apk di luar toko aplikasi resmi umumnya trojan perbankan (Android Banking Trojan). Modus ini meminta izin Accessibility Service dan Read SMS untuk menyadap SMS OTP m-Banking. Jangan pernah di-install. Jika telanjur, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitasnya.";
+    reply = "Berkas berekstensi .apk di luar toko aplikasi resmi umumnya penipuan aplikasi ponsel (trojan perbankan). Modus ini meminta izin khusus untuk menyadap SMS OTP m-Banking. Jangan pernah di-install. Jika telanjur, segera aktifkan Mode Pesawat (Airplane Mode) dan hapus aplikasinya.";
   } else if (lower.includes("ojk") || lower.includes("iasc") || lower.includes("lapor") || lower.includes("polisi")) {
     reply = "Untuk penanganan darurat penipuan finansial, laporkan nomor rekening penipu dalam 15-30 menit pertama ke Indonesia Anti-Scam Centre (IASC) OJK via portal iasc.ojk.go.id atau kontak 157 untuk blokir kilat rekening penampung. Untuk jerat pidana UU ITE, laporkan ke patrolisiber.id Bareskrim Polri.";
   } else if (lower.includes("hukum") || lower.includes("pasal") || lower.includes("ite")) {
@@ -198,10 +198,10 @@ BASIS PENGETAHUAN RESMI OTORITAS (OJK, BARESKRIM, BSSN):
      * Pasal 32 jo. Pasal 48: Penyadapan / intersepsi transmisi SMS OTP m-Banking tanpa hak (Hingga 10 tahun / denda Rp3 Miliar).
      * Pasal 35 jo. Pasal 51 ayat (1): Manipulasi dokumen otentik elektronik / phising domain (Hingga 12 tahun / denda Rp12 Miliar).
    - KUHP: Pasal 378 (Penipuan konvensional, 4 tahun penjara).
-   - UU No. 8 Tahun 2010 (TPPU): Menjerat penyedia / penjual Rekening Nominee (Mule Account) yang menampung uang kejahatan (Hingga 20 tahun penjara).
+   - UU No. 8 Tahun 2010 (TPPU): Menjerat penyedia / penjual Rekening Penampung yang menampung uang kejahatan (Hingga 20 tahun penjara).
    - POJK No. 22/2023: Pelindungan Konsumen Sektor Jasa Keuangan.
 4. PROTOKOL FORENSIK TEKNIS (BSSN):
-   - Malware APK Sniffer: Memanfaatkan Android Accessibility Services (AccessibilityNodeInfo) & izin READ_SMS untuk mencuri token OTP. Tindakan: Segera aktifkan Mode Pesawat (Air-Gap) untuk memutus soket TCP malware ke Command & Control (C2), lalu cabut izin aksesibilitas.
+   - Malware APK Sniffer: Memanfaatkan izin khusus untuk mencuri token OTP. Tindakan: Segera aktifkan Mode Pesawat (Airplane Mode) untuk memutus koneksi malware ke server penipu, lalu hapus aplikasi.
    - Quishing (QRIS Phishing): Dynamic QR code tampering mengalihkan pembayaran ke merchant fiktif.
    - Task Scam: Skema penipuan komisi bertingkat (Advance-Fee Fraud) mengeksploitasi bias sunk-cost fallacy.
 
@@ -219,7 +219,7 @@ ATURAN KECERDASAN KONTEKSTUAL & PENGENALAN INTENT (WAJIB DIPATUHI):
 2. JIKA PENGGUNA MEMBAHAS / MENANYAKAN / MELAPORKAN KEJAHATAN SIBER ATAU KASUS PENIPUAN:
    (Contoh: pesan mencurigakan, file .apk, ancaman pemblokiran, loker paruh waktu like YouTube, tawaran investasi pacar online/pig butchering, begal OTP/WhatsApp, pinjol ilegal, sextortion):
    - Bedah kasusnya secara tajam dan ilmiah: jelaskan trik psikologisnya dan ancaman teknisnya.
-   - Jika pengguna panik atau sudah telanjur transfer/instal APK, prioritaskan instruksi darurat Golden Time 15 Menit pertama (Air-gap/Mode Pesawat, Call Center Bank, dan lapor ke iasc.ojk.go.id).
+   - Jika pengguna panik atau sudah telanjur transfer/instal APK, prioritaskan instruksi darurat Golden Time 15 Menit pertama (Mode Pesawat (Airplane Mode), Call Center Bank, dan lapor ke iasc.ojk.go.id).
    - Kutip pasal UU ITE No. 1/2024 dan alur Laporan Polisi di patrolisiber.id secara proporsional.
    - detectedVectors: [1-3 vektor analisis relevan]
    - recommendedAction: [1 rekomendasi aksi nyata dan cepat]
