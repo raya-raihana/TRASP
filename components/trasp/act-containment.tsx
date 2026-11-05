@@ -71,27 +71,35 @@ function renderCleanMessage(text: string) {
 const CASE_META: Record<string, { icon: any; tags: string[] }> = {
   "apk-sniffer": {
     icon: Smartphone,
-    tags: ["Izin Aksesibilitas", "Sadap OTP SMS", "Trojan Dropper"],
+    tags: ["APK Sniffer", "Sadap OTP SMS"],
   },
   "authority-impersonation": {
     icon: Building2,
-    tags: ["Domain Palsu .xyz", "Catut DJP / BSSN", "Phishing Kredensial"],
+    tags: ["Domain Palsu", "Phishing DJP"],
   },
   "task-scam": {
     icon: Briefcase,
-    tags: ["Deposit Bertingkat", "Grup Telegram", "Tugas Like Video"],
+    tags: ["Deposit Bertingkat", "Loker Palsu"],
+  },
+  "sms-blast-phishing": {
+    icon: MessageSquare,
+    tags: ["SMS Masking", "Phishing Bank"],
   },
   "sms-phishing": {
     icon: MessageSquare,
-    tags: ["SMS Masking", "Kenaikan Tarif Bank", "Pencurian Akun"],
+    tags: ["SMS Masking", "Phishing Bank"],
+  },
+  "account-takeover-quishing": {
+    icon: QrCode,
+    tags: ["QRIS Palsu", "Begal OTP"],
   },
   "quishing-otp": {
     icon: QrCode,
-    tags: ["QRIS Palsu", "Dynamic Swap", "Begal Sesi OTP"],
+    tags: ["QRIS Palsu", "Begal OTP"],
   },
   "deepfake-vishing": {
     icon: Mic,
-    tags: ["Voice Cloning AI", "Video Deepfake", "Impersonasi Pimpinan"],
+    tags: ["Voice Cloning", "Deepfake AI"],
   },
 };
 
@@ -332,12 +340,12 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </Button>
           </div>
 
-          {/* Grid Katalog Kasus (6 Cards) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {/* Grid Katalog Kasus (6 Cards) - Clean & Scannable */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {COMPENDIUM_CASES.map((item) => {
               const meta = CASE_META[item.id] || {
                 icon: Shield,
-                tags: ["Forensik Siber", "Deteksi AI", "UU ITE"],
+                tags: ["Forensik Siber", "UU ITE"],
               };
               const IconComp = meta.icon;
 
@@ -345,49 +353,44 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 <div
                   key={item.id}
                   onClick={() => handleOpenDetail(item.id)}
-                  className="group relative border border-border bg-card hover:border-primary/60 transition-all p-4 rounded flex flex-col justify-between cursor-pointer hover:shadow-xs space-y-3.5"
+                  className="group relative border border-border bg-card hover:border-primary/60 transition-all duration-200 p-5 rounded-lg flex flex-col justify-between cursor-pointer hover:shadow-xs space-y-4"
                 >
-                  <div className="space-y-2.5">
-                    {/* Top Row: Index & Danger Badge */}
+                  <div className="space-y-3">
+                    {/* Top Row: Case Code (#01) & Severity Badge */}
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold text-muted-foreground">
-                        KASUS #{String(item.number).padStart(2, "0")}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary group-hover:scale-105 transition-transform">
+                          <IconComp className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="text-xs font-mono font-bold text-muted-foreground group-hover:text-primary transition-colors">
+                          #{String(item.number).padStart(2, "0")}
+                        </span>
+                      </div>
                       <Badge
                         variant="outline"
-                        className={`text-[10px] font-mono ${
+                        className={`text-[10px] font-mono px-2 py-0.5 ${
                           item.riskLevel === "CRITICAL"
-                            ? "border-rose-500/40 text-rose-500 bg-rose-500/10"
-                            : "border-amber-500/40 text-amber-500 bg-amber-500/10"
+                            ? "border-rose-500/30 text-rose-500 bg-rose-500/10"
+                            : "border-amber-500/30 text-amber-500 bg-amber-500/10"
                         }`}
                       >
-                        {item.riskLevel} • {item.dangerScore}/100
+                        {item.riskLevel}
                       </Badge>
                     </div>
 
-                    {/* Icon + Category */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary group-hover:scale-105 transition-transform">
-                        <IconComp className="w-4 h-4" />
-                      </div>
-                      <span className="text-[11px] font-mono text-muted-foreground line-clamp-1">
-                        {item.category}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-serif font-bold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                    {/* Case Title (Max 1-2 lines, bold) */}
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                       {item.title}
                     </h3>
 
-                    {/* Modus Operandi */}
-                    <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                    {/* Case Modus Description (Max 1 ringkas sentence / line-clamp-2) */}
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       {item.modusOperandi}
                     </p>
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {meta.tags.map((tag, tIdx) => (
+                    {/* Tags: Max 1-2 tags */}
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      {meta.tags.slice(0, 2).map((tag, tIdx) => (
                         <span
                           key={tIdx}
                           className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted/60 text-muted-foreground border border-border/50"
@@ -398,12 +401,10 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                     </div>
                   </div>
 
-                  {/* Button Action */}
-                  <div className="pt-2 border-t border-border/60">
-                    <div className="w-full py-1.5 px-3 rounded text-xs font-mono font-bold text-primary bg-primary/10 group-hover:bg-primary group-hover:text-primary-foreground border border-primary/20 transition-all flex items-center justify-between">
-                      <span>Buka Mitigasi &amp; Informasi</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
+                  {/* Subtle Action Link */}
+                  <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors">
+                    <span className="font-medium">Lihat Mitigasi</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               );
