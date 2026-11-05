@@ -1148,298 +1148,6 @@ export function LearnSandbox({
     }, 2400);
   };
 
-  const getDialogueCards = (scenarioKey: string, role: "victim_game" | "redteam_game") => {
-    const baseKey = scenarioKey.replace(/^rt-/, "");
-    if (role === "victim_game") {
-      if (baseKey === "apk-kurir" || baseKey === "kurir-jnt") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Taktis / Kritis",
-            badge: "Bongkar Format File",
-            scoreLabel: "+25 XP",
-            text: "Kok foto resi paket formatnya berkas aplikasi (.APK)? Bukankah dokumen resi biasanya berformat gambar JPG atau PDF resmi?",
-          },
-          {
-            type: "neutral" as const,
-            label: "Waspada / Netral",
-            badge: "Verifikasi Resi",
-            scoreLabel: "+10 XP",
-            text: "Saya tidak merasa memesan barang. Tolong sebutkan nomor resinya biar saya cek di aplikasi resmi ekspedisi.",
-          },
-          {
-            type: "trap" as const,
-            label: "Lengah / Terjebak",
-            badge: "Panik Terhasut",
-            scoreLabel: "-20 Integritas",
-            text: "Aduh bahaya paket saya tertahan! Sebentar saya unduh dan buka berkasnya sekarang ya mas...",
-          },
-        ];
-      }
-      if (baseKey === "undangan-nikah") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Taktis / Kritis",
-            badge: "Cek Keaslian Undangan",
-            scoreLabel: "+25 XP",
-            text: "Ini dengan siapa ya? Kenapa undangan pernikahan formatnya file installer .APK dan bukan link web undangan digital yang lazim?",
-          },
-          {
-            type: "neutral" as const,
-            label: "Waspada / Netral",
-            badge: "Minta Foto Fisik",
-            scoreLabel: "+10 XP",
-            text: "Nomor Anda belum tersimpan di kontak saya. Bisa kirimkan foto fisik undangannya atau sebutkan nama mempelai?",
-          },
-          {
-            type: "trap" as const,
-            label: "Lengah / Terjebak",
-            badge: "Penasaran Terbujuk",
-            scoreLabel: "-20 Integritas",
-            text: "Wah selamat ya! Siapa nih yang nikah? Penasaran banget, saya langsung instal filenya ya...",
-          },
-        ];
-      }
-      if (baseKey === "surat-tilang") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Taktis / Kritis",
-            badge: "Audit Regulasi Tilang",
-            scoreLabel: "+25 XP",
-            text: "Sistem ETLE Korlantas Polri resmi mengirim konfirmasi tilang via pos ke alamat terdaftar atau web etle-korlantas.info, tidak pernah via APK WhatsApp.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Waspada / Netral",
-            badge: "Minta Bukti Plat",
-            scoreLabel: "+10 XP",
-            text: "Tolong beritahu nomor plat kendaraan dan tanggal kejadiannya. Saya akan verifikasi langsung ke kantor Samsat.",
-          },
-          {
-            type: "trap" as const,
-            label: "Lengah / Terjebak",
-            badge: "Takut Diblokir",
-            scoreLabel: "-20 Integritas",
-            text: "Aduh jangan blokir SIM/STNK saya pak! Saya segera buka dan setujui izin berkas surat tilang ini...",
-          },
-        ];
-      }
-      if (baseKey === "task-scam") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Taktis / Kritis",
-            badge: "Deteksi Skema Ponzi",
-            scoreLabel: "+25 XP",
-            text: "Hanya klik video lalu dibayar jutaan tapi wajib deposit dana di awal adalah ciri khas penipuan task scam skema Ponzi.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Waspada / Netral",
-            badge: "Tolak Penawaran",
-            scoreLabel: "+10 XP",
-            text: "Maaf saya tidak tertarik dengan pekerjaan sampingan tanpa kontrak resmi dari perusahaan yang terdaftar.",
-          },
-          {
-            type: "trap" as const,
-            label: "Lengah / Terjebak",
-            badge: "Tergiur Uang Instan",
-            scoreLabel: "-20 Integritas",
-            text: "Wah lumayan banget Rp500 ribu per hari! Syaratnya apa kak? Saya siap deposit uang jaminannya...",
-          },
-        ];
-      }
-      if (baseKey === "phishing-pajak") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Taktis / Kritis",
-            badge: "Inspeksi Domain DJP",
-            scoreLabel: "+25 XP",
-            text: "Portal resmi DJP hanya beralamat di pajak.go.id dengan domain pemerintah .go.id. Tautan Anda mencurigakan.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Waspada / Netral",
-            badge: "Login Mandiri",
-            scoreLabel: "+10 XP",
-            text: "Saya akan melakukan pelaporan SPT secara mandiri dengan membuka browser langsung ke DJP Online.",
-          },
-          {
-            type: "trap" as const,
-            label: "Lengah / Terjebak",
-            badge: "Takut Denda Pajak",
-            scoreLabel: "-20 Integritas",
-            text: "Denda Rp10 juta?! Jangan sampai kena sanksi, saya langsung klik tautan itu dan masukkan EFIN sekarang...",
-          },
-        ];
-      }
-      return [
-        {
-          type: "tactical" as const,
-          label: "Taktis / Kritis",
-          badge: "Verifikasi Otoritas",
-          scoreLabel: "+25 XP",
-          text: "Saya tidak menemukan bukti legalitas pesan ini. Mohon verifikasi lewat kanal kontak resmi institusi Anda.",
-        },
-        {
-          type: "neutral" as const,
-          label: "Waspada / Netral",
-          badge: "Tolak Pembagian Data",
-          scoreLabel: "+10 XP",
-          text: "Saya menolak memberikan data rahasia atau kode OTP apa pun via obrolan pesan pribadi.",
-        },
-        {
-          type: "trap" as const,
-          label: "Lengah / Terjebak",
-          badge: "Tunduk Manipulasi",
-          scoreLabel: "-20 Integritas",
-          text: "Baik saya ikuti semua petunjuknya sekarang, jangan blokir akun perbankan saya ya.",
-        },
-      ];
-    } else {
-      if (baseKey === "apk-kurir" || baseKey === "kurir-jnt") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Persuasif / Taktis",
-            badge: "Urgensi Halus",
-            scoreLabel: "+25 XP",
-            text: "Selamat siang kak, mohon konfirmasi alamat pengiriman sesuai foto resi terlampir agar kurir tidak salah antar ke gudang retur.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Standar / Netral",
-            badge: "Format Kurir",
-            scoreLabel: "+10 XP",
-            text: "Ini paket atas nama kakak yang belum diambil. Silakan cek lembar resi di dokumen yang saya kirimkan ini.",
-          },
-          {
-            type: "trap" as const,
-            label: "Blunder / Agresif",
-            badge: "Terlalu Agresif",
-            scoreLabel: "-20 Kepercayaan",
-            text: "CEPAT BUKA DAN INSTALL FILE .APK INI SEKARANG JUGA ATAU PAKET KAKAK KAMI HANCURKAN!",
-          },
-        ];
-      }
-      if (baseKey === "undangan-nikah") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Persuasif / Taktis",
-            badge: "Social Pretext",
-            scoreLabel: "+25 XP",
-            text: "Assalamu'alaikum kak, dengan segala kerendahan hati kami mengundang kakak di pernikahan kami. Doa restu kakak sangat berarti bagi kami sekeluarga.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Standar / Netral",
-            badge: "Undangan Sopan",
-            scoreLabel: "+10 XP",
-            text: "Halo kak, ini berkas undangan digital kami yang dilengkapi denah barcode lokasi akad dan resepsi.",
-          },
-          {
-            type: "trap" as const,
-            label: "Blunder / Agresif",
-            badge: "Terlalu Kasar",
-            scoreLabel: "-20 Kepercayaan",
-            text: "Gue mau nikah, buruan klik file aplikasi ini gak usah banyak nanya!",
-          },
-        ];
-      }
-      if (baseKey === "surat-tilang") {
-        return [
-          {
-            type: "tactical" as const,
-            label: "Persuasif / Taktis",
-            badge: "Otoritas Formal",
-            scoreLabel: "+25 XP",
-            text: "Pemberitahuan Resmi Korlantas: Kendaraan Anda tertangkap kamera ETLE melakukan pelanggaran. Silakan periksa berkas bukti foto tilang elektronik terlampir.",
-          },
-          {
-            type: "neutral" as const,
-            label: "Standar / Netral",
-            badge: "Instruksi Sidang",
-            scoreLabel: "+10 XP",
-            text: "Harap konfirmasi kepemilikan kendaraan dalam dokumen ini sebelum berkas dilimpahkan ke Pengadilan.",
-          },
-          {
-            type: "trap" as const,
-            label: "Blunder / Agresif",
-            badge: "Mencurigakan",
-            scoreLabel: "-20 Kepercayaan",
-            text: "POLISI DISINI! KAU MELANGGAR HUKUM! SEGERA PASANG FILE INI ATAU DIJEMPUT PAKSA POLISI!",
-          },
-        ];
-      }
-      return [
-        {
-          type: "tactical" as const,
-          label: "Persuasif / Taktis",
-          badge: "Eksploitasi Kredibilitas",
-          scoreLabel: "+25 XP",
-          text: "Kami dari tim layanan pelanggan resmi mendapati ada pembaruan sistem. Mohon verifikasi agar akses layanan tidak tertunda.",
-        },
-        {
-          type: "neutral" as const,
-          label: "Standar / Netral",
-          badge: "Pemberitahuan Umum",
-          scoreLabel: "+10 XP",
-          text: "Pesan ini diteruskan dari pusat bantuan nasabah untuk penyesuaian data profil akun Anda.",
-        },
-        {
-          type: "trap" as const,
-          label: "Blunder / Agresif",
-          badge: "Terlalu Terbuka",
-          scoreLabel: "-20 Kepercayaan",
-          text: "Kirim password dan kode OTP kamu sekarang ke nomor ini!",
-        },
-      ];
-    }
-  };
-
-  const handleSelectDialogueCard = (card: {
-    type: "tactical" | "neutral" | "trap";
-    text: string;
-    scoreLabel: string;
-  }) => {
-    if (isCurrentGameFinished) return;
-
-    if (gameRole === "victim_game") {
-      if (card.type === "tactical") {
-        playGameSound("critical");
-        setPanicLevel((prev) => Math.max(0, prev - 15));
-        triggerScoreToast("Logika Tajam! Manipulasi Terdeteksi", "+25 XP", "good");
-      } else if (card.type === "neutral") {
-        playGameSound("neutral");
-        setPanicLevel((prev) => Math.max(0, prev - 5));
-        triggerScoreToast("Sikap Waspada Terjaga", "+10 XP", "neutral");
-      } else {
-        playGameSound("trap");
-        setPanicLevel((prev) => Math.min(100, prev + 25));
-        triggerScoreToast("Waspada! Terpancing Manipulasi", "-20 Integritas", "bad");
-      }
-      handleSendVictimChat(card.text);
-    } else {
-      if (card.type === "tactical") {
-        playGameSound("critical");
-        setTrustMeter((prev) => Math.min(100, prev + 20));
-        triggerScoreToast("Pretext Meyakinkan! Target Terpancing", "+25 XP", "good");
-      } else if (card.type === "neutral") {
-        playGameSound("neutral");
-        triggerScoreToast("Umpan Netral Terkirim", "+10 XP", "neutral");
-      } else {
-        playGameSound("trap");
-        setTrustMeter((prev) => Math.max(0, prev - 15));
-        triggerScoreToast("Blunder! Target Makin Curiga", "-20 Kepercayaan", "bad");
-      }
-      handleSendRedteamChat(card.text);
-    }
-  };
-
   const handleBlockAndReport = () => {
     setIsVictimGameFinished(true);
     handleLevelFinished(selectedScenarioKey);
@@ -1472,21 +1180,20 @@ export function LearnSandbox({
           {/* 1. MODERN GAMIFICATION HUD PANEL                          */}
           {/* ========================================================= */}
           {/* ========================================================= */}
-          {/* 1. MODERN GAMIFICATION HUD PANEL (CLEAN & BALANCED)       */}
+          {/* 1. COMPACT GAMIFICATION HUD HEADER                        */}
           {/* ========================================================= */}
           <div
-            className={`border transition-all duration-300 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xs ${
+            className={`border transition-all duration-300 rounded-xl p-4 sm:p-5 space-y-3.5 shadow-xs ${
               gameRole === "victim_game"
                 ? "bg-[#FAF8F5] dark:bg-card border-neutral-300 dark:border-neutral-700"
                 : "bg-[#FAF8F5] dark:bg-card border-rose-300 dark:border-rose-800 ring-1 ring-rose-500/20"
             }`}
           >
-            {/* Top Bar: Profile, Rank, Shields, Streak & Role Switcher */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              {/* Profile & Rank Insignia */}
+            {/* Baris 1: Judul Utama di Kiri & Toggle Switch di Kanan */}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border shadow-xs transition-transform hover:scale-105 shrink-0 ${
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl border shadow-2xs shrink-0 ${
                     gameRole === "victim_game"
                       ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                       : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
@@ -1496,140 +1203,90 @@ export function LearnSandbox({
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {gameRole === "victim_game" ? (
-                      <>
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] font-mono font-bold px-2.5 py-0.5 border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10"
-                        >
-                          Operasi Blue Team
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] font-mono font-bold px-2 py-0.5 border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 bg-white dark:bg-neutral-800"
-                        >
-                          Cyber Sentinel (Tier II)
-                        </Badge>
-                      </>
-                    ) : (
-                      <>
-                        <Badge
-                          className="text-[10px] font-mono font-bold px-2.5 py-0.5 bg-rose-600 text-white border-rose-600 shadow-xs"
-                        >
-                          MODE: RED TEAM (OFFENSE)
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] font-mono font-bold px-2 py-0.5 border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40"
-                        >
-                          Ghost Operator (Tier II)
-                        </Badge>
-                        <span className="text-[11px] font-mono font-bold text-rose-600 dark:text-rose-400">
-                          Simulasi Red Team
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <h2 className="text-base sm:text-xl font-serif font-bold text-neutral-900 dark:text-neutral-100 leading-tight mt-1">
+                  <h2 className="text-base sm:text-lg font-serif font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
                     {gameRole === "victim_game" ? "Kampanye Investigasi Forensik" : "Simulasi Penetrasi Rekayasa Sosial"}
                   </h2>
+                  <div className="flex items-center gap-2 text-[11px] font-mono mt-0.5">
+                    <span className="font-bold text-neutral-700 dark:text-neutral-300">
+                      {gameRole === "victim_game" ? "Cyber Sentinel (Tier II)" : "Ghost Operator (Tier II)"}
+                    </span>
+                    <span className="text-neutral-400">&bull;</span>
+                    <span className={gameRole === "victim_game" ? "text-emerald-700 dark:text-emerald-400 font-semibold" : "text-rose-600 dark:text-rose-400 font-semibold"}>
+                      {gameRole === "victim_game" ? "Operasi Blue Team" : "Simulasi Red Team"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Right: Gamification Badges & Dual Mode Switcher */}
-              <div className="flex items-center gap-3 flex-wrap">
-                {/* Shield Batteries (3 Lives) */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg shadow-2xs">
-                  <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-300 font-bold mr-1">Integritas:</span>
-                  <div className="flex items-center gap-1" title="3 Nyawa / Shield Integrity">
+              {/* Toggle Switch Defense / Red Team yang rapi */}
+              <div
+                className={`flex items-center gap-1 p-1 border rounded-lg bg-white dark:bg-neutral-800 shadow-2xs ${
+                  gameRole === "victim_game" ? "border-neutral-300 dark:border-neutral-700" : "border-rose-300 dark:border-rose-800"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleSwitchMode("victim_game")}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
+                    gameRole === "victim_game"
+                      ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xs"
+                      : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Defense</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSwitchMode("redteam_game")}
+                  className={`px-3 py-1.5 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
+                    gameRole === "redteam_game"
+                      ? "bg-rose-600 text-white shadow-xs"
+                      : "text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400"
+                  }`}
+                >
+                  <Crosshair className="w-3.5 h-3.5" />
+                  <span>Red Team</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Baris 2: Indikator ringkas dalam satu baris horizontal */}
+            <div className="pt-2.5 border-t border-neutral-300/80 dark:border-neutral-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+              <div className="flex items-center gap-3">
+                {/* Status Nyawa / Integritas */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-2xs">
+                  <span className="text-[10px] text-neutral-700 dark:text-neutral-300 font-bold">Integritas:</span>
+                  <div className="flex items-center gap-0.5" title="3 Nyawa / Shield Integrity">
                     <span className="text-xs">🛡️</span>
                     <span className="text-xs">🛡️</span>
                     <span className="text-xs">🛡️</span>
                   </div>
                 </div>
 
-                {/* Streak Badge */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-lg text-amber-800 dark:text-amber-300 text-xs font-mono font-bold shadow-2xs">
+                {/* Streak Harian */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-md text-amber-800 dark:text-amber-300 font-bold shadow-2xs">
                   <Flame className="w-3.5 h-3.5 fill-current text-amber-500" />
                   <span>4 Hari Streak</span>
                 </div>
+              </div>
 
-                {/* Role Switcher Pill */}
-                <div
-                  className={`flex items-center gap-1 p-1 border rounded-lg transition-colors bg-white dark:bg-neutral-800 shadow-2xs ${
-                    gameRole === "victim_game" ? "border-neutral-300 dark:border-neutral-700" : "border-rose-300 dark:border-rose-800"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchMode("victim_game")}
-                    className={`px-3 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
-                      gameRole === "victim_game"
-                        ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xs"
-                        : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <Shield className="w-3.5 h-3.5" />
-                    <span>Defense</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchMode("redteam_game")}
-                    className={`px-3 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
-                      gameRole === "redteam_game"
-                        ? "bg-rose-600 text-white shadow-xs"
-                        : "text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400"
-                    }`}
-                  >
-                    <Crosshair className="w-3.5 h-3.5" />
-                    <span>Red Team</span>
-                  </button>
+              {/* XP & Progres Bar Level */}
+              <div className="flex items-center gap-3 flex-1 sm:max-w-md">
+                <div className="w-full space-y-1">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium flex items-center gap-1">
+                      <Award className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{currentProgress.xp} / 1,500 XP</span>
+                    </span>
+                    <span className="font-bold text-neutral-900 dark:text-neutral-100">
+                      Level {currentProgress.completedLevels.length}/10 Selesai ({Math.min(100, Math.round((currentProgress.xp / 1500) * 100))}%)
+                    </span>
+                  </div>
+                  <Progress value={Math.min(100, (currentProgress.xp / 1500) * 100)} className="h-2 bg-neutral-200 dark:bg-neutral-800" />
                 </div>
               </div>
-            </div>
-
-            {/* Bottom Bar: Interactive XP Progress Bar */}
-            <div className="space-y-2 pt-2 border-t border-neutral-300/80 dark:border-neutral-700/80">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5 font-medium">
-                  <Award className="w-4 h-4 text-amber-500" />
-                  <span>Progres Kampanye: <strong className="text-neutral-900 dark:text-neutral-100 font-bold">{currentProgress.xp}</strong> / 1,500 XP</span>
-                </span>
-                <span className="font-bold text-neutral-900 dark:text-neutral-100">
-                  Level {currentProgress.completedLevels.length}/10 Selesai ({Math.min(100, Math.round((currentProgress.xp / 1500) * 100))}%)
-                </span>
-              </div>
-              <Progress value={Math.min(100, (currentProgress.xp / 1500) * 100)} className="h-2.5 bg-neutral-200 dark:bg-neutral-800" />
-            </div>
-
-            {/* Sector Tabs Filter */}
-            <div className="flex items-center gap-2 overflow-x-auto pt-1 text-xs font-mono">
-              {[
-                { id: "ALL" as const, label: "Semua Sektor (10 Level)" },
-                { id: 1 as const, label: "Sektor 1: Social Engineering (Lv 1-4)" },
-                { id: 2 as const, label: "Sektor 2: Network & Phishing (Lv 5-8)" },
-                { id: 3 as const, label: "Sektor 3: Deepfake & AI (Lv 9-10)" },
-              ].map((sec) => {
-                const isSelected = selectedSector === sec.id;
-                return (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    onClick={() => setSelectedSector(sec.id)}
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 shadow-2xs ${
-                      isSelected
-                        ? gameRole === "victim_game"
-                          ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 border-neutral-900 dark:border-neutral-100"
-                          : "bg-rose-600 text-white border-rose-600"
-                        : "bg-white dark:bg-neutral-800/90 border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {sec.label}
-                  </button>
-                );
-              })}
             </div>
           </div>
 
@@ -1694,9 +1351,27 @@ export function LearnSandbox({
               />
             </svg>
 
+            {/* Chapter Dividers / Milestone Track Labels */}
+            <div className="absolute left-1/2 top-[1.2%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
+                Sektor 1: Social Engineering (Lv 1-4)
+              </span>
+            </div>
+
+            <div className="absolute left-1/2 top-[37%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
+                Sektor 2: Network &amp; Phishing (Lv 5-8)
+              </span>
+            </div>
+
+            <div className="absolute left-1/2 top-[75%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
+                Sektor 3: Deepfake &amp; AI (Lv 9-10)
+              </span>
+            </div>
+
             {/* Render All Campaign Level Nodes */}
             {currentCampaignLevels.map((lvl) => {
-              const isFilteredOut = selectedSector !== "ALL" && lvl.sectorId !== selectedSector;
               const isCompleted = currentProgress.completedLevels.includes(lvl.id);
               const isActive = (lvl.levelNumber === currentProgress.currentLevel || (currentModeKey === "defense" && lvl.id === "checkpoint-quiz-1")) && !isCompleted;
               const isLocked = !isCompleted && !isActive;
@@ -1705,9 +1380,7 @@ export function LearnSandbox({
                 <div
                   key={lvl.id}
                   style={{ left: `${lvl.xPct}%`, top: `${lvl.yPct}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10 transition-all duration-300 ${
-                    isFilteredOut ? "opacity-25 pointer-events-none scale-90" : "opacity-100"
-                  }`}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10 transition-all duration-300 opacity-100"
                 >
                   {/* NODE TYPE 1: CHECKPOINT (DIAMOND GEOMETRY) */}
                   {lvl.type === "quiz" || lvl.type === "drill" ? (
@@ -2232,17 +1905,7 @@ export function LearnSandbox({
 
                     <div className="overflow-hidden">
                       <h3 className="text-xs font-bold font-mono text-foreground flex items-center gap-1.5 truncate">
-                        {gameRole === "victim_game" ? activeLevel.bossName : `Target: ${activeLevel.targetName}`}
-                        <Badge
-                          variant="outline"
-                          className={`text-[9px] py-0 px-1 font-mono shrink-0 ${
-                            gameRole === "victim_game"
-                              ? "bg-rose-500/10 text-rose-500 border-rose-500/30"
-                              : "bg-blue-500/10 text-blue-500 border-blue-500/30"
-                          }`}
-                        >
-                          {gameRole === "victim_game" ? "Boss AI" : "Target AI"}
-                        </Badge>
+                        {gameRole === "victim_game" ? activeLevel.bossName : activeLevel.targetName}
                       </h3>
                       <div className="text-[10px] text-muted-foreground font-mono truncate">
                         {gameRole === "victim_game"
@@ -2254,11 +1917,6 @@ export function LearnSandbox({
                           : "Online (WhatsApp)"}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1 shrink-0">
-                    <Award className="w-3.5 h-3.5 text-amber-500" />
-                    {activeLevel.xp}
                   </div>
                 </div>
 
@@ -2347,64 +2005,7 @@ export function LearnSandbox({
                   )}
                 </div>
 
-                {/* 4. Interactive Dialogue Cards (3 Options) */}
-                {!isCurrentGameFinished && (
-                  <div className="p-2.5 bg-muted/40 border-t border-border space-y-1.5 shrink-0">
-                    <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
-                      <span className="flex items-center gap-1 font-bold text-foreground">
-                        <Sparkles className="w-3 h-3 text-amber-500" />
-                        Pilihan Respon Dialog:
-                      </span>
-                      <span>Pilih kartu taktis</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-1.5 max-h-[145px] overflow-y-auto pr-0.5">
-                      {getDialogueCards(selectedScenarioKey, gameRole).map((card, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          disabled={gameRole === "victim_game" ? isScammerTyping : isTargetTyping}
-                          onClick={() => handleSelectDialogueCard(card)}
-                          className={`w-full text-left p-2 rounded-lg border transition-all cursor-pointer flex items-start gap-2 ${
-                            card.type === "tactical"
-                              ? "bg-emerald-500/5 hover:bg-emerald-500/10 border-emerald-500/30 text-foreground"
-                              : card.type === "neutral"
-                              ? "bg-blue-500/5 hover:bg-blue-500/10 border-blue-500/30 text-foreground"
-                              : "bg-rose-500/5 hover:bg-rose-500/10 border-rose-500/30 text-foreground"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        >
-                          <div className="shrink-0 mt-0.5">
-                            <Badge
-                              variant="outline"
-                              className={`text-[9px] py-0 px-1 font-mono ${
-                                card.type === "tactical"
-                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/40"
-                                  : card.type === "neutral"
-                                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/40"
-                                  : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/40"
-                              }`}
-                            >
-                              {card.scoreLabel}
-                            </Badge>
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[10px] font-bold font-mono text-muted-foreground flex items-center gap-1">
-                              <span>{card.label}</span>
-                              <span>&bull;</span>
-                              <span className="truncate">{card.badge}</span>
-                            </div>
-                            <p className="text-[11px] leading-snug line-clamp-2 mt-0.5 font-medium">
-                              "{card.text}"
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 5. Chat Input Bar (Manual Typing Option) */}
+                {/* 4. Chat Input Bar */}
                 <div className="p-2.5 bg-muted/80 border-t border-border shrink-0">
                   <form
                     onSubmit={(e) => {
@@ -2431,8 +2032,8 @@ export function LearnSandbox({
                         isCurrentGameFinished
                           ? "Level telah selesai. Buka debrief untuk evaluasi."
                           : gameRole === "victim_game"
-                          ? "Atau ketik balasan sendiri..."
-                          : "Atau ketik kalimat manipulasi..."
+                          ? "Ketik balasan Anda ke penipu..."
+                          : "Ketik kalimat manipulasi..."
                       }
                       disabled={isCurrentGameFinished || (gameRole === "victim_game" ? isScammerTyping : isTargetTyping)}
                       className="text-xs h-10 bg-background border-border rounded-xl disabled:opacity-60"
@@ -2494,11 +2095,6 @@ export function LearnSandbox({
                         </span>
                       </div>
                       <Progress value={playerHealth} className="h-2.5" />
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        {playerHealth >= 70
-                          ? "Saldo rekening & kredensial OTP terlindungi."
-                          : "Waspada potensi kebocoran akses perbankan!"}
-                      </p>
                     </div>
 
                     {/* Meter 2: Panic Level / Tekanan Psikologis */}
@@ -2521,13 +2117,6 @@ export function LearnSandbox({
                         </span>
                       </div>
                       <Progress value={panicLevel} className="h-2.5" />
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        {panicLevel <= 30
-                          ? "Pikiran tenang, analisis rasional terjaga."
-                          : panicLevel <= 60
-                          ? "Mulai ada tekanan urgensi palsu."
-                          : "Panik tinggi! Border layar berdenyut waspada."}
-                      </p>
                     </div>
 
                     {/* Tombol Aksi Kritis: Blokir & Laporkan */}
@@ -2563,9 +2152,6 @@ export function LearnSandbox({
                         <span className="font-bold font-mono text-amber-500">{trustMeter}%</span>
                       </div>
                       <Progress value={trustMeter} className="h-2.5" />
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        Target mencapai &ge;70% untuk keberhasilan penetrasi.
-                      </p>
                     </div>
 
                     {/* Meter 2: Kecurigaan Target (Suspicion Meter) */}
@@ -2578,9 +2164,6 @@ export function LearnSandbox({
                         <span className="font-bold font-mono text-rose-500">{targetSkepticism}%</span>
                       </div>
                       <Progress value={targetSkepticism} className="h-2.5" />
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        Jika kecurigaan mencapai 100%, nomor Anda akan diblokir.
-                      </p>
                     </div>
 
                     {/* Tombol Aksi Kritis: Akhiri Serangan & Debrief */}

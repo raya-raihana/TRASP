@@ -20,11 +20,10 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   await expect(screen.getByText(/Undangan & Resi Kurir \.APK/i)).toBeVisible();
   await app.screenshot('quest-01-defense-initial-hud');
 
-  // 4. Verify Sector Filter Tabs
-  await expect(screen.getByRole('button', 'Semua Sektor (10 Level)')).toBeVisible();
-  await expect(screen.getByRole('button', /Sektor 1: Social Engineering/i)).toBeVisible();
-  await expect(screen.getByRole('button', /Sektor 2: Network & Phishing/i)).toBeVisible();
-  await expect(screen.getByRole('button', /Sektor 3: Deepfake & AI/i)).toBeVisible();
+  // 4. Verify Sector Chapter Dividers in roadmap
+  await expect(screen.getByText(/Sektor 1: Social Engineering/i)).toBeVisible();
+  await expect(screen.getByText(/Sektor 2: Network & Phishing/i)).toBeVisible();
+  await expect(screen.getByText(/Sektor 3: Deepfake & AI/i)).toBeVisible();
 
   // 5. Switch to Red Team (Offense Mode) & Verify Independent Zero-Progress
   const redTeamBtn = screen.getByRole('button', 'Red Team');
@@ -67,8 +66,7 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   await expect(screen.getByText('09:41')).toBeVisible();
   await expect(screen.getByText(/Integritas Saldo & Data:/i)).toBeVisible();
   await expect(screen.getByText(/Tingkat Tekanan Psikologis:/i)).toBeVisible();
-  await expect(screen.getByText(/Pilihan Respon Dialog:/i)).toBeVisible();
-  await expect(screen.getByText(/Taktis \/ Kritis/i)).toBeVisible();
+  await expect(screen.getByRole('textbox')).toBeVisible();
   await app.screenshot('quest-05-level2-arena-phone-mockup');
 
   // 9. Test Block & Report Action (Debrief Trigger)
