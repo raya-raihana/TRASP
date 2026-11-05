@@ -19,6 +19,16 @@ import {
   ChevronRight,
   Gamepad2,
   Play,
+  Lock,
+  Unlock,
+  HelpCircle,
+  Timer,
+  Skull,
+  Radio,
+  Layers,
+  Check,
+  X,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,84 +52,267 @@ interface GameChatMessage {
   delta?: number;
 }
 
-interface GameLevel {
+export interface GameLevel {
   id: string;
   levelNumber: number;
+  sectorId: 1 | 2 | 3;
+  sectorName: string;
   title: string;
   category: string;
+  type: "battle" | "quiz" | "drill" | "boss";
   bossName: string;
   targetName: string;
   difficulty: "Easy" | "Medium" | "Hard" | "Insane";
   diffColor: string;
   icon: string;
   xp: string;
+  xpNumber: number;
   synopsis: string;
   objective: string;
   tags: string[];
+  status: "completed" | "active" | "locked";
+  score?: number;
+  reqXp?: number;
+  xPct: number;
+  yPct: number;
 }
 
 const GAME_LEVELS: GameLevel[] = [
+  // SEKTOR 1: SOCIAL ENGINEERING & INFILTRATION
   {
     id: "apk-kurir",
     levelNumber: 1,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
     title: "Undangan & Resi Kurir .APK",
     category: "Android Malware / Banking Trojan",
+    type: "battle",
     bossName: "Kurir J&T Palsu",
     targetName: "Warga Biasa",
     difficulty: "Easy",
     diffColor: "text-emerald-400 border-emerald-500/40 bg-emerald-950/40",
     icon: "📦",
     xp: "+100 XP",
-    synopsis: "Pelaku mengirimkan file LIHAT_FOTO_PAKET.apk lewat WhatsApp dan menekan korban harus menginstalnya dalam 2 jam.",
-    objective: "Pertahankan HP Anda di atas 50% dengan menolak instalasi file APK liar dan mintalah nomor resi resmi.",
-    tags: ["Trojan Dropper", "Sadap OTP", "Manipulasi Urgensi"],
+    xpNumber: 100,
+    synopsis: "Berkas LIHAT_FOTO_PAKET.apk disamarkan sebagai foto resi untuk menyusupkan trojan penyadap SMS OTP m-Banking.",
+    objective: "Pertahankan HP di atas 50% dengan menolak instalasi file APK liar dan mintalah nomor resi resmi.",
+    tags: ["Trojan Dropper", "Sadap OTP SMS", "Urgensi 2 Jam"],
+    status: "completed",
+    score: 95,
+    xPct: 26,
+    yPct: 5,
   },
   {
-    id: "loker-bumn",
+    id: "undangan-nikah",
     levelNumber: 2,
-    title: "Task Scam & Loker BUMN",
-    category: "Social Engineering / Deposit Ponzi",
-    bossName: "HRD Gadungan",
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Undangan Pernikahan .APK",
+    category: "Curiosity Trap / Sideloading",
+    type: "battle",
+    bossName: "Kerabat Palsu",
+    targetName: "Penerima Undangan",
+    difficulty: "Easy",
+    diffColor: "text-emerald-400 border-emerald-500/40 bg-emerald-950/40",
+    icon: "💌",
+    xp: "+150 XP",
+    xpNumber: 150,
+    synopsis: "Eksploitasi rasa sungkan dan penasaran via berkas Surat_Undangan_Pernikahan.apk di WhatsApp.",
+    objective: "Identifikasi kejanggalan ekstensi dan tolak unduhan di luar Google Play Store.",
+    tags: ["Curiosity Bias", "Undangan Digital", "Malware Android"],
+    status: "active",
+    xPct: 74,
+    yPct: 14,
+  },
+  {
+    id: "checkpoint-quiz-1",
+    levelNumber: 3,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Mini-Quiz: Izin Aksesibilitas",
+    category: "Forensic Knowledge Checkpoint",
+    type: "quiz",
+    bossName: "Evaluator BSSN",
+    targetName: "Analis Forensik",
+    difficulty: "Medium",
+    diffColor: "text-cyan-400 border-cyan-500/40 bg-cyan-950/40",
+    icon: "📝",
+    xp: "+100 XP",
+    xpNumber: 100,
+    synopsis: "Checkpoint taktis: uji pemahaman dalam mendeteksi penyalahgunaan Android Accessibility Service oleh malware perbankan.",
+    objective: "Selesaikan 3 soal evaluasi teknis izin sistem dengan skor sempurna.",
+    tags: ["Checkpoint Quiz", "Accessibility Tree", "Play Protect"],
+    status: "active",
+    xPct: 34,
+    yPct: 23,
+  },
+  {
+    id: "tilang-etle",
+    levelNumber: 4,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Boss Sektor 1: Tilang ETLE Polri",
+    category: "Authority Coercion / Boss Battle",
+    type: "boss",
+    bossName: "Sindikat ETLE Palsu",
+    targetName: "Pemilik Kendaraan",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "🚔",
+    xp: "+300 XP",
+    xpNumber: 300,
+    synopsis: "Ancaman pemblokiran STNK dalam 24 jam dengan lampiran Surat_Tilang_ETLE.apk mencatut Korlantas Polri.",
+    objective: "Hadapi gertak sambal denda tilang dan tegakkan protokol konfirmasi resmi Polri.",
+    tags: ["Boss Battle Sektor 1", "Pencatutan Polri", "Ancaman STNK"],
+    status: "locked",
+    reqXp: 300,
+    xPct: 76,
+    yPct: 32,
+  },
+
+  // SEKTOR 2: NETWORK, SPOOFING & PHISHING
+  {
+    id: "loker-bumn",
+    levelNumber: 5,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Task Scam & Ponzi Like Video",
+    category: "Reciprocity Trap / Deposit Bertingkat",
+    type: "battle",
+    bossName: "HRD Gadungan BUMN",
     targetName: "Pencari Kerja",
     difficulty: "Medium",
     diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
     icon: "💼",
     xp: "+200 XP",
-    synopsis: "Tawaran kerja paruh waktu komisi like & subscribe YouTube yang berujung instruksi deposit uang bertingkat di Telegram.",
-    objective: "Kritisi skema komisi tidak masuk akal dan tolak mentransfer deposit uang talangan.",
-    tags: ["Tugas Telegram", "Deposit Bertingkat", "Sunk Cost Trap"],
+    xpNumber: 200,
+    synopsis: "Umpan komisi awal Rp30.000 cair instan sebelum menjebak korban dengan setoran deposit VIP jutaan rupiah.",
+    objective: "Patahkan logika setoran uang kerja dan cegah sindikat menguras modal Anda.",
+    tags: ["Task Fraud", "Foot-in-the-Door", "Mule Accounts"],
+    status: "locked",
+    reqXp: 450,
+    xPct: 28,
+    yPct: 42,
   },
   {
     id: "phishing-pajak",
-    levelNumber: 3,
-    title: "Phishing Pajak & Coretax",
-    category: "Credential Harvesting / Impersonation",
-    bossName: "Oknum DJP Palsu",
+    levelNumber: 6,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Phishing DJP Coretax & Denda",
+    category: "Domain Spoofing / Credential Harvesting",
+    type: "battle",
+    bossName: "Oknum Pajak Gadungan",
     targetName: "Wajib Pajak",
     difficulty: "Hard",
     diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
     icon: "🏛️",
-    xp: "+300 XP",
-    synopsis: "Pencatutan identitas Ditjen Pajak / BSSN yang mengancam sanksi dan denda jika tidak memverifikasi NIK di website tiruan.",
-    objective: "Verifikasi keaslian domain URL dan tolak menyerahkan password akun atau identitas pribadi.",
-    tags: ["Domain Palsu .xyz", "Ancaman Denda", "Pencurian Akun"],
+    xp: "+250 XP",
+    xpNumber: 250,
+    synopsis: "Pencatutan Ditjen Pajak menggunakan domain murah (.top) untuk mencuri kredensial m-Banking wajib pajak.",
+    objective: "Inspeksi root domain .go.id dan tolak memasukkan user ID/PIN di situs tiruan.",
+    tags: ["Subdomain Spoofing", "DJP Coretax", "Kring Pajak 1500200"],
+    status: "locked",
+    reqXp: 650,
+    xPct: 72,
+    yPct: 51,
+  },
+  {
+    id: "checkpoint-drill-2",
+    levelNumber: 7,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Timed Incident Drill: 15-Menit Air-Gap",
+    category: "Emergency Incident Drill",
+    type: "drill",
+    bossName: "Incident Handler Bareskrim",
+    targetName: "First Responder",
+    difficulty: "Hard",
+    diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
+    icon: "⏱️",
+    xp: "+150 XP",
+    xpNumber: 150,
+    synopsis: "Simulasi tanggap darurat golden time: lakukan isolasi sinyal radio dan pemulihan kredensial dalam hitungan menit.",
+    objective: "Eksekusi 4 langkah teknis mitigasi air-gap sebelum trojan mengeksfiltrasi data m-Banking.",
+    tags: ["Incident Drill", "Air-Gap Isolation", "Golden Time"],
+    status: "locked",
+    reqXp: 800,
+    xPct: 30,
+    yPct: 60,
   },
   {
     id: "m-banking-palsu",
-    levelNumber: 4,
-    title: "M-Banking Palsu & Kenaikan Tarif",
-    category: "Banking Phishing / OTP Hijacking",
-    bossName: "Sindikat Bank",
+    levelNumber: 8,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Boss Sektor 2: SMS Masking Tarif Bank",
+    category: "SIM Box Phishing / Boss Battle",
+    type: "boss",
+    bossName: "Sindikat SMS Blast Bank",
     targetName: "Nasabah Bank",
     difficulty: "Insane",
     diffColor: "text-purple-400 border-purple-500/40 bg-purple-950/40",
     icon: "🏦",
+    xp: "+400 XP",
+    xpNumber: 400,
+    synopsis: "Serangan SMS blast masif mencatut bank besar dengan isu kenaikan biaya transfer Rp150.000/bulan.",
+    objective: "Bongkar manipulasi kepanikan dan lindungi kode OTP serta CVV kartu debit Anda.",
+    tags: ["Boss Battle Sektor 2", "SMS Masking", "Begal OTP"],
+    status: "locked",
+    reqXp: 950,
+    xPct: 75,
+    yPct: 70,
+  },
+
+  // SEKTOR 3: ADVANCED DEEPFAKE & AI FRAUD
+  {
+    id: "quishing-qris",
+    levelNumber: 9,
+    sectorId: 3,
+    sectorName: "Sektor 3: Advanced Deepfake",
+    title: "Quishing QRIS & Begal Akun WA",
+    category: "QR Tampering / Account Takeover",
+    type: "battle",
+    bossName: "Kasir Minimarket Palsu",
+    targetName: "Pengguna WhatsApp",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "📱",
+    xp: "+350 XP",
+    xpNumber: 350,
+    synopsis: "Manipulasi belas kasihan salah kirim voucher pulsa demi membegal 6 digit kode autentikasi WhatsApp.",
+    objective: "Tolak menyerahkan 6 digit kode verifikasi dan pertahankan kendali akun Anda.",
+    tags: ["Account Takeover", "Quishing QRIS", "Verifikasi 2FA"],
+    status: "locked",
+    reqXp: 1200,
+    xPct: 28,
+    yPct: 80,
+  },
+  {
+    id: "deepfake-bos",
+    levelNumber: 10,
+    sectorId: 3,
+    sectorName: "Sektor 3: Advanced Deepfake",
+    title: "Final Boss: AI Voice Cloning Pimpinan",
+    category: "Generative AI Audio Spoofing / CEO Fraud",
+    type: "boss",
+    bossName: "Sindikat AI Deepfake Vishing",
+    targetName: "Staf Keuangan Kantor",
+    difficulty: "Insane",
+    diffColor: "text-red-500 border-red-500/50 bg-red-950/50",
+    icon: "🎙️",
     xp: "+500 XP",
-    synopsis: "Notifikasi darurat biaya transfer naik jadi Rp150.000/bulan dengan link formulir pembatalan untuk membegal OTP & PIN ATM.",
-    objective: "Tepis intimidasi customer service palsu dan jangan pernah membocorkan PIN atau kode OTP SMS.",
-    tags: ["Kenaikan Tarif", "Begal OTP SMS", "Social Engineering"],
+    xpNumber: 500,
+    synopsis: "Panggilan telepon suara tiruan pimpinan perusahaan yang menginstruksikan transfer darurat Rp25 juta.",
+    objective: "Tegakkan integritas SOP keuangan kantor dan tolak intimidasi pimpinan palsu berbasis AI.",
+    tags: ["Final Boss Battle", "AI Voice Clone", "CEO Fraud"],
+    status: "locked",
+    reqXp: 1500,
+    xPct: 72,
+    yPct: 89,
   },
 ];
+
 
 function renderCleanMessage(text: string) {
   const segments = text.split(/(\*\*[^*]+\*\*)/g);
@@ -146,6 +339,22 @@ export function LearnSandbox({
 
   // Mode: "victim_game" (User = Korban, Lawan = Penipu AI) vs "redteam_game" (User = Penipu, Lawan = Target AI)
   const [gameRole, setGameRole] = useState<"victim_game" | "redteam_game">("victim_game");
+
+  // Sector filter tab: "ALL" | 1 | 2 | 3
+  const [selectedSector, setSelectedSector] = useState<"ALL" | 1 | 2 | 3>("ALL");
+
+  // Checkpoint Mini-Games State
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [quizScore, setQuizScore] = useState<number | null>(null);
+
+  const [isDrillOpen, setIsDrillOpen] = useState(false);
+  const [drillChecks, setDrillChecks] = useState<Record<number, boolean>>({});
+  const [isDrillDone, setIsDrillDone] = useState(false);
+
+  // User Stats & Gamification
+  const [userXp, setUserXp] = useState(850);
+  const [completedLevels, setCompletedLevels] = useState<string[]>(["apk-kurir"]);
 
   const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>(
     SANDBOX_SCENARIOS[initialScenarioId] ? initialScenarioId : "apk-kurir"
@@ -346,6 +555,19 @@ export function LearnSandbox({
   );
 
   const handleStartLevel = (levelId: string) => {
+    if (levelId === "checkpoint-quiz-1") {
+      setIsQuizOpen(true);
+      return;
+    }
+    if (levelId === "checkpoint-drill-2") {
+      setIsDrillOpen(true);
+      return;
+    }
+    if (levelId === "mystery-vault") {
+      setIsChestOpen(true);
+      return;
+    }
+
     if (levelId !== selectedScenarioKey) {
       resetAllGames(levelId);
     }
@@ -557,259 +779,620 @@ export function LearnSandbox({
       {/* ========================================================= */}
       {gameView === "catalog" && (
         <div className="space-y-4 animate-in fade-in duration-200">
-          {/* Compact Quest Bar */}
-          <div className="border border-border bg-card p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                <Gamepad2 className="w-4 h-4" />
+          {/* ========================================================= */}
+          {/* 1. MODERN GAMIFICATION HUD PANEL                          */}
+          {/* ========================================================= */}
+          <div
+            className={`border transition-all duration-300 rounded-lg p-4 sm:p-5 space-y-4 ${
+              gameRole === "victim_game"
+                ? "bg-card border-border/80 shadow-xs"
+                : "bg-zinc-950 border-rose-900/60 shadow-lg shadow-rose-950/20 text-foreground"
+            }`}
+          >
+            {/* Top Bar: Profile, Rank, Shields, Streak & Role Switcher */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              {/* Profile & Rank Insignia */}
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border shadow-inner transition-transform hover:scale-105 shrink-0 ${
+                    gameRole === "victim_game"
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                      : "bg-rose-500/10 border-rose-500/40 text-rose-500"
+                  }`}
+                >
+                  {gameRole === "victim_game" ? "🛡️" : "🕵️"}
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                      {gameRole === "victim_game" ? "Operasi Blue Team" : "Simulasi Red Team"}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-mono font-bold px-2 py-0.2 ${
+                        gameRole === "victim_game"
+                          ? "border-emerald-500/30 text-emerald-400 bg-emerald-950/30"
+                          : "border-rose-500/40 text-rose-400 bg-rose-950/40"
+                      }`}
+                    >
+                      {gameRole === "victim_game" ? "Cyber Sentinel (Tier II)" : "Ghost Operator (Tier II)"}
+                    </Badge>
+                  </div>
+                  <h2 className="text-base sm:text-lg font-serif font-bold text-foreground leading-tight mt-0.5">
+                    {gameRole === "victim_game" ? "Kampanye Investigasi Forensik" : "Simulasi Penetrasi Rekayasa Sosial"}
+                  </h2>
+                </div>
               </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-serif font-bold text-foreground">
-                  Cyber Quest Roadmap
-                </h2>
-                <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-2">
-                  <span className="text-amber-500 font-bold">Level 1/4 Selesai</span>
-                  <span>•</span>
-                  <span>Total: 850 XP</span>
+
+              {/* Right: Gamification Badges & Dual Mode Switcher */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Shield Batteries (3 Lives) */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 border border-border/80 rounded-md">
+                  <span className="text-[10px] font-mono text-muted-foreground mr-1">Integritas:</span>
+                  <div className="flex items-center gap-1" title="3 Nyawa / Shield Integrity">
+                    <span className="text-xs">🛡️</span>
+                    <span className="text-xs">🛡️</span>
+                    <span className="text-xs">🛡️</span>
+                  </div>
+                </div>
+
+                {/* Streak Badge */}
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-md text-amber-500 text-xs font-mono font-bold">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>4 Hari Streak</span>
+                </div>
+
+                {/* Role Switcher Pill */}
+                <div
+                  className={`flex items-center gap-1 p-1 border rounded-lg transition-colors ${
+                    gameRole === "victim_game" ? "bg-muted/60 border-border" : "bg-zinc-900 border-rose-900/50"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setGameRole("victim_game")}
+                    className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
+                      gameRole === "victim_game"
+                        ? "bg-primary text-primary-foreground shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Shield className="w-3 h-3" />
+                    <span>Defense</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setGameRole("redteam_game")}
+                    className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
+                      gameRole === "redteam_game"
+                        ? "bg-rose-600 text-white shadow-xs"
+                        : "text-muted-foreground hover:text-rose-400"
+                    }`}
+                  >
+                    <Crosshair className="w-3 h-3" />
+                    <span>Red Team</span>
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* Role Switcher */}
-            <div className="flex items-center gap-1 bg-muted/60 p-1 border border-border shrink-0 self-start sm:self-center rounded">
-              <button
-                type="button"
-                onClick={() => setGameRole("victim_game")}
-                className={`px-3 py-1.5 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-xs ${
-                  gameRole === "victim_game"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Mode: Korban (Defense)</span>
-              </button>
+            {/* Bottom Bar: Interactive XP Progress Bar */}
+            <div className="space-y-1.5 pt-2 border-t border-border/40">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Award className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Progres Kampanye: <strong>{userXp}</strong> / 1,500 XP</span>
+                </span>
+                <span className="font-bold text-foreground">
+                  Level 1/10 Selesai ({Math.round((userXp / 1500) * 100)}%)
+                </span>
+              </div>
+              <Progress value={(userXp / 1500) * 100} className="h-2.5" />
+            </div>
 
+            {/* Sector Tabs Filter */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 text-xs font-mono">
               <button
                 type="button"
-                onClick={() => setGameRole("redteam_game")}
-                className={`px-3 py-1.5 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-xs ${
-                  gameRole === "redteam_game"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
+                onClick={() => setSelectedSector("ALL")}
+                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedSector === "ALL"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <Crosshair className="w-3.5 h-3.5" />
-                <span>Mode: Red Team (Offense)</span>
+                Semua Sektor (10 Level)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedSector(1)}
+                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedSector === 1
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Sektor 1: Social Engineering (Lv 1-4)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedSector(2)}
+                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedSector === 2
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Sektor 2: Network &amp; Phishing (Lv 5-8)
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedSector(3)}
+                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedSector === 3
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Sektor 3: Deepfake &amp; AI (Lv 9-10)
               </button>
             </div>
           </div>
 
-          {/* Gamified Visual Path Canvas */}
-          <div className="relative w-full max-w-xl mx-auto h-[580px] sm:h-[640px] p-4 bg-muted/10 border border-border rounded overflow-hidden select-none">
-            {/* Cyber Grid Dot Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none opacity-40" />
+          {/* ========================================================= */}
+          {/* 2. DYNAMIC ROADMAP SVG CANVAS WITH BEZIER CONNECTOR       */}
+          {/* ========================================================= */}
+          <div
+            className={`relative w-full max-w-2xl mx-auto h-[1050px] p-4 border rounded-xl overflow-hidden select-none transition-colors duration-300 ${
+              gameRole === "victim_game"
+                ? "bg-gradient-to-b from-card via-background to-card/90 border-border/80"
+                : "bg-gradient-to-b from-zinc-950 via-zinc-900 to-black border-rose-950/60"
+            }`}
+          >
+            {/* Ambient Background Grid Pattern */}
+            <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-30" />
 
-            {/* Glowing SVG Path Connector */}
+            {/* Glowing SVG Path Connector (Smooth Bezier) */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none -z-0"
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
             >
-              {/* Base dashed line */}
+              <defs>
+                <linearGradient id="questGlowEmerald" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="50%" stopColor="#06b6d4" />
+                  <stop offset="100%" stopColor="#f59e0b" />
+                </linearGradient>
+
+                <linearGradient id="questGlowCrimson" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#f43f5e" />
+                  <stop offset="50%" stopColor="#e11d48" />
+                  <stop offset="100%" stopColor="#a855f7" />
+                </linearGradient>
+
+                <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Full Route Pathway (Base Dashed Track) */}
               <path
-                d="M 28 10 Q 50 20, 72 30 Q 50 40, 28 50 Q 50 60, 72 70 Q 60 80, 50 90"
+                d="M 26 5 C 74 7, 74 11, 74 14 C 34 17, 34 20, 34 23 C 76 26, 76 29, 76 32 C 28 35, 28 39, 28 42 C 72 45, 72 48, 72 51 C 30 54, 30 57, 30 60 C 75 63, 75 67, 75 70 C 28 73, 28 77, 28 80 C 72 83, 72 86, 72 89 C 50 91, 50 93, 50 96"
                 fill="none"
                 stroke="currentColor"
-                className="text-border"
+                className="text-border/60 dark:text-border/40"
                 strokeWidth="2.5"
                 strokeDasharray="3 3"
               />
-              {/* Active neon progress line */}
+
+              {/* Active / Completed Progress Glow Line */}
               <path
-                d="M 28 10 Q 50 20, 72 30"
+                d="M 26 5 C 74 7, 74 11, 74 14"
                 fill="none"
-                stroke="url(#questGlowGradient)"
+                stroke={gameRole === "victim_game" ? "url(#questGlowEmerald)" : "url(#questGlowCrimson)"}
                 strokeWidth="3.5"
+                filter="url(#glowEffect)"
               />
-              <defs>
-                <linearGradient id="questGlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#f59e0b" />
-                </linearGradient>
-              </defs>
             </svg>
 
-            {/* Node 1: Trojan APK */}
-            <div className="absolute left-[28%] top-[10%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-              <button
-                type="button"
-                onClick={() => handleStartLevel("apk-kurir")}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-emerald-500 shadow-lg shadow-emerald-500/20 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-emerald-500/20"
-                title="Mainkan Level 1: Trojan APK"
-              >
-                <span>📦</span>
-                <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-mono text-[10px] font-bold shadow-xs flex items-center gap-0.5">
-                  <CheckCircle2 className="w-2.5 h-2.5" /> 95
-                </span>
-                <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-emerald-500/40 rounded text-[9px] font-mono font-bold text-foreground">
-                  01
-                </span>
-              </button>
-              <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-foreground">
-                  Trojan APK
-                </div>
-                <div className="text-[10px] font-mono text-emerald-400 font-semibold">
-                  +100 XP • Selesai
-                </div>
-              </div>
-            </div>
+            {/* Render All Campaign Level Nodes */}
+            {GAME_LEVELS.map((lvl) => {
+              const isFilteredOut = selectedSector !== "ALL" && lvl.sectorId !== selectedSector;
+              const isCompleted = completedLevels.includes(lvl.id);
+              const isActive = lvl.id === "undangan-nikah" || lvl.id === "checkpoint-quiz-1";
+              const isLocked = !isCompleted && !isActive;
 
-            {/* Node 2: Task Scam (Current Active) */}
-            <div className="absolute left-[72%] top-[30%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-              <button
-                type="button"
-                onClick={() => handleStartLevel("loker-bumn")}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500 shadow-xl shadow-amber-500/30 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/30 animate-pulse"
-                title="Mainkan Level 2: Task Scam"
-              >
-                <span>💼</span>
-                <span className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-amber-500 text-black font-mono text-[10px] font-bold shadow-xs flex items-center gap-1">
-                  <Play className="w-2.5 h-2.5 fill-current" /> Main
-                </span>
-                <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-amber-500/40 rounded text-[9px] font-mono font-bold text-foreground">
-                  02
-                </span>
-              </button>
-              <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-foreground">
-                  Task Scam
-                </div>
-                <div className="text-[10px] font-mono text-amber-400 font-semibold">
-                  +200 XP • Misi Aktif
-                </div>
-              </div>
-            </div>
+              return (
+                <div
+                  key={lvl.id}
+                  style={{ left: `${lvl.xPct}%`, top: `${lvl.yPct}%` }}
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10 transition-all duration-300 ${
+                    isFilteredOut ? "opacity-25 pointer-events-none scale-90" : "opacity-100"
+                  }`}
+                >
+                  {/* NODE TYPE 1: CHECKPOINT (DIAMOND GEOMETRY) */}
+                  {lvl.type === "quiz" || lvl.type === "drill" ? (
+                    <button
+                      type="button"
+                      onClick={() => handleStartLevel(lvl.id)}
+                      className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                        isCompleted
+                          ? "bg-card border-2 border-emerald-500 shadow-md shadow-emerald-500/20"
+                          : isActive
+                          ? "bg-card border-2 border-cyan-500 shadow-lg shadow-cyan-500/30 ring-4 ring-cyan-500/20"
+                          : "bg-muted/40 border border-border text-muted-foreground opacity-60"
+                      } rounded-xl rotate-45`}
+                      title={`Checkpoint: ${lvl.title}`}
+                    >
+                      <span className="-rotate-45 text-xl sm:text-2xl">{lvl.icon}</span>
 
-            {/* Node 3: Phishing Pajak */}
-            <div className="absolute left-[28%] top-[50%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-              <button
-                type="button"
-                onClick={() => handleStartLevel("phishing-pajak")}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-border hover:border-rose-500/80 shadow-md flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-muted"
-                title="Mainkan Level 3: Phishing Pajak"
-              >
-                <span>🏛️</span>
-                <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-muted border border-border text-muted-foreground font-mono text-[10px] font-bold">
-                  Level 03
-                </span>
-                <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-muted-foreground">
-                  03
-                </span>
-              </button>
-              <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-foreground">
-                  Phishing Pajak
-                </div>
-                <div className="text-[10px] font-mono text-muted-foreground font-semibold">
-                  +300 XP
-                </div>
-              </div>
-            </div>
+                      {/* Milestone Badge */}
+                      <span className="absolute -top-3 -rotate-45 px-2 py-0.5 rounded-full bg-cyan-600 text-white font-mono text-[9px] font-bold shadow-xs whitespace-nowrap">
+                        {lvl.type === "quiz" ? "QUIZ" : "DRILL"}
+                      </span>
+                    </button>
+                  ) : lvl.type === "boss" ? (
+                    /* NODE TYPE 2: BOSS LEVEL (HEXAGONAL / FLAME GEOMETRY) */
+                    <button
+                      type="button"
+                      onClick={() => handleStartLevel(lvl.id)}
+                      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer border-2 ${
+                        isCompleted
+                          ? "bg-card border-emerald-500 shadow-lg shadow-emerald-500/20"
+                          : isActive
+                          ? "bg-card border-rose-500 shadow-xl shadow-rose-500/30 ring-4 ring-rose-500/30 animate-pulse"
+                          : "bg-muted/30 border-rose-900/60 text-muted-foreground opacity-70"
+                      }`}
+                      title={`Boss Battle: ${lvl.title}`}
+                    >
+                      <span>{lvl.icon}</span>
 
-            {/* Node 4: Begal OTP Bank */}
-            <div className="absolute left-[72%] top-[70%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-              <button
-                type="button"
-                onClick={() => handleStartLevel("m-banking-palsu")}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-border hover:border-purple-500/80 shadow-md flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-muted"
-                title="Mainkan Level 4: Begal OTP Bank"
-              >
-                <span>🏦</span>
-                <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-muted border border-border text-muted-foreground font-mono text-[10px] font-bold">
-                  Boss Level
-                </span>
-                <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-muted-foreground">
-                  04
-                </span>
-              </button>
-              <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-foreground">
-                  Begal OTP Bank
-                </div>
-                <div className="text-[10px] font-mono text-muted-foreground font-semibold">
-                  +500 XP
-                </div>
-              </div>
-            </div>
+                      {/* Boss Badge */}
+                      <span className="absolute -top-3 px-2 py-0.5 rounded-full bg-rose-600 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-1 whitespace-nowrap">
+                        <Skull className="w-2.5 h-2.5" /> BOSS
+                      </span>
 
-            {/* Node 5: Mystery Chest (Hadiah Guardian) */}
-            <div className="absolute left-[50%] top-[90%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
+                      {/* Level Number */}
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-foreground">
+                        {String(lvl.levelNumber).padStart(2, "0")}
+                      </span>
+                    </button>
+                  ) : (
+                    /* NODE TYPE 3: STANDARD BATTLE NODE (CIRCULAR) */
+                    <button
+                      type="button"
+                      onClick={() => handleStartLevel(lvl.id)}
+                      className={`relative w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-card border-2 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                        isCompleted
+                          ? "border-emerald-500 shadow-lg shadow-emerald-500/20 ring-4 ring-emerald-500/20"
+                          : isActive
+                          ? gameRole === "victim_game"
+                            ? "border-amber-500 shadow-xl shadow-amber-500/30 ring-4 ring-amber-500/30"
+                            : "border-rose-500 shadow-xl shadow-rose-500/30 ring-4 ring-rose-500/30"
+                          : "border-border text-muted-foreground opacity-60"
+                      }`}
+                      title={`Level ${lvl.levelNumber}: ${lvl.title}`}
+                    >
+                      <span>{lvl.icon}</span>
+
+                      {/* Status / Play Now Pill */}
+                      {isCompleted ? (
+                        <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-0.5">
+                          <CheckCircle2 className="w-2.5 h-2.5" /> {lvl.score || 95}
+                        </span>
+                      ) : isActive ? (
+                        <>
+                          <span className="absolute -inset-1 rounded-full animate-ping opacity-25 bg-amber-500 pointer-events-none" />
+                          <span
+                            className={`absolute -top-2.5 px-2.5 py-0.5 rounded-full font-mono text-[9px] font-bold shadow-xs flex items-center gap-1 whitespace-nowrap ${
+                              gameRole === "victim_game" ? "bg-amber-500 text-black" : "bg-rose-600 text-white"
+                            }`}
+                          >
+                            <Play className="w-2.5 h-2.5 fill-current" /> PLAY NOW
+                          </span>
+                        </>
+                      ) : (
+                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-muted border border-border text-muted-foreground font-mono text-[9px] flex items-center gap-0.5">
+                          <Lock className="w-2.5 h-2.5" /> {lvl.reqXp || 300} XP
+                        </span>
+                      )}
+
+                      {/* Level Number Footprint */}
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-foreground">
+                        {String(lvl.levelNumber).padStart(2, "0")}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Level Text Info Below Node */}
+                  <div className="mt-2 text-center pointer-events-none max-w-[120px]">
+                    <div className="text-xs font-bold font-mono text-foreground truncate">
+                      {lvl.title}
+                    </div>
+                    <div
+                      className={`text-[10px] font-mono font-semibold truncate ${
+                        isCompleted
+                          ? "text-emerald-400"
+                          : isActive
+                          ? gameRole === "victim_game"
+                            ? "text-amber-400"
+                            : "text-rose-400"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {lvl.xp} {isCompleted ? "• Selesai" : isLocked ? "• Terkunci" : "• Misi Aktif"}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* NODE 11: FINAL REWARD VAULT (MYSTERY CHEST) */}
+            <div className="absolute left-[50%] top-[96%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
               <button
                 type="button"
                 onClick={() => setIsChestOpen(true)}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500/60 hover:border-amber-400 shadow-xl shadow-amber-500/20 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
-                title="Buka Peti Hadiah Guardian"
+                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500/70 hover:border-amber-400 shadow-xl shadow-amber-500/30 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
+                title="Buka Master Cyber Sentinel Vault"
               >
                 <span>🎁</span>
-                <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono text-[10px] font-bold">
-                  Reward
+                <span className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-amber-500 text-black font-mono text-[10px] font-bold shadow-xs">
+                  VAULT
                 </span>
               </button>
               <div className="mt-2 text-center pointer-events-none">
                 <div className="text-xs sm:text-sm font-bold font-mono text-foreground flex items-center justify-center gap-1">
                   <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                  Mystery Chest
+                  Master Vault
                 </div>
                 <div className="text-[10px] font-mono text-amber-400 font-semibold">
-                  Lencana Guardian
+                  Lencana Kehormatan 2026
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Mystery Chest Modal */}
+          {/* ========================================================= */}
+          {/* 3. MODAL CHECKPOINT 1: MINI-QUIZ FORENSIK                 */}
+          {/* ========================================================= */}
+          {isQuizOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono text-xs font-bold">
+                      QUIZ
+                    </span>
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
+                      Mini-Quiz: Izin Aksesibilitas Android
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setIsQuizOpen(false)}
+                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {/* Soal 1 */}
+                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
+                    <span className="font-mono font-bold text-primary block">
+                      1. Mengapa berkas foto berformat .APK sangat mencurigakan?
+                    </span>
+                    <div className="space-y-1 font-sans">
+                      {[
+                        "Karena .APK adalah format installer aplikasi, bukan format berkas gambar (JPG/PNG).",
+                        "Karena berkas .APK hanya bisa dibuka di komputer server ekspedisi.",
+                      ].map((opt, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setQuizAnswers({ ...quizAnswers, 1: i })}
+                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
+                            quizAnswers[1] === i
+                              ? "bg-primary/10 border-primary text-primary font-medium"
+                              : "bg-background border-border hover:bg-muted/40"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Soal 2 */}
+                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
+                    <span className="font-mono font-bold text-primary block">
+                      2. Izin apa yang disalahgunakan malware untuk menyadap kode OTP perbankan?
+                    </span>
+                    <div className="space-y-1 font-sans">
+                      {[
+                        "Accessibility Services & Read SMS",
+                        "Izin Akses Kamera dan Bluetooth",
+                      ].map((opt, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setQuizAnswers({ ...quizAnswers, 2: i })}
+                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
+                            quizAnswers[2] === i
+                              ? "bg-primary/10 border-primary text-primary font-medium"
+                              : "bg-background border-border hover:bg-muted/40"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsQuizOpen(false)}
+                    className="text-xs h-8"
+                  >
+                    Tutup
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setUserXp((prev) => prev + 100);
+                      if (!completedLevels.includes("checkpoint-quiz-1")) {
+                        setCompletedLevels((prev) => [...prev, "checkpoint-quiz-1"]);
+                      }
+                      setIsQuizOpen(false);
+                    }}
+                    disabled={quizAnswers[1] === undefined || quizAnswers[2] === undefined}
+                    className="text-xs h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-mono font-bold cursor-pointer"
+                  >
+                    Kirim &amp; Klaim +100 XP
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 4. MODAL CHECKPOINT 2: TIMED INCIDENT DRILL (AIR-GAP)     */}
+          {/* ========================================================= */}
+          {isDrillOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30 font-mono text-xs font-bold flex items-center gap-1">
+                      <Timer className="w-3.5 h-3.5" /> DRILL
+                    </span>
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
+                      Timed Incident Drill: 15-Menit Air-Gap
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setIsDrillOpen(false)}
+                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Simulasikan protokol tanggap darurat golden time saat mendeteksi ponsel telah mengklik berkas APK liar.
+                </p>
+
+                <div className="space-y-2 text-xs">
+                  {[
+                    "Aktifkan Mode Pesawat (Airplane Mode) seketika untuk memutus server C2.",
+                    "Matikan seluruh koneksi Wi-Fi, Bluetooth, dan cabut kartu SIM fisik.",
+                    "Masuk ke Pengaturan > Aksesibilitas > Cabut izin aplikasi mencurigakan.",
+                    "Lakukan pergantian kredensial m-Banking dari perangkat lain yang aman.",
+                  ].map((stepText, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setDrillChecks({ ...drillChecks, [idx]: !drillChecks[idx] })}
+                      className={`p-2.5 rounded border transition-colors cursor-pointer flex items-center gap-2.5 ${
+                        drillChecks[idx]
+                          ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
+                          : "bg-muted/30 border-border hover:bg-muted/50"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${
+                          drillChecks[idx]
+                            ? "bg-emerald-600 border-emerald-600 text-white"
+                            : "border-border bg-background"
+                        }`}
+                      >
+                        {drillChecks[idx] && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span className={drillChecks[idx] ? "line-through text-muted-foreground" : ""}>
+                        {stepText}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsDrillOpen(false)}
+                    className="text-xs h-8"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setUserXp((prev) => prev + 150);
+                      if (!completedLevels.includes("checkpoint-drill-2")) {
+                        setCompletedLevels((prev) => [...prev, "checkpoint-drill-2"]);
+                      }
+                      setIsDrillOpen(false);
+                    }}
+                    disabled={Object.values(drillChecks).filter(Boolean).length < 4}
+                    className="text-xs h-8 bg-amber-600 hover:bg-amber-700 text-white font-mono font-bold cursor-pointer"
+                  >
+                    Eksekusi Selesai (+150 XP)
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 5. MODAL REWARD: MASTER CYBER SENTINEL VAULT              */}
+          {/* ========================================================= */}
           {isChestOpen && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-card border border-border max-w-sm w-full p-5 text-center space-y-3 rounded shadow-xl animate-in zoom-in-95 duration-150">
-                <div className="w-14 h-14 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl">
+              <div className="bg-card border border-border max-w-sm w-full p-5 text-center space-y-3.5 rounded-lg shadow-2xl animate-in zoom-in-95 duration-150">
+                <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-4xl shadow-inner">
                   🎁
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-base text-foreground">
-                    Peti Rahasia Forensik
+                    Master Cyber Sentinel Vault
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Lencana Cyber Guardian 2026 terbuka untuk investigasi siber.
+                    Lencana Kehormatan Cyber Guardian 2026 UNMUL terbuka untuk Anda.
                   </p>
                 </div>
-                <div className="p-2.5 bg-muted/40 border border-border rounded text-xs font-mono text-foreground space-y-1">
+                <div className="p-3 bg-muted/40 border border-border rounded text-xs font-mono text-foreground space-y-1.5 text-left">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total XP:</span>
-                    <span className="font-bold text-amber-500">+1,100 XP</span>
+                    <span className="text-muted-foreground">Total Kampanye XP:</span>
+                    <span className="font-bold text-amber-500">+{userXp} XP</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status:</span>
-                    <span className="font-bold text-emerald-500">Tier III (Elite)</span>
+                    <span className="text-muted-foreground">Peringkat Agen:</span>
+                    <span className="font-bold text-emerald-500">Tier III (Elite Sentinel)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Status Sertifikasi:</span>
+                    <span className="font-bold text-primary">Live Verified MIT-WEEK 2026</span>
                   </div>
                 </div>
                 <Button
                   onClick={() => setIsChestOpen(false)}
-                  className="w-full text-xs h-8 bg-primary text-primary-foreground font-mono font-medium"
+                  className="w-full text-xs h-8 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
                 >
-                  Tutup &amp; Lanjutkan Latihan
+                  Klaim Lencana &amp; Lanjutkan Latihan
                 </Button>
               </div>
             </div>
           )}
         </div>
-      )}
-
-      {/* ========================================================= */}
-      {/* VIEW 2: ARENA PERMAINAN INTERAKTIF                        */}
-      {/* ========================================================= */}
-      {gameView === "arena" && (
+      )}{gameView === "arena" && (
         <div className="space-y-3 animate-in fade-in duration-200">
           {/* Top Navigation & Level Indicator */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2 bg-muted/30 border border-border rounded">

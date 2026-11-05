@@ -427,6 +427,272 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
     }
   },
 
+  "undangan-nikah": {
+    id: "undangan-nikah",
+    title: "Undangan Pernikahan Digital .APK",
+    category: "Android Malware / Banking Trojan",
+    scammerName: "Teman Lama / Kerabat Palsu",
+    scammerNumber: "+62 813-8877-6655",
+    scammerAvatar: "UN",
+    initialVulnerability: 50,
+    steps: [
+      {
+        stepIndex: 1,
+        scammerMessage:
+          "Halo kak! Kami sekeluarga bermaksud mengundang kakak ke acara pernikahan kami hari Minggu besok. Mohon doa restu dan kehadirannya ya kak. Detail lokasi dan denah terlampir di berkas Surat_Undangan_Pernikahan.apk ini ya kak.",
+        timestamp: "09:12",
+        attachment: {
+          type: "apk",
+          name: "Surat_Undangan_Pernikahan.apk",
+          size: "5.1 MB",
+          meta: "Aplikasi Android Liar Berkedok Undangan Digital"
+        },
+        scammerTelemetry: {
+          activeTactic: "Eksploitasi Kekerabatan & Curiosity Bias",
+          scammerMood: "CONFIDENT",
+          internalThought: "Orang Indonesia sungkan menolak undangan pernikahan. Pasti penasaran siapa yang nikah dan langsung install file APK ini."
+        },
+        userChoices: [
+          {
+            text: "Wah selamat ya! Ini dengan siapa ya? Saya buka dulu undangannya.",
+            type: "VULNERABLE",
+            vulnerabilityDelta: 35,
+            scammerResponse: "Terima kasih banyak kak! Dibuka aja aplikasinya kak nanti langsung muncul foto mempelai dan jadwal resepsinya.",
+            nextTelemetry: {
+              activeTactic: "Penyusupan Izin Aksesibilitas",
+              scammerMood: "CONFIDENT",
+              internalThought: "Kena pancing! Korban install APK undangan nikah. Aksesibilitas aktif, OTP m-Banking siap disedot."
+            }
+          },
+          {
+            text: "Kok undangannya file .APK kak? Bukannya kalau undangan digital biasanya link website atau gambar PDF/JPG?",
+            type: "CRITICAL",
+            vulnerabilityDelta: -10,
+            scammerResponse: "Itu undangan digital interaktif ada video animasi dan peta Google Maps otomatis kak, makanya dibuat dalam format aplikasi agar ringan di HP.",
+            nextTelemetry: {
+              activeTactic: "Dalih Fitur Canggih Digital",
+              scammerMood: "DEFLECTING",
+              internalThought: "Target kritis nanya ekstensi APK. Gue beralasan undangan interaktif biar dia penasaran lagi."
+            }
+          },
+          {
+            text: "Ini nomor siapa ya? Saya tidak pernah simpan nomor ini dan tidak ada nama pengirimnya.",
+            type: "CRITICAL",
+            vulnerabilityDelta: -5,
+            scammerResponse: "Masa lupa kak, ini teman waktu di kampus dulu! Buka aja dulu undangannya biar lihat foto saya kak.",
+            nextTelemetry: {
+              activeTactic: "Sok Akrab & Familiarity Trick",
+              scammerMood: "DEFLECTING",
+              internalThought: "Gue pura-pura temen lama biar dia merasa gak enak kalau nolak."
+            }
+          }
+        ]
+      }
+    ],
+    postMortem: {
+      title: "Evaluasi Forensik: Modus Undangan Pernikahan .APK",
+      vulnerableConclusion: "File APK undangan pernikahan adalah trojan perbankan yang dirancang menyadap SMS OTP m-Banking secara sembunyi-sembunyi.",
+      criticalConclusion: "Analisis Anda cermat! Menolak instalasi APK undangan palsu menggagalkan peretasan akun finansial Anda.",
+      coreLesson: "Undangan digital asli berupa tautan website resmi (URL) atau gambar/video, bukan file installer aplikasi Android (.apk).",
+      recommendedActions: [
+        "Jangan instal file .apk yang dikirim via WhatsApp dengan kedok undangan.",
+        "Ingatkan keluarga di grup WhatsApp tentang bahaya modus undangan nikah APK.",
+        "Jika terlanjur buka, aktifkan mode pesawat dan hapus aplikasi segera."
+      ]
+    }
+  },
+
+  "tilang-etle": {
+    id: "tilang-etle",
+    title: "Surat Tilang ETLE Polri Palsu",
+    category: "Pencatutan Otoritas / Android Dropper",
+    scammerName: "Petugas Ditlantas Polri",
+    scammerNumber: "+62 822-5544-3322",
+    scammerAvatar: "PO",
+    initialVulnerability: 60,
+    steps: [
+      {
+        stepIndex: 1,
+        scammerMessage:
+          "PEMBERITAHUAN PELANGGARAN LALU LINTAS (ETLE POLRI): Kendaraan Anda bernomor polisi B 1234 XYZ terekam kamera ETLE melakukan pelanggaran lampu merah. Buka berkas Surat_Tilang_ETLE_Bukti.apk berikut untuk melihat foto pelanggaran dan melakukan konfirmasi sebelum STNK diblokir permanen dalam 24 jam!",
+        timestamp: "08:45",
+        attachment: {
+          type: "apk",
+          name: "Surat_Tilang_ETLE_Bukti.apk",
+          size: "6.2 MB",
+          meta: "Malware Android Pencatut Logo Korlantas Polri"
+        },
+        scammerTelemetry: {
+          activeTactic: "Teror Otoritas Hukum & Ancaman Blokir STNK",
+          scammerMood: "CONFIDENT",
+          internalThought: "Ancaman tilang dan blokir STNK bikin panik. Korban bakal buru-buru buka file tanpa verifikasi nopol kendaraannya."
+        },
+        userChoices: [
+          {
+            text: "Waduh kena tilang di mana ya? Saya cek foto buktinya sekarang.",
+            type: "VULNERABLE",
+            vulnerabilityDelta: 35,
+            scammerResponse: "Segera install aplikasinya dan ikuti petunjuk verifikasi tilang agar nomor kendaraan tidak langsung kami kirim ke Samsat.",
+            nextTelemetry: {
+              activeTactic: "Tekanan Urgensi Samsat",
+              scammerMood: "CONFIDENT",
+              internalThought: "Masuk perangkap. Korban panik STNK diblokir."
+            }
+          },
+          {
+            text: "Polri resmi mengirim surat konfirmasi ETLE lewat kantor pos fisik atau cek di situs etle-pmj.info, bukan kirim file .apk via nomor WhatsApp pribadi!",
+            type: "CRITICAL",
+            vulnerabilityDelta: -10,
+            scammerResponse: "Ini sistem notifikasi kilat digital Ditlantas 2026 kak! Kalau Anda menolak konfirmasi, kami anggap Anda mengakui pelanggaran dan denda maksimal Rp1.000.000 berlaku!",
+            nextTelemetry: {
+              activeTactic: "Gertak Denda Maksimal",
+              scammerMood: "PANICKED",
+              internalThought: "Korban tahu SOP surat fisik ETLE! Gue gertak pakai denda satu juta."
+            }
+          }
+        ]
+      }
+    ],
+    postMortem: {
+      title: "Evaluasi Forensik: Modus Surat Tilang ETLE Palsu",
+      vulnerableConclusion: "Polri tidak pernah mengirimkan surat tilang berformat .APK melalui WhatsApp.",
+      criticalConclusion: "Pemahaman Anda terhadap prosedur resmi Korlantas Polri menyelamatkan Anda dari peretasan m-Banking.",
+      coreLesson: "Konfirmasi ETLE resmi dikirim melalui pos fisik tercatat atau dapat dicek mandiri di portal resmi etle-korlantas.info.",
+      recommendedActions: [
+        "Verifikasi tilang di portal resmi https://etle-korlantas.info.",
+        "Abaikan pesan WhatsApp yang mengatasnamakan Ditlantas dengan lampiran file installer.",
+        "Laporkan ke portal Patroli Siber Polri (patrolisiber.id)."
+      ]
+    }
+  },
+
+  "quishing-qris": {
+    id: "quishing-qris",
+    title: "Quishing QRIS & Begal Sesi WhatsApp",
+    category: "Penyusupan Akun / QR Code Tampering",
+    scammerName: "Kasir Minimarket Gadungan",
+    scammerNumber: "+62 895-3322-1100",
+    scammerAvatar: "QR",
+    initialVulnerability: 50,
+    steps: [
+      {
+        stepIndex: 1,
+        scammerMessage:
+          "Halo kak, mohon maaf sekali mengganggu. Saya kasir Indomaret, tadi saya salah input nomor handphone untuk kirim voucher pulsa Rp500.000, nomornya masuk ke SMS kakak. Boleh tolong sebutkan 6 digit angka SMS yang barusan masuk kak? Tolong bantu ya kak, saya harus ganti pakai gaji kalau hilang.",
+        timestamp: "16:20",
+        attachment: {
+          type: "receipt",
+          name: "STRUK_VOUCHER_500RB.jpg",
+          size: "190 KB",
+          meta: "Struk Fiktif Pancingan Emosi Kasir"
+        },
+        scammerTelemetry: {
+          activeTactic: "Manipulasi Rasa Bersalah (Guilt & Empathy Trap)",
+          scammerMood: "CONFIDENT",
+          internalThought: "Gue pasang wajah memelas kasir minimarket salah input nomor. Angka 6 digit itu kode OTP buat gue bajak akun WhatsApp dia."
+        },
+        userChoices: [
+          {
+            text: "Oh iya kasihan sekali kak, kodenya 482910 ya kak.",
+            type: "VULNERABLE",
+            vulnerabilityDelta: 45,
+            scammerResponse: "Terima kasih banyak kak! Semoga berkah ya kak.",
+            nextTelemetry: {
+              activeTactic: "Pengambilalihan Akun Penuh (Account Takeover)",
+              scammerMood: "CONFIDENT",
+              internalThought: "Akun WhatsApp korban berhasil dibajak! Sekarang gue chat semua temennya buat pinjem uang."
+            }
+          },
+          {
+            text: "SMS yang masuk ini jelas tertulis 'JANGAN BAGIKAN KODE INI KEPADA SIAPA PUN UNTUK VERIFIKASI WHATSAPP'. Anda penipu mau bajak akun saya!",
+            type: "CRITICAL",
+            vulnerabilityDelta: -10,
+            scammerResponse: "Kak itu sistem otomatis gateway voucher kak, bukan WhatsApp. Tolong kak kasihan anak saya di rumah!",
+            nextTelemetry: {
+              activeTactic: "Dalih Gateway Otomatis",
+              scammerMood: "DEFLECTING",
+              internalThought: "Dia baca teks peringatan SMS! Gue alibi itu sistem gateway voucher pulsa."
+            }
+          }
+        ]
+      }
+    ],
+    postMortem: {
+      title: "Evaluasi Forensik: Modus Salah Kirim OTP & Begal Akun",
+      vulnerableConclusion: "Menyerahkan 6 digit kode OTP menyebabkan akun Anda langsung berpindah tangan ke penipu.",
+      criticalConclusion: "Keputusan tepat! Kode OTP adalah rahasia pribadi yang tidak boleh dibagikan kepada siapa pun.",
+      coreLesson: "Tidak ada pihak resmi yang meminta kode verifikasi masuk dengan dalih salah kirim voucher atau pulsa.",
+      recommendedActions: [
+        "Aktifkan Verifikasi Dua Langkah (PIN 2FA) di pengaturan WhatsApp.",
+        "Jangan pernah membacakan kode OTP SMS kepada orang asing.",
+        "Segera amankan akun jika ada notifikasi login tidak dikenal."
+      ]
+    }
+  },
+
+  "deepfake-bos": {
+    id: "deepfake-bos",
+    title: "AI Voice Cloning Pimpinan Perusahaan",
+    category: "Generative AI Spoofing / CEO Fraud",
+    scammerName: "Direktur Utama (Kloning AI)",
+    scammerNumber: "+62 811-9900-1122",
+    scammerAvatar: "AI",
+    initialVulnerability: 55,
+    steps: [
+      {
+        stepIndex: 1,
+        scammerMessage:
+          "[Panggilan Suara AI] Halo Dimas, saya lagi meeting tertutup dengan komisaris di luar negeri. Ini ada pembayaran tender darurat yang harus diselesaikan sebelum jam 17:00 sore ini sebesar Rp25.000.000 ke rekening vendor mitra. Tolong talangi dulu pakai dana kas operasional, nanti malam saya ganti langsung dari rekening pribadi saya. Jangan cerita ke staf lain dulu ya, ini proyek rahasia kantor.",
+        timestamp: "16:40",
+        attachment: {
+          type: "document",
+          name: "MEMO_URGENT_DIREKSI.pdf",
+          size: "420 KB",
+          meta: "Memo Internal Tiruan Bertanda Tangan Digital Palsu"
+        },
+        scammerTelemetry: {
+          activeTactic: "Otoritas Pimpinan & Manipulasi Suara AI (Voice Clone)",
+          scammerMood: "CONFIDENT",
+          internalThought: "Suara gue udah dikloning pake AI dari rekaman video sambutan YouTube si bos. Staf bawahan pasti segan dan langsung nurut."
+        },
+        userChoices: [
+          {
+            text: "Siap Pak, saya segera transfer dana kas operasional Rp25 juta ke rekening vendor sekarang.",
+            type: "VULNERABLE",
+            vulnerabilityDelta: 40,
+            scammerResponse: "Bagus Dimas, kirim ke BCA 8820192318 a.n PT Multi Graha ya. Kirim bukti transfernya segera.",
+            nextTelemetry: {
+              activeTactic: "CEO Fraud Execution",
+              scammerMood: "CONFIDENT",
+              internalThought: "Dapat 25 juta! Duit langsung di-split ke rekening nominee penampung."
+            }
+          },
+          {
+            text: "Mohon maaf Pak, sesuai SOP keuangan kantor, pengeluaran dana kas di atas Rp5 juta wajib melalui formulir persetujuan finance resmi dan verifikasi tatap muka atau video call dua arah.",
+            type: "CRITICAL",
+            vulnerabilityDelta: -10,
+            scammerResponse: "Kamu ini lambat sekali kerja! Ini proyek prioritas bernilai miliaran, kalau sampai batal gara-gara kamu, saya pecat kamu besok!",
+            nextTelemetry: {
+              activeTactic: "Intimidasi Pemecatan (Power Harassment)",
+              scammerMood: "PANICKED",
+              internalThought: "Dia taat SOP keuangan! Gue ancam pecat biar dia takut kehilangan pekerjaan."
+            }
+          }
+        ]
+      }
+    ],
+    postMortem: {
+      title: "Evaluasi Forensik: AI Voice Cloning & CEO Fraud",
+      vulnerableConclusion: "Teknologi Generative AI memungkinkan kloning suara siapa pun hanya dari sampel audio 3 detik.",
+      criticalConclusion: "Integritas SOP Anda menyelamatkan perusahaan dari kerugian puluhan juta rupiah.",
+      coreLesson: "Instruksi transfer uang mendadak dari atasan melalui telepon atau pesan pribadi wajib diverifikasi melalui kanal sekunder (SOP perusahaan).",
+      recommendedActions: [
+        "Terapkan kode verifikasi rahasia (Safe Word) dalam komunikasi internal perusahaan.",
+        "Wajibkan otorisasi ganda (Dual-Signatory) untuk setiap pengeluaran dana kas.",
+        "Lakukan konfirmasi tatap muka atau video call jika ada permintaan transfer darurat."
+      ]
+    }
+  },
   "m-banking-palsu": {
     id: "m-banking-palsu",
     title: "Bukti Transfer M-Banking Editan",
@@ -846,6 +1112,89 @@ export function matchCustomUserReply(
     }
   }
 
+  // 5. Scenario: undangan-nikah
+  if (scenarioId === "undangan-nikah") {
+    if (normalized.includes("apk") || normalized.includes("format") || normalized.includes("link") || normalized.includes("web")) {
+      const resp = pickFresh([
+        "Format .APK itu undangan digital interaktif ada video animasi dan denah lokasi GPS langsung kak, makanya dibuat dalam format aplikasi Android resmi.",
+        "Kalau link website sering error kalau server down kak, makanya panitia buat file dokumen aplikasi biar langsung tersimpan di HP kakak.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Dalih Undangan Interaktif",
+          scammerMood: "DEFLECTING",
+          internalThought: "Dia nanya soal ekstensi APK! Gue alibi fitur peta dan video interaktif.",
+        },
+      };
+    }
+  }
+
+  // 6. Scenario: tilang-etle
+  if (scenarioId === "tilang-etle") {
+    if (normalized.includes("pos") || normalized.includes("etle") || normalized.includes("resmi") || normalized.includes("polisi")) {
+      const resp = pickFresh([
+        "Ini sistem ETLE Digital Presisi Korlantas Polri 2026 kak! Sekarang semua notifikasi dikirim kilat via WhatsApp untuk memangkas waktu kirim pos.",
+        "Data pelanggaran resmi tercatat di server Korlantas kak. Segera buka berkas bukti fotonya dalam 24 jam sebelum STNK masuk daftar blokir blokir Samsat.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Ancaman Pemblokiran STNK Samsat",
+          scammerMood: "DEFLECTING",
+          internalThought: "Korban paham soal surat fisik pos. Gue bantah pake alibi sistem digital presisi Polri.",
+        },
+      };
+    }
+  }
+
+  // 7. Scenario: quishing-qris
+  if (scenarioId === "quishing-qris") {
+    if (normalized.includes("otp") || normalized.includes("sms") || normalized.includes("kode") || normalized.includes("bajak")) {
+      const resp = pickFresh([
+        "Kak tolong kak, itu kode voucher belanja kasir Indomaret bukan akun m-Banking! Kalau gak dibacakan saya kena potong gaji bulan ini.",
+        "Demi Allah kak saya cuma kasir biasa yang salah ketik satu angka nomor handphone. Tolong bantu sebutkan 6 angkanya kak.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Eksploitasi Belas Kasihan & Sumpah Palsu",
+          scammerMood: "PANICKED",
+          internalThought: "Dia sadar itu kode OTP verifikasi! Gue sumpah palsu dan mohon-mohon biar dia luluh.",
+        },
+      };
+    }
+  }
+
+  // 8. Scenario: deepfake-bos
+  if (scenarioId === "deepfake-bos") {
+    if (normalized.includes("sop") || normalized.includes("finance") || normalized.includes("telepon") || normalized.includes("kantor")) {
+      const resp = pickFresh([
+        "Kamu ini gak loyal ya sama atasan! Saya lagi meeting sama menteri dan komisaris, kamu malah debat soal SOP! Transfer sekarang atau besok kamu saya mutasi!",
+        "Saya pimpinan kamu Dimas! Memo direksi sudah saya lampirkan, dana ini buat talangan vendor strategis, nanti malam saya ganti tunai!",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Penyalahgunaan Otoritas & Gertak Mutasi",
+          scammerMood: "PUSHING",
+          internalThought: "Dia bawa-bawa SOP finance kantor! Gue tekan pakai ancaman mutasi kerjaan biar nyalinya ciut.",
+        },
+      };
+    }
+  }
   // 5. Default General Response
   const defaultResp = pickFresh([
     "Tolong segera diproses ya kak, kami hanya memberikan batas waktu sampai jam kerja selesai hari ini.",
