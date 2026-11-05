@@ -59,6 +59,7 @@ interface ChatMessage {
   text: string;
   time: string;
   vectors?: string[];
+  actionToAct?: boolean;
 }
 
 function renderCleanMessage(text: string) {
@@ -74,6 +75,65 @@ function renderCleanMessage(text: string) {
     const cleanSeg = seg.replace(/\*/g, "");
     return <span key={i}>{cleanSeg}</span>;
   });
+}
+
+function formatForensicScanMessage(
+  verdict: string,
+  score: number,
+  level: string,
+  reasoning: string,
+  mitigation: string,
+  biasExploited: string[] = [],
+  technicalThreats: string[] = []
+): string {
+  const isClean = score <= 10 || level === "LOW";
+
+  if (isClean) {
+    return `🛡️ **HASIL ANALISIS FORENSIK DIGITAL (TRASP ENGINE)**
+
+• **Vonis Deteksi:** ${verdict}
+• **Tingkat Bahaya:** AMAN (Skor Risiko: ${score}/100)
+
+**1. Uraian Forensik Bukti:**
+${reasoning}
+
+**2. Status Keamanan Sampel:**
+${mitigation || "Sampel ini bersih dari indikasi phishing, rekayasa sosial, maupun muatan file berbahaya. Tidak diperlukan tindakan mitigasi darurat siber."}
+
+Ada pesan atau tautan lain yang ingin Anda periksakan? Tanyakan atau kirimkan buktinya ke saya!`;
+  }
+
+  const biasList =
+    biasExploited && biasExploited.length > 0
+      ? biasExploited.map((b) => `• ${b}`).join("\n")
+      : "• Bias Urgensi Semu (Tekanan Batas Waktu)\n• Bias Otoritas Pihak Ekspedisi/Institusi\n• Eksploitasi Kepanikan Korban";
+
+  const threatList =
+    technicalThreats && technicalThreats.length > 0
+      ? technicalThreats.map((t) => `• ${t}`).join("\n")
+      : "• Ekstensi Berkas Berbahaya di Luar Toko Resmi\n• Penyadapan Izin Aksesibilitas (Accessibility) & SMS OTP\n• Sambungan Server Penyerang / IP Mentah";
+
+  return `🛡️ **HASIL ANALISIS FORENSIK DIGITAL RESMI (TRASP ENGINE)**
+
+• **Vonis Deteksi:** ${verdict}
+• **Tingkat Risiko:** ${level} (Skor Bahaya: ${score}/100)
+
+**1. Uraian Forensik Bukti & Modus Operandi:**
+${reasoning}
+
+**2. Celah / Taktik Terdeteksi (Social Engineering):**
+${biasList}
+
+**3. Ancaman Teknis Siber Teridentifikasi:**
+${threatList}
+
+**4. Rekomendasi Tindakan Darurat:**
+${mitigation}
+
+**5. Panduan Mitigasi & Pelaporan Resmi:**
+• **Jalur Finansial (Penyelamatan Aset):** Segera hubungi Call Center Bank penerbit rekening Anda dan laporkan nomor rekening penipu ke **Indonesia Anti-Scam Centre (IASC)** di portal **iasc.ojk.go.id** atau Hotline OJK 157 untuk permohonan penundaan transaksi (blokir kilat).
+• **Jalur Pidana Siber:** Buat Laporan Polisi (LP) melalui portal resmi Dittipidsiber Bareskrim Polri di **patrolisiber.id** sebagai syarat sah pembekuan rekening tetap dan penyitaan aset sitaan negara.
+• **SOP Mitigasi Lanjutan:** Silakan klik tombol di bawah untuk membuka modul **Act** (SOP Mitigasi & Pelaporan) guna mendapatkan panduan isolasi gawai dan formulir pelaporan interaktif.`;
 }
 
 export function RecognizeEngine({
@@ -122,20 +182,77 @@ export function RecognizeEngine({
   const [isBotTyping, setIsBotTyping] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
+  // Initial Chat Generator with complete forensic breakdown of default sample
+  const createInitialChat = useCallback(() => {
+    const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const greetingMsg: ChatMessage = {
+      id: "bot-init-1",
+      sender: "bot",
+      text: `Halo! Saya Ras, asisten investigasi forensik siber dan analis regulasi TRASP.
+
+Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI OJK (IASC), Bareskrim Polri (patrolisiber.id), dan UU ITE No. 1/2024. Masukkan bukti pesan atau tautan mencurigakan di sebelah kiri, lalu klik **"Pindai & Analisis"**.`,
+      time,
+    };
+
+    const initialAnalysisText = formatForensicScanMessage(
+      "Penyusupan Trojan Perbankan (APK Sniffer)",
+      95,
+      "HIGH",
+      "Pesan ini mengeksploitasi kepanikan batas waktu 2 jam agar korban tidak sempat memverifikasi ke kurir asli. Berkas .apk disamarkan sebagai foto resi paket untuk menyusupkan malware pencuri kode OTP m-Banking saat izin aksesibilitas (Accessibility Services) diberikan pengguna.",
+      "Jangan pernah instal berkas .apk. Jika telanjur klik, segera aktifkan Mode Pesawat (Air-Gap) dan cabut izin aksesibilitas gawai.",
+      [
+        "Bias Urgensi Semu (Batas 2 Jam)",
+        "Bias Otoritas Kurir Ekspedisi Resmi",
+        "Eksploitasi Kepanikan Paket Batal/Hangus",
+      ],
+      [
+        "Ekstensi APK Berbahaya di Luar Toko Resmi (Sideloading)",
+        "Alamat IP Publik Mentah Tanpa Enkripsi SSL/HTTPS",
+        "Eksploitasi Izin Accessibility Services & Penyadapan SMS OTP",
+      ]
+    );
+
+    const initialScanMsg: ChatMessage = {
+      id: "bot-init-scan",
+      sender: "bot",
+      text: initialAnalysisText,
+      time,
+      actionToAct: true,
+    };
+
+    return [greetingMsg, initialScanMsg];
+  }, []);
+
   // Helper to add forensic scan message to Ras chatbot
   const appendScanVerdictToChat = useCallback(
-    (verdict: string, score: number, level: string, reasoning: string, mitigation: string) => {
+    (
+      verdict: string,
+      score: number,
+      level: string,
+      reasoning: string,
+      mitigation: string,
+      biasExploited: string[] = [],
+      technicalThreats: string[] = []
+    ) => {
       const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
       const isClean = score <= 10 || level === "LOW";
-      const messageText = isClean
-        ? `Saya telah memverifikasi bukti yang Anda masukkan:\n\n• **Status:** ${verdict}\n• **Tingkat Bahaya:** AMAN (Skor: ${score}/100)\n• **Uraian:** ${reasoning}\n• **Keterangan:** ${mitigation}\n\nBukti ini bersih dan tidak memuat indikator kejahatan siber. Ada hal lain yang ingin Anda konsultasikan?`
-        : `Saya telah memindai bukti yang Anda masukkan:\n\n• **Deteksi:** ${verdict}\n• **Tingkat Bahaya:** ${level} (${score}/100)\n• **Uraian Forensik:** ${reasoning}\n• **Rekomendasi Tindakan:** ${mitigation}\n\nSilakan tanyakan pada saya jika butuh panduan isolasi atau pelaporan resmi.`;
+
+      const messageText = formatForensicScanMessage(
+        verdict,
+        score,
+        level,
+        reasoning,
+        mitigation,
+        biasExploited,
+        technicalThreats
+      );
 
       const scanMessage: ChatMessage = {
         id: "bot-scan-" + Date.now(),
         sender: "bot",
         text: messageText,
         time,
+        actionToAct: !isClean,
       };
 
       setChatHistory((prev) => {
@@ -159,6 +276,8 @@ export function RecognizeEngine({
       const level = local.riskLevel;
       const reasoning = local.summary;
       const mitigation = local.safeRecommendations?.[0] || "Jangan kirim data sensitif atau transfer dana.";
+      const bias = local.detectedRedFlags.length > 0 ? local.detectedRedFlags : ["Pola Manipulasi Linguistik"];
+      const threats = local.vectors.filter((v) => v.score > 0).map((v) => v.name);
 
       setAiStudy({
         isLoading: false,
@@ -166,13 +285,13 @@ export function RecognizeEngine({
         summaryVerdict: verdict,
         dangerScore: score,
         riskLevel: level,
-        biasExploited: local.detectedRedFlags.length > 0 ? local.detectedRedFlags : ["Pola Manipulasi Linguistik"],
-        technicalThreats: local.vectors.filter((v) => v.score > 0).map((v) => v.name),
+        biasExploited: bias,
+        technicalThreats: threats,
         deepForensicReasoning: reasoning,
         mitigationRecommendation: mitigation,
       });
 
-      appendScanVerdictToChat(verdict, score, level, reasoning, mitigation);
+      appendScanVerdictToChat(verdict, score, level, reasoning, mitigation, bias, threats);
     },
     [appendScanVerdictToChat]
   );
@@ -197,6 +316,8 @@ export function RecognizeEngine({
             const level = data.riskLevel || "HIGH";
             const reasoning = data.deepForensicReasoning || "Pesan ini mengandung indikator manipulasi rekayasa sosial.";
             const mitigation = data.mitigationRecommendation || "Jangan transfer uang atau serahkan data rahasia.";
+            const bias = data.biasExploited || [];
+            const threats = data.technicalThreats || [];
 
             setAiStudy({
               isLoading: false,
@@ -204,13 +325,13 @@ export function RecognizeEngine({
               summaryVerdict: verdict,
               dangerScore: score,
               riskLevel: level,
-              biasExploited: data.biasExploited || [],
-              technicalThreats: data.technicalThreats || [],
+              biasExploited: bias,
+              technicalThreats: threats,
               deepForensicReasoning: reasoning,
               mitigationRecommendation: mitigation,
             });
 
-            appendScanVerdictToChat(verdict, score, level, reasoning, mitigation);
+            appendScanVerdictToChat(verdict, score, level, reasoning, mitigation, bias, threats);
             return;
           }
         }
@@ -224,6 +345,16 @@ export function RecognizeEngine({
     },
     [appendScanVerdictToChat, fallbackToLocal]
   );
+
+  const handleResetChat = useCallback(() => {
+    const initial = createInitialChat();
+    setChatHistory(initial);
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("trasp_recognize_chat", JSON.stringify(initial));
+      } catch {}
+    }
+  }, [createInitialChat]);
 
   // Restore persistent state from localStorage on mount
   useEffect(() => {
@@ -252,7 +383,19 @@ export function RecognizeEngine({
         handleResetChat();
       }
     }
-  }, []);
+  }, [handleResetChat]);
+
+  // Sync external preset changes
+  useEffect(() => {
+    if (initialPresetId) {
+      const p = PRESET_CASES.find((item) => item.id === initialPresetId);
+      if (p) {
+        setSelectedPresetId(p.id);
+        setInputText(p.rawText);
+        setInputUrl(p.rawUrl || "");
+      }
+    }
+  }, [initialPresetId]);
 
   // Save input changes to localStorage
   useEffect(() => {
@@ -269,22 +412,6 @@ export function RecognizeEngine({
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatHistory, isBotTyping, isScanning]);
-
-  const handleResetChat = () => {
-    const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-    const initialGreeting: ChatMessage = {
-      id: "bot-init-" + Date.now(),
-      sender: "bot",
-      text: `Halo! Saya Ras. Masukkan bukti pesan atau tautan mencurigakan di sebelah kiri, lalu klik "Pindai & Analisis" untuk memulai verifikasi forensik digital.`,
-      time,
-    };
-    setChatHistory([initialGreeting]);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("trasp_recognize_chat", JSON.stringify([initialGreeting]));
-      } catch {}
-    }
-  };
 
   const handleRunAnalysis = () => {
     let textToAnalyze = inputText;
@@ -414,12 +541,12 @@ export function RecognizeEngine({
 
   return (
     <div className="space-y-4">
-      {/* Main Grid: Left (Input & Hasil Analisis Forensik) vs Right (Interactive AI Chatbot Ras) */}
+      {/* Main Grid: Left (Input Card) vs Right (Interactive AI Chatbot Ras) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         {/* ========================================================= */}
-        {/* LEFT COLUMN: INPUT PENIPU & HASIL ANALISIS FORENSIK        */}
+        {/* LEFT COLUMN: INPUT PENIPU                                 */}
         {/* ========================================================= */}
-        <div className="lg:col-span-6 space-y-4 flex flex-col">
+        <div className="lg:col-span-5 space-y-4 flex flex-col">
           {/* 1. Input Card */}
           <Card className="border-border">
             <CardHeader className="p-3.5 pb-2 border-b border-border bg-muted/20">
@@ -454,7 +581,7 @@ export function RecognizeEngine({
 
                 <TabsContent value="text" className="space-y-2 mt-0">
                   <Textarea
-                    rows={5}
+                    rows={6}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Tempel pesan penipuan di sini..."
@@ -501,110 +628,50 @@ export function RecognizeEngine({
                   </>
                 )}
               </Button>
+
+              {/* Contoh Kasus Preset */}
+              <div className="space-y-1.5 pt-2 border-t border-border/60">
+                <span className="text-[10px] font-mono text-muted-foreground uppercase font-bold">
+                  Contoh Kasus Riil:
+                </span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {PRESET_CASES.map((preset) => {
+                    const isSelected = selectedPresetId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedPresetId(preset.id);
+                          setInputText(preset.rawText);
+                          setInputUrl(preset.rawUrl || "");
+                          onPresetChange?.(preset.id);
+                        }}
+                        className={`p-1.5 text-left border text-[11px] font-mono rounded transition-colors ${
+                          isSelected
+                            ? "bg-primary/10 border-primary text-foreground font-semibold"
+                            : "bg-muted/40 border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                        }`}
+                      >
+                        <div className="truncate font-sans font-medium text-xs text-foreground">
+                          {preset.title}
+                        </div>
+                        <div className="text-[9px] text-muted-foreground truncate">
+                          {preset.tag}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </CardContent>
           </Card>
-
-          {/* 2. Hasil Analisis Forensik Card (Muncul saat dipindai) */}
-          {hasScanned && (
-            <Card className="border-border animate-in fade-in duration-200">
-              <CardHeader className="p-3.5 pb-2 border-b border-border bg-muted/20">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xs font-bold font-mono tracking-wider uppercase flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-primary" />
-                    Hasil Analisis Forensik
-                  </CardTitle>
-                  <Badge
-                    variant="outline"
-                    className={`text-[10px] font-mono ${getRiskColor(aiStudy.riskLevel || analysisResult.riskLevel)}`}
-                  >
-                    {aiStudy.riskLevel || analysisResult.riskLevel} • {aiStudy.dangerScore ?? analysisResult.riskScore}/100
-                  </Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-3.5 space-y-3 text-xs">
-                {/* Vonis Deteksi */}
-                <div>
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase font-bold">
-                    Vonis Deteksi:
-                  </span>
-                  <h4 className="font-serif font-bold text-sm text-foreground mt-0.5">
-                    {aiStudy.summaryVerdict || analysisResult.statusLabel}
-                  </h4>
-                </div>
-
-                {/* Uraian Forensik Kritis */}
-                <div className="p-2.5 bg-muted/40 border border-border rounded space-y-1">
-                  <span className="text-[10px] font-mono text-primary font-bold uppercase flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-amber-500" />
-                    Uraian Forensik Bukti:
-                  </span>
-                  <p className="text-muted-foreground leading-relaxed text-[11px]">
-                    {aiStudy.deepForensicReasoning || analysisResult.summary}
-                  </p>
-                </div>
-
-                {/* Celah / Taktik Terdeteksi */}
-                {aiStudy.biasExploited && aiStudy.biasExploited.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono text-muted-foreground font-bold uppercase">
-                      Celah / Taktik Terdeteksi:
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {aiStudy.biasExploited.map((bias, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 text-[10px] font-mono bg-muted border border-border rounded text-muted-foreground"
-                        >
-                          {bias}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Rekomendasi Tindakan / Status Keamanan */}
-                {(() => {
-                  const currentScore = aiStudy.dangerScore ?? analysisResult.riskScore;
-                  const isClean = currentScore <= 10;
-                  return (
-                    <div className={`p-2.5 rounded space-y-1 border ${
-                      isClean
-                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300"
-                        : "bg-rose-500/10 border-rose-500/30 text-foreground"
-                    }`}>
-                      <span className={`text-[10px] font-mono font-bold uppercase flex items-center gap-1 ${
-                        isClean ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"
-                      }`}>
-                        {isClean ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Zap className="w-3 h-3 text-rose-500" />}
-                        {isClean ? "Status Keamanan Sampel:" : "Rekomendasi Tindakan Darurat:"}
-                      </span>
-                      <p className="text-[11px] leading-relaxed">
-                        {aiStudy.mitigationRecommendation || analysisResult.safeRecommendations?.[0]}
-                      </p>
-                    </div>
-                  );
-                })()}
-
-                {/* Tombol ke Act */}
-                {onSwitchToAct && (
-                  <Button
-                    onClick={() => onSwitchToAct(selectedPresetId)}
-                    className="w-full text-xs h-8 bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 font-mono font-medium cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <span>Buka SOP Mitigasi &amp; Laporan (Act)</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* ========================================================= */}
         {/* RIGHT COLUMN: INTERACTIVE AI FORENSIC CHATBOT (Ras)        */}
         {/* ========================================================= */}
-        <div className="lg:col-span-6 flex flex-col h-[600px] lg:h-auto min-h-[580px] bg-card border border-border">
+        <div className="lg:col-span-7 flex flex-col h-[640px] lg:h-[680px] bg-card border border-border">
           {/* Chatbot Header */}
           <div className="px-3.5 py-2.5 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
@@ -647,7 +714,7 @@ export function RecognizeEngine({
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded p-2.5 space-y-1 leading-relaxed ${
+                  className={`max-w-[88%] rounded p-3 space-y-1 leading-relaxed ${
                     m.sender === "user"
                       ? "bg-primary text-primary-foreground font-medium"
                       : "bg-muted/70 border border-border text-foreground"
@@ -657,7 +724,20 @@ export function RecognizeEngine({
                     {renderCleanMessage(m.text)}
                   </div>
 
-                  <div className="text-[9px] text-muted-foreground/80 font-mono text-right">
+                  {m.actionToAct && onSwitchToAct && (
+                    <div className="pt-2">
+                      <Button
+                        size="sm"
+                        onClick={() => onSwitchToAct(selectedPresetId)}
+                        className="w-full text-xs h-8 bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 font-mono font-medium cursor-pointer transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <span>Buka SOP Mitigasi &amp; Laporan (Act)</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="text-[9px] text-muted-foreground/80 font-mono text-right pt-1">
                     {m.time}
                   </div>
                 </div>

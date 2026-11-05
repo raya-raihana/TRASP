@@ -558,9 +558,21 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
 export function matchCustomUserReply(
   userText: string,
   scenarioId: string,
-  currentStepIndex: number = 0
+  currentStepIndex: number = 0,
+  chatHistory: Array<{ sender: string; text: string }> = []
 ): DialogueChoice {
   const normalized = userText.toLowerCase().trim();
+  const previousBotTexts = chatHistory
+    .filter((m) => m.sender === "bot")
+    .map((m) => m.text.toLowerCase().trim());
+
+  const pickFresh = (candidates: string[]): string => {
+    const unused = candidates.filter(
+      (c) => !previousBotTexts.some((p) => p.includes(c.slice(0, 20).toLowerCase()) || c.toLowerCase().includes(p.slice(0, 20)))
+    );
+    if (unused.length > 0) return unused[0];
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  };
 
   // 1. Check if userText closely matches any pre-configured choice in scenario.steps[currentStepIndex]
   const scenario = SANDBOX_SCENARIOS[scenarioId] || SANDBOX_SCENARIOS["apk-kurir"];
@@ -569,122 +581,147 @@ export function matchCustomUserReply(
     if (currentStep && currentStep.userChoices) {
       const matchedChoice = currentStep.userChoices.find((c) => {
         const cNorm = c.text.toLowerCase().trim();
-        return (
-          normalized === cNorm ||
-          normalized.includes(cNorm.substring(0, 20)) ||
-          cNorm.includes(normalized.substring(0, 20))
-        );
+        return normalized === cNorm;
       });
-      if (matchedChoice) {
+      if (matchedChoice && !previousBotTexts.includes(matchedChoice.scammerResponse.toLowerCase().trim())) {
         return matchedChoice;
       }
     }
   }
 
-  // 2. Critical keywords (user is vigilant, investigating, or calling out the scam)
-  const criticalKeywords = [
-    "polisi", "lapor", "cekrekening", "patroli", "ojk", "kemenaker", "komdigi",
-    "palsu", "hoax", "penipu", "bohong", "surat tugas", "call center", "resmi",
-    "kantor", "identitas", "ktp", "resi", "ekstensi", "apk", "format", "virus",
-    "malware", "trojan", "blokir", "mutasi", "bukti mutasi", "delay", "kring pajak",
-    "ngapain", "tidak mau", "gamau", "gak mau", "tolak", "ogah", "mana izin",
-    "rekening siapa", "bca", "bank", "modus", "tipu", "cek", "jnt", "tidak ada",
-    "bukan", "ngaco", "situs", "website", "lacak", "track", "keberatan"
-  ];
-
-  // 3. Vulnerable keywords (user is falling into the trap or obeying)
-  const vulnerableKeywords = [
-    "transfer", "kirim", "tf", "rekening", "saldo", "setor", "uang", "deposit",
-    "bayar", "install", "pasang", "unduh", "download", "buka", "klik", "otp",
-    "kode", "sms", "pin", "password", "siap", "oke", "ok", "iya", "baik",
-    "sebentar", "ini buktinya", "ini struknya", "sudah transfer", "sudah kirim",
-    "sudah bayar", "sudah install", "sudah pasang", "udah transfer", "udah kirim",
-    "tolong", "kasihan", "pinjam", "nomor berapa", "rekening mana"
-  ];
-
-  const hasCritical = criticalKeywords.some((kw) => normalized.includes(kw));
-  const hasVulnerable = vulnerableKeywords.some((kw) => normalized.includes(kw));
-
-  // Determine classification: critical inquiry / scam detection takes precedence
-  if (hasCritical) {
-    if (currentStepIndex >= 1) {
-      // User stays critical into step 2 -> Scammer is busted / aborts mission
+  // 2. Scenario: apk-kurir (Kurir J&T Palsu)
+  if (scenarioId === "apk-kurir") {
+    // A. User addresses defensiveness/emotion ("sensi", "curiga", "gak ngancem", "santai", "marah")
+    if (
+      normalized.includes("sensi") ||
+      normalized.includes("curiga") ||
+      normalized.includes("gak ngancem") ||
+      normalized.includes("tidak ngancem") ||
+      normalized.includes("gak lapor") ||
+      normalized.includes("tidak lapor") ||
+      normalized.includes("siapa yang lapor") ||
+      normalized.includes("santai") ||
+      normalized.includes("marah") ||
+      normalized.includes("baper") ||
+      normalized.includes("ngegas") ||
+      normalized.includes("santuy")
+    ) {
+      const resp = pickFresh([
+        "Bukan sensi kak, cuma kurir di lapangan lagi dikejar waktu paket numpuk 80 alamat. Kalau gak selesai sore ini saya kena potong gaji. Tolong dibantu buka aja dulu ya kak biar gak salah paham.",
+        "Ya maaf kalau tadi saya agak buru-buru kak, masalahnya sistem scanner gudang otomatis retur paket dalam 2 jam kalau barcode gak di-scan. Coba klik buka sebentar aja ya kak.",
+        "Santai kok kak, saya cuma jalanin tugas antar barang. Biar sama-sama enak, cek dulu berkasnya sebentar, kalau bukan punya kakak nanti saya bawa balik ke drop point.",
+        "Aduh maaf kak kalau terkesan ngegas, seharian di jalan kena macet dan hujan. Maksud saya cuma mau pastiin paket kakak gak ketahan. Dibantu cek sebentar ya.",
+        "Iya kak maaf ya, saya gak ada maksud marah. Cuma kan tugas saya nganterin sampai tuntas. Kalau kakak gak mau buka berkasnya, nanti pihak gudang anggap paketnya bermasalah.",
+        "Gak sensi kok kak, kita ngobrol baik-baik aja. Tapi tolong kerjasamanya ya kak, resi fisik di paket kena air jadi barcode cuma bisa dibaca lewat aplikasi dokumen itu.",
+      ]);
       return {
         text: userText,
         type: "CRITICAL",
-        vulnerabilityDelta: -50,
-        scammerResponse:
-          "[Panggilan Ditolak] — Nomor ini telah memblokir kontak Anda setelah kedoknya terbongkar.",
+        vulnerabilityDelta: -5,
+        scammerResponse: resp,
         nextTelemetry: {
-          activeTactic: "Kekalahan Total (Scammer Busted & Abort)",
-          scammerMood: "BUSTED",
-          internalThought:
-            "MAMPUS! Korban sudah lapor patroli siber dan tahu semua taktik kami. Segera cabut nomor dan buang kartu perdana ini!"
-        }
+          activeTactic: "False Empathy & Urgent Framing",
+          scammerMood: "DEFLECTING",
+          internalThought: "Target sadar gue defensif. Gue turunin tensi sambil tetep dorong buat buka file APK-nya.",
+        },
       };
     }
 
-    if (scenarioId === "apk-kurir") {
+    // B. User questions file format ("apk", "format", "jpg", "png", "aplikasi", "foto")
+    if (
+      normalized.includes("apk") ||
+      normalized.includes("format") ||
+      normalized.includes("jpg") ||
+      normalized.includes("png") ||
+      normalized.includes("aplikasi") ||
+      normalized.includes("ekstensi") ||
+      normalized.includes("gambar")
+    ) {
+      const resp = pickFresh([
+        "Itu bukan aplikasi jahat kak, sistem scanner barcode gudang otomatis generate berkas manifest resi dalam format digital begitu. Buka aja dulu biar kelihatan foto resi dan barangnya.",
+        "Kamera sistem kantor kami emang otomatis generate file itu kak buat bukti barcode serah terima. Di HP kakak aman kok, tinggal diizinkan buka sekarang.",
+        "Gak bisa kirim foto biasa kak, dari server logistik pusat sistemnya terenkripsi. Makanya harus dibuka lewat berkas dokumen resi tersebut.",
+        "Format foto biasa sering pecah kak kalau dikirim kompres lewat WhatsApp, makanya kantor pakai file dokumen digital resmi biar barcode-nya kebaca jelas.",
+        "Itu format standar sistem ekspedisi 2026 kak, sudah tersertifikasi kok jadi gak usah khawatir, aman dibuka di Android tipe apa pun.",
+      ]);
       return {
         text: userText,
         type: "CRITICAL",
-        vulnerabilityDelta: -35,
-        scammerResponse:
-          "Kok kakak malah curiga dan ngancam lapor? Saya ini kurir resmi cuma jalanin tugas kantor! Kalau kakak nggak percaya, saya laporkan balik pencemaran nama baik ya!",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Technical Misdirection & Jargon Bait",
+          scammerMood: "DEFLECTING",
+          internalThought: "Dia nanya soal ekstensi APK! Gue pake alasan sistem barcode ekspedisi biar dia percaya.",
+        },
+      };
+    }
+
+    // C. User asks for tracking number / nomor resi
+    if (normalized.includes("resi") || normalized.includes("nomor") || normalized.includes("lacak") || normalized.includes("track")) {
+      const resp = pickFresh([
+        "Nomor resinya tertulis lengkap di dalam foto berkas itu kak. Buka aja dulu biar kelihatan nomor resi dan nama pengirim aslinya.",
+        "Saya cuma kurir drop point kak, gak pegang database komputer. Semuanya ada di berkas itu, tinggal klik buat verifikasi resi.",
+        "Kalau nomor resi tertulis di stiker paket yang basah kak, sebagian angka gak kebaca. Makanya sistem arsip ngirim file digital ini ke nomor penerima.",
+        "Kakak tinggal buka berkasnya sebentar, di halaman awal langsung muncul detail pengirim dan nomor resi 12 digit resminya.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -5,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Deflection to Dropper Execution",
+          scammerMood: "DEFLECTING",
+          internalThought: "Target minta nomor resi. Gue arahin tetep harus klik berkas buat liat nomornya.",
+        },
+      };
+    }
+
+    // D. User threatens to report or calls out scam (excluding cases where user explicitly denies reporting)
+    if (
+      (normalized.includes("polisi") ||
+        normalized.includes("lapor") ||
+        normalized.includes("penipu") ||
+        normalized.includes("tipu") ||
+        normalized.includes("bohong") ||
+        normalized.includes("palsu") ||
+        normalized.includes("ojk")) &&
+      !normalized.includes("gak lapor") &&
+      !normalized.includes("tidak lapor") &&
+      !normalized.includes("gak ngancem") &&
+      !normalized.includes("bukan ngancem") &&
+      !normalized.includes("curiga aja")
+    ) {
+      const resp = pickFresh([
+        "Kok kakak malah curiga dan ngancam lapor? Saya ini kurir resmi cuma jalanin tugas kantor! Kalau kakak nggak percaya, saya laporkan balik pencemaran nama baik ya!",
+        "Silakan kalau mau lapor kak, saya ada bukti surat jalan resmi dari kantor. Tapi kalau paket kakak hilang atau retur jangan salahin kurir ya!",
+        "Loh kok nuduh penipu kak, saya cari nafkah halal antar barang! Buka dulu berkasnya biar lihat segel resmi J&T.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -10,
+        scammerResponse: resp,
         nextTelemetry: {
           activeTactic: "Gertak Sambal Defensif (Defensive Intimidation)",
           scammerMood: "DEFLECTING",
-          internalThought:
-            "Sial, korbannya kritis dan sebut kata kunci bahaya! Gue balik serang pake ancaman hukum palsu biar mentalnya drop."
-        }
-      };
-    } else if (scenarioId === "loker-bumn") {
-      return {
-        text: userText,
-        type: "CRITICAL",
-        vulnerabilityDelta: -40,
-        scammerResponse:
-          "Kakak jangan sok tahu ya! Banyak yang sudah sukses cair ratusan juta di grup kami. Kalau nggak mau cuan, nggak usah fitnah perusahaan kami!",
-        nextTelemetry: {
-          activeTactic: "Ego Defence & Social Proof Gaslighting",
-          scammerMood: "DEFLECTING",
-          internalThought:
-            "Aduh dia sebut OJK/Polisi! Jangan sampai member lain di komplotan gue tahu target ini udah bangun."
-        }
-      };
-    } else if (scenarioId === "phishing-pajak") {
-      return {
-        text: userText,
-        type: "CRITICAL",
-        vulnerabilityDelta: -45,
-        scammerResponse:
-          "Anda menentang petugas resmi DJP! Rekening bank Anda sekarang resmi kami ajukan blokir permanen melalui sistem pusat!",
-        nextTelemetry: {
-          activeTactic: "Ancaman Otoritas Puncak (Fabricated Authority)",
-          scammerMood: "PANICKED",
-          internalThought:
-            "Mampus, dia sadar ini penipuan pajak! Gue buat ancaman blokir terakhir kali sebelum gue cabut nomor ini."
-        }
-      };
-    } else {
-      return {
-        text: userText,
-        type: "CRITICAL",
-        vulnerabilityDelta: -40,
-        scammerResponse:
-          "Tega banget sih kakak, anak saya lagi sakit kritis masa dibilang penipu! Mana bukti mutasi bank kakak, jangan bohong!",
-        nextTelemetry: {
-          activeTactic: "Playing the Victim (Emotional Guilt-Trip)",
-          scammerMood: "DEFLECTING",
-          internalThought:
-            "Dia minta cek mutasi riil! Gue makin dramatisir kondisi anak di RS biar rasa bersalahnya bikin dia khilaf."
-        }
+          internalThought: "Sial, target bawa-bawa kata kunci hukum! Gue balik serang pake ancaman nama baik.",
+        },
       };
     }
-  }
 
-  if (hasVulnerable) {
-    if (scenarioId === "apk-kurir") {
+    // E. User agrees or is vulnerable
+    if (
+      normalized.includes("buka") ||
+      normalized.includes("install") ||
+      normalized.includes("pasang") ||
+      normalized.includes("download") ||
+      normalized.includes("oke") ||
+      normalized.includes("ok") ||
+      normalized.includes("siap") ||
+      normalized.includes("iya")
+    ) {
       return {
         text: userText,
         type: "VULNERABLE",
@@ -694,67 +731,135 @@ export function matchCustomUserReply(
         nextTelemetry: {
           activeTactic: "Penyusupan Izin Aksesibilitas (Trojan Deploy)",
           scammerMood: "CONFIDENT",
-          internalThought:
-            "Kena lo! Korban setuju install/buka. Tinggal tunggu izin aksesibilitas aktif buat sedot OTP perbankannya."
-        }
+          internalThought: "Kena lo! Korban setuju install. Tinggal tunggu izin aksesibilitas aktif buat sedot OTP.",
+        },
       };
-    } else if (scenarioId === "loker-bumn") {
+    }
+
+    // F. General fallback for apk-kurir
+    const generalResp = pickFresh([
+      "Tolong dibantu cek dulu ya kak berkasnya, biar urusan paket ini cepat beres dan gak ketahan di gudang logistik.",
+      "Saya tunggu konfirmasinya ya kak, kasihan paketnya kalau sampai ke-return otomatis oleh sistem.",
+      "Gimana kelanjutannya kak? Mohon dikabari ya biar saya bisa lanjut ke alamat pengantaran berikutnya.",
+      "Ini saya masih tunggu di sekitar area alamat kakak, tolong segera dibuka ya dokumennya biar bisa saya serahkan.",
+      "Halo kak, tolong respons ya. Batas waktu verifikasi sistem tinggal sebentar lagi sebelum statusnya berubah retur.",
+    ]);
+    return {
+      text: userText,
+      type: "NEUTRAL",
+      vulnerabilityDelta: 0,
+      scammerResponse: generalResp,
+      nextTelemetry: {
+        activeTactic: "Urgency Reiteration",
+        scammerMood: "PUSHING",
+        internalThought: "Target merespons di luar skenario. Gue desak lagi dengan alasan batas waktu gudang.",
+      },
+    };
+  }
+
+  // 3. Scenario: loker-bumn (Task Scam / Ponzi)
+  if (scenarioId === "loker-bumn") {
+    if (normalized.includes("deposit") || normalized.includes("uang") || normalized.includes("bayar") || normalized.includes("modal")) {
+      const resp = pickFresh([
+        "Deposit ini bukan bayar kak, cuma saldo jaminan pengerjaan tugas VIP yang akan langsung cair beserta komisi 30% dalam 10 menit!",
+        "Tenang aja kak, semua member kami sudah buktikan dana deposit langsung masuk ke rekening pribadi bersama komisi harian.",
+      ]);
       return {
         text: userText,
-        type: "VULNERABLE",
-        vulnerabilityDelta: 35,
-        scammerResponse:
-          "Siap kak! Silakan kirimkan dana deposit ke rekening bendahara kami ya, setelah itu kirim bukti transfer ke sini dalam 5 menit.",
+        type: "CRITICAL",
+        vulnerabilityDelta: -30,
+        scammerResponse: resp,
         nextTelemetry: {
-          activeTactic: "Penyedotan Finansial Berkedok Tugas VIP",
-          scammerMood: "CONFIDENT",
-          internalThought:
-            "Target tergiur keuntungan cepat! Sekali dia transfer 200 ribu, selanjutnya bakal gue kuras jutaan rupiah."
-        }
+          activeTactic: "Guaranteed Return Bait & Social Proof",
+          scammerMood: "DEFLECTING",
+          internalThought: "Dia ragu soal deposit. Gue yakinkan lagi pakai iming-iming pencairan instan 10 menit.",
+        },
       };
-    } else if (scenarioId === "phishing-pajak") {
+    }
+    if (normalized.includes("tipu") || normalized.includes("ojk") || normalized.includes("lapor") || normalized.includes("polisi")) {
+      const resp = pickFresh([
+        "Kakak jangan sok tahu ya! Banyak yang sudah sukses cair ratusan juta di grup kami. Kalau nggak mau cuan, nggak usah fitnah perusahaan kami!",
+        "Perusahaan kami PT Talent BUMN berizin resmi kak, kalau kakak ragu silakan keluar dari grup daripada memprovokasi member lain!",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -45,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Ego Defence & Gaslighting",
+          scammerMood: "DEFLECTING",
+          internalThought: "Target menyebut OJK/Penipuan. Gue bentak biar dia merasa bersalah dan terisolasi.",
+        },
+      };
+    }
+    if (normalized.includes("transfer") || normalized.includes("siap") || normalized.includes("oke") || normalized.includes("kirim")) {
       return {
         text: userText,
         type: "VULNERABLE",
         vulnerabilityDelta: 40,
-        scammerResponse:
-          "Segera masukkan nomor rekening dan 6 digit kode OTP yang masuk ke SMS Anda pada portal tersebut agar pembatalan blokir berhasil.",
+        scammerResponse: "Mantap kak! Silakan transfer sekarang ke rekening bendahara kami dan kirimkan bukti transfernya ya.",
         nextTelemetry: {
-          activeTactic: "Eksfiltrasi Kredensial Langsung",
+          activeTactic: "Penyedotan Dana Bertingkat",
           scammerMood: "CONFIDENT",
-          internalThought:
-            "Target masuk jebakan phishing! Kode OTP perbankan akan langsung terkirim ke panel bot Telegram gue."
-        }
-      };
-    } else {
-      return {
-        text: userText,
-        type: "VULNERABLE",
-        vulnerabilityDelta: 40,
-        scammerResponse:
-          "Terima kasih banyak kak orang baik! Tolong transfer lebihnya sekarang ya kak, anak saya sudah ditunggu dokter di kasir RS.",
-        nextTelemetry: {
-          activeTactic: "Eksfiltrasi Saldo Berbasis Empati Palsu",
-          scammerMood: "CONFIDENT",
-          internalThought:
-            "Uang gratis 1,3 juta masuk kantong! Struk editan Canva gue berhasil memperdaya target."
-        }
+          internalThought: "Masuk perangkap! Uang deposit awal masuk, tinggal minta deposit kedua yang lebih besar.",
+        },
       };
     }
   }
 
-  // Default Neutral / Inquiry response
+  // 4. Scenario: phishing-pajak (DJP Palsu)
+  if (scenarioId === "phishing-pajak") {
+    if (normalized.includes("link") || normalized.includes("portal") || normalized.includes("situs") || normalized.includes("url")) {
+      const resp = pickFresh([
+        "Link portal tersebut adalah server terenkripsi khusus verifikasi wajib pajak progresif yang terhubung langsung dengan sistem Coretax DJP.",
+        "Demi keamanan data, wajib pajak diarahkan ke portal gateway resmi pembayaran sanksi sebelum berkas dilimpahkan ke juru sita.",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -30,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Fabricated Security Protocol",
+          scammerMood: "DEFLECTING",
+          internalThought: "Target meneliti link domain! Gue samarkan pake istilah sistem Coretax pusat.",
+        },
+      };
+    }
+    if (normalized.includes("lapor") || normalized.includes("polisi") || normalized.includes("palsu") || normalized.includes("djp")) {
+      const resp = pickFresh([
+        "Anda menentang petugas resmi DJP! Rekening bank Anda sekarang resmi kami ajukan blokir permanen melalui sistem pusat!",
+        "Silakan periksa NIK Anda besok di kantor pajak, status Anda akan masuk daftar hitam wajib pajak tidak patuh jika menolak verifikasi!",
+      ]);
+      return {
+        text: userText,
+        type: "CRITICAL",
+        vulnerabilityDelta: -45,
+        scammerResponse: resp,
+        nextTelemetry: {
+          activeTactic: "Ancaman Otoritas Puncak",
+          scammerMood: "PANICKED",
+          internalThought: "Mampus, dia curiga ini DJP tiruan! Gue serang pake ancaman blokir NIK.",
+        },
+      };
+    }
+  }
+
+  // 5. Default General Response
+  const defaultResp = pickFresh([
+    "Tolong segera diproses ya kak, kami hanya memberikan batas waktu sampai jam kerja selesai hari ini.",
+    "Jangan ditunda lagi kak, demi keamanan data dan kelancaran transaksi kakak sendiri.",
+  ]);
   return {
     text: userText,
     type: "NEUTRAL",
-    vulnerabilityDelta: 5,
-    scammerResponse:
-      "Mohon maaf kak tolong perhatikan instruksi saya di atas ya, waktunya sangat mendesak! Jangan buang waktu lagi sebelum batas waktu habis.",
+    vulnerabilityDelta: -10,
+    scammerResponse: defaultResp,
     nextTelemetry: {
-      activeTactic: "Fokus Tekanan Waktu (Time-Pressure Redirection)",
-      scammerMood: "PUSHING",
-      internalThought:
-        "Target nanya hal di luar skenario. Gue harus tarik balik fokus dia ke rasa takut atau urgensi waktu."
-    }
+      activeTactic: "Manipulasi Taktis Siber",
+      scammerMood: "DEFLECTING",
+      internalThought: "Target merespons secara netral. Gue arahkan kembali ke instruksi utama.",
+    },
   };
 }

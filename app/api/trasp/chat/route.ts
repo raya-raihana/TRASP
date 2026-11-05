@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SANDBOX_SCENARIOS, matchCustomUserReply } from "@/lib/trasp/sandbox-data";
 
-function createFallbackScammerResponse(userMessage: string, scenarioId: string, currentStepIndex: number = 0) {
-  const fallback = matchCustomUserReply(userMessage || "", scenarioId || "apk-kurir", currentStepIndex);
+function createFallbackScammerResponse(
+  userMessage: string,
+  scenarioId: string,
+  currentStepIndex: number = 0,
+  chatHistory: Array<{ sender: string; text: string }> = []
+) {
+  const fallback = matchCustomUserReply(userMessage || "", scenarioId || "apk-kurir", currentStepIndex, chatHistory);
   return {
     ok: true,
     source: "local-heuristic",
@@ -115,9 +120,10 @@ function createFallbackAssistantResponse(userMessage: string) {
 
 const CANDIDATE_GEMINI_MODELS = [
   "gemini-flash-lite-latest",
-  "gemini-3.5-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3-flash-preview",
   "gemini-3.6-flash",
-  "gemini-3.8-flash",
 ];
 
 export async function POST(req: NextRequest) {
@@ -125,12 +131,14 @@ export async function POST(req: NextRequest) {
   let scenarioId = "apk-kurir";
   let currentStepIndex = 0;
   let mode: "scammer" | "assistant" | "victim" = "scammer";
+  let chatHistory: Array<{ sender: string; text: string }> = [];
 
   try {
     const body = await req.json();
     userMessage = body.userMessage || body.message || "";
     scenarioId = body.scenarioId || "apk-kurir";
     currentStepIndex = body.currentStepIndex || 0;
+    chatHistory = Array.isArray(body.chatHistory) ? body.chatHistory : [];
     
     if (body.mode === "victim") {
       mode = "victim";
@@ -140,7 +148,7 @@ export async function POST(req: NextRequest) {
       mode = "scammer";
     }
 
-    const { chatHistory, currentVulnerability, currentSkepticism, contextEvidence } = body;
+    const { currentVulnerability, currentSkepticism, contextEvidence } = body;
 
     const rawKey =
       process.env.GEMINI_API_KEY ||
@@ -409,9 +417,12 @@ PESAN TERBARU DARI TARGET (USER):
 
 INSTRUKSI ROLEPLAY:
 1. Tanggapi pesan target dengan gaya bahasa WhatsApp penipu Indonesia yang otentik (menekan urgensi waktu, dalih sistem, sok akrab, atau gertak balik).
-2. Jika target kritis/curiga/sebut polisi/OJK: Kamu mulai defensif, ngeles, dan tutupi kedokmu.
-3. Jika target mau menuruti: Dorong lebih keras agar dia segera transfer/kirim OTP/instal APK.
-4. Jangan pernah membocorkan bahwa kamu adalah AI.
+2. DILARANG KERAS mengulang kalimat balasan sebelumnya yang sudah ada di riwayat obrolan! Setiap tanggapan HARUS segar, unik, dan kontekstual terhadap kata-kata terakhir target.
+3. Jika target mengatakan hanya curiga dan tidak mengancam lapor (misal: "curiga aja gue gak ngancem lapor kok, sensi banget kamu"): JANGAN menuduh lapor lagi! Mintalah maaf atau bersikap santai/playing victim bahwa Anda hanya kurir yang lelah dikejar target jam kerja, lalu bujuk kembali agar target mengecek dokumen tersebut.
+4. Jika target kritis/curiga/sebut polisi/OJK: Anda mulai defensif, ngeles beralasan sistem barcode kantor, dan tutupi kedok.
+5. Jika target mau menuruti: Dorong lebih keras agar dia segera transfer/kirim OTP/instal APK.
+6. Pertahankan percakapan agar dinamis, bervariasi, dan bisa berlanjut hingga 10-20+ pertukaran pesan obrolan. Jangan langsung menyerah; terus cari dalih licik untuk memancing target (berkelit, mengalihkan topik, pura-pura kasihan dikejar target kantor, dll).
+7. Jangan pernah membocorkan bahwa Anda adalah AI.
 
 FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
 {
@@ -419,7 +430,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
   "activeTactic": "nama taktik manipulasi psikologis (misal: Kepanikan Urgensi, Dalih Otoritas, Gaslighting)",
   "scammerMood": "CONFIDENT" | "PUSHING" | "DEFLECTING" | "PANICKED" | "BUSTED",
   "internalThought": "monolog batin sinis penipu tentang apa yang dia pikirkan",
-  "vulnerabilityDelta": angka antara -50 sampai +50 (negatif jika target waspada, positif jika target termakan umpan)
+  "vulnerabilityDelta": angka antara -10 sampai +25 (-5 s/d -10 jika target kritis/curiga, +15 s/d +25 jika target mulai termakan umpan/setuju)
 }`;
 
     for (const model of CANDIDATE_GEMINI_MODELS) {
@@ -505,7 +516,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
       }
     }
 
-    return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex));
+    return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex, chatHistory));
   } catch (_err) {
     if (mode === "assistant") {
       return NextResponse.json(createFallbackAssistantResponse(userMessage));
@@ -513,6 +524,6 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
     if (mode === "victim") {
       return NextResponse.json(createFallbackVictimResponse(userMessage));
     }
-    return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex));
+    return NextResponse.json(createFallbackScammerResponse(userMessage, scenarioId, currentStepIndex, chatHistory));
   }
 }
