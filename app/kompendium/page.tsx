@@ -88,7 +88,7 @@ export default function CompendiumPage() {
             className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Kembali</span>
+            <span>Kembali ke Workbench</span>
           </Link>
           <div className="h-4 w-[1px] bg-border hidden sm:block" />
           <div className="flex items-center gap-2">

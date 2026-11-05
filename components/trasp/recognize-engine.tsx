@@ -166,7 +166,7 @@ export function RecognizeEngine({
   // Real-Time AI Study State
   const [aiStudy, setAiStudy] = useState<AIForensicStudy>({
     isLoading: false,
-    source: "gemini-ai (gemini-3.6-flash)",
+    source: "neural-nlp (gemini-2.5-flash)",
     summaryVerdict: "Penyusupan Trojan Perbankan (APK Sniffer)",
     dangerScore: 95,
     riskLevel: "HIGH",
@@ -681,8 +681,8 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
               <div>
                 <h3 className="text-xs font-bold font-mono tracking-wide text-foreground flex items-center gap-1.5">
                   Ras
-                  <Badge variant="outline" className="text-[9px] py-0 px-1 bg-emerald-500/10 text-emerald-600 border-emerald-500/30 font-mono">
-                    Live Gemini
+                  <Badge variant="outline" className="text-[9px] py-0 px-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-mono">
+                    Analis Forensik TRASP
                   </Badge>
                 </h3>
               </div>

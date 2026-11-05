@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   IconAlertTriangle,
+  IconBook,
   IconFolder,
   IconSearch,
   IconTerminal2,
@@ -111,6 +113,15 @@ export function AppSidebar({
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="cursor-pointer text-xs">
+                  <Link href="/kompendium">
+                    <IconBook className="h-4 w-4" />
+                    <span>Kompendium Regulasi</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <TeamInfoDialog
                   trigger={

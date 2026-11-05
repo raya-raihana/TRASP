@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { IconBrandGithub } from "@tabler/icons-react";
+import { IconBrandGithub, IconBook } from "@tabler/icons-react";
 
 interface SiteHeaderProps {
   activeToolName?: string;
@@ -24,6 +25,14 @@ export function SiteHeader({ activeToolName = "Recognize" }: SiteHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <Link
+          href="/kompendium"
+          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono border border-border bg-muted/40 hover:bg-muted text-foreground transition-colors"
+          title="Buka Kompendium Regulasi & Modus Siber"
+        >
+          <IconBook className="h-3.5 w-3.5 text-primary" />
+          <span>Kompendium</span>
+        </Link>
         <a
           href="https://github.com/raya-raihana/TRASP"
           target="_blank"
