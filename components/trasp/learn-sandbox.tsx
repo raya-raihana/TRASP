@@ -1097,11 +1097,14 @@ export function LearnSandbox({
           {/* ========================================================= */}
           {/* 1. MODERN GAMIFICATION HUD PANEL                          */}
           {/* ========================================================= */}
+          {/* ========================================================= */}
+          {/* 1. MODERN GAMIFICATION HUD PANEL (CLEAN & BALANCED)       */}
+          {/* ========================================================= */}
           <div
-            className={`border transition-all duration-300 rounded-lg p-4 sm:p-5 space-y-4 ${
+            className={`border transition-all duration-300 rounded-xl p-4 sm:p-6 space-y-4 ${
               gameRole === "victim_game"
-                ? "bg-card border-border/80 shadow-xs"
-                : "bg-zinc-950 border-rose-900/60 shadow-lg shadow-rose-950/20 text-foreground"
+                ? "bg-card border-border shadow-xs"
+                : "bg-card border-rose-500/30 shadow-xs"
             }`}
           >
             {/* Top Bar: Profile, Rank, Shields, Streak & Role Switcher */}
@@ -1109,10 +1112,10 @@ export function LearnSandbox({
               {/* Profile & Rank Insignia */}
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border shadow-inner transition-transform hover:scale-105 shrink-0 ${
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl border shadow-xs transition-transform hover:scale-105 shrink-0 ${
                     gameRole === "victim_game"
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                      : "bg-rose-500/10 border-rose-500/40 text-rose-500"
+                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                      : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
                   }`}
                 >
                   {gameRole === "victim_game" ? "🛡️" : "🕵️"}
@@ -1125,10 +1128,10 @@ export function LearnSandbox({
                     </span>
                     <Badge
                       variant="outline"
-                      className={`text-[10px] font-mono font-bold px-2 py-0.2 ${
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 ${
                         gameRole === "victim_game"
-                          ? "border-emerald-500/30 text-emerald-400 bg-emerald-950/30"
-                          : "border-rose-500/40 text-rose-400 bg-rose-950/40"
+                          ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+                          : "border-rose-500/30 text-rose-600 dark:text-rose-400 bg-rose-500/10"
                       }`}
                     >
                       {gameRole === "victim_game" ? "Cyber Sentinel (Tier II)" : "Ghost Operator (Tier II)"}
@@ -1153,7 +1156,7 @@ export function LearnSandbox({
                 </div>
 
                 {/* Streak Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-md text-amber-500 text-xs font-mono font-bold">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-md text-amber-600 dark:text-amber-400 text-xs font-mono font-bold">
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   <span>4 Hari Streak</span>
                 </div>
@@ -1161,7 +1164,7 @@ export function LearnSandbox({
                 {/* Role Switcher Pill */}
                 <div
                   className={`flex items-center gap-1 p-1 border rounded-lg transition-colors ${
-                    gameRole === "victim_game" ? "bg-muted/60 border-border" : "bg-zinc-900 border-rose-900/50"
+                    gameRole === "victim_game" ? "bg-muted/50 border-border" : "bg-muted/50 border-rose-500/30"
                   }`}
                 >
                   <button
@@ -1183,7 +1186,7 @@ export function LearnSandbox({
                     className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
                       gameRole === "redteam_game"
                         ? "bg-rose-600 text-white shadow-xs"
-                        : "text-muted-foreground hover:text-rose-400"
+                        : "text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400"
                     }`}
                   >
                     <Crosshair className="w-3 h-3" />
@@ -1214,7 +1217,9 @@ export function LearnSandbox({
                 onClick={() => setSelectedSector("ALL")}
                 className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
                   selectedSector === "ALL"
-                    ? "bg-primary text-primary-foreground border-primary"
+                    ? gameRole === "victim_game"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-rose-600 text-white border-rose-600"
                     : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -1225,7 +1230,9 @@ export function LearnSandbox({
                 onClick={() => setSelectedSector(1)}
                 className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
                   selectedSector === 1
-                    ? "bg-primary text-primary-foreground border-primary"
+                    ? gameRole === "victim_game"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-rose-600 text-white border-rose-600"
                     : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -1236,22 +1243,26 @@ export function LearnSandbox({
                 onClick={() => setSelectedSector(2)}
                 className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
                   selectedSector === 2
-                    ? "bg-primary text-primary-foreground border-primary"
+                    ? gameRole === "victim_game"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-rose-600 text-white border-rose-600"
                     : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Sektor 2: Network &amp; Phishing (Lv 5-8)
+                Sektor 2: Network & Phishing (Lv 5-8)
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedSector(3)}
                 className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
                   selectedSector === 3
-                    ? "bg-primary text-primary-foreground border-primary"
+                    ? gameRole === "victim_game"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-rose-600 text-white border-rose-600"
                     : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Sektor 3: Deepfake &amp; AI (Lv 9-10)
+                Sektor 3: Deepfake & AI (Lv 9-10)
               </button>
             </div>
           </div>
@@ -1260,14 +1271,14 @@ export function LearnSandbox({
           {/* 2. DYNAMIC ROADMAP SVG CANVAS WITH BEZIER CONNECTOR       */}
           {/* ========================================================= */}
           <div
-            className={`relative w-full max-w-2xl mx-auto h-[1050px] p-4 border rounded-xl overflow-hidden select-none transition-colors duration-300 ${
+            className={`relative w-full mx-auto min-h-[1100px] h-[1120px] px-4 py-8 sm:px-12 border rounded-xl overflow-hidden select-none transition-colors duration-300 ${
               gameRole === "victim_game"
-                ? "bg-gradient-to-b from-card via-background to-card/90 border-border/80"
-                : "bg-gradient-to-b from-zinc-950 via-zinc-900 to-black border-rose-950/60"
+                ? "bg-card border-border shadow-xs"
+                : "bg-card border-rose-500/30 shadow-xs"
             }`}
           >
             {/* Ambient Background Grid Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-30" />
+            <div className="absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-[0.03] text-foreground" />
 
             {/* Glowing SVG Path Connector (Smooth Bezier) */}
             <svg
@@ -1283,9 +1294,9 @@ export function LearnSandbox({
                 </linearGradient>
 
                 <linearGradient id="questGlowCrimson" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#f43f5e" />
-                  <stop offset="50%" stopColor="#e11d48" />
-                  <stop offset="100%" stopColor="#a855f7" />
+                  <stop offset="0%" stopColor="#e11d48" />
+                  <stop offset="50%" stopColor="#f43f5e" />
+                  <stop offset="100%" stopColor="#9333ea" />
                 </linearGradient>
 
                 <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
@@ -1302,7 +1313,7 @@ export function LearnSandbox({
                 d="M 26 5 C 74 7, 74 11, 74 14 C 34 17, 34 20, 34 23 C 76 26, 76 29, 76 32 C 28 35, 28 39, 28 42 C 72 45, 72 48, 72 51 C 30 54, 30 57, 30 60 C 75 63, 75 67, 75 70 C 28 73, 28 77, 28 80 C 72 83, 72 86, 72 89 C 50 91, 50 93, 50 96"
                 fill="none"
                 stroke="currentColor"
-                className="text-border/60 dark:text-border/40"
+                className="text-border/80"
                 strokeWidth="2.5"
                 strokeDasharray="3 3"
               />
@@ -1339,17 +1350,23 @@ export function LearnSandbox({
                       onClick={() => handleStartLevel(lvl.id)}
                       className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer ${
                         isCompleted
-                          ? "bg-card border-2 border-emerald-500 shadow-md shadow-emerald-500/20"
+                          ? "bg-card border-2 border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
-                          ? "bg-card border-2 border-cyan-500 shadow-lg shadow-cyan-500/30 ring-4 ring-cyan-500/20"
-                          : "bg-muted/40 border border-border text-muted-foreground opacity-60"
+                          ? gameRole === "victim_game"
+                            ? "bg-card border-2 border-cyan-500 shadow-lg ring-4 ring-cyan-500/25"
+                            : "bg-card border-2 border-rose-500 shadow-lg ring-4 ring-rose-500/25"
+                          : "bg-muted/70 border border-border text-zinc-500 opacity-80 hover:opacity-100"
                       } rounded-xl rotate-45`}
                       title={`Checkpoint: ${lvl.title}`}
                     >
                       <span className="-rotate-45 text-xl sm:text-2xl">{lvl.icon}</span>
 
                       {/* Milestone Badge */}
-                      <span className="absolute -top-3 -rotate-45 px-2 py-0.5 rounded-full bg-cyan-600 text-white font-mono text-[9px] font-bold shadow-xs whitespace-nowrap">
+                      <span
+                        className={`absolute -top-3 -rotate-45 px-2 py-0.5 rounded-full text-white font-mono text-[9px] font-bold shadow-xs whitespace-nowrap ${
+                          gameRole === "victim_game" ? "bg-cyan-600" : "bg-rose-600"
+                        }`}
+                      >
                         {lvl.type === "quiz" ? "QUIZ" : "DRILL"}
                       </span>
                     </button>
@@ -1360,10 +1377,10 @@ export function LearnSandbox({
                       onClick={() => handleStartLevel(lvl.id)}
                       className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer border-2 ${
                         isCompleted
-                          ? "bg-card border-emerald-500 shadow-lg shadow-emerald-500/20"
+                          ? "bg-card border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
-                          ? "bg-card border-rose-500 shadow-xl shadow-rose-500/30 ring-4 ring-rose-500/30 animate-pulse"
-                          : "bg-muted/30 border-rose-900/60 text-muted-foreground opacity-70"
+                          ? "bg-card border-rose-500 shadow-xl ring-4 ring-rose-500/30 animate-pulse"
+                          : "bg-muted/70 border-border text-zinc-500 opacity-80 hover:opacity-100"
                       }`}
                       title={`Boss Battle: ${lvl.title}`}
                     >
@@ -1375,7 +1392,7 @@ export function LearnSandbox({
                       </span>
 
                       {/* Level Number */}
-                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-foreground">
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-zinc-900 dark:text-zinc-100">
                         {String(lvl.levelNumber).padStart(2, "0")}
                       </span>
                     </button>
@@ -1386,12 +1403,12 @@ export function LearnSandbox({
                       onClick={() => handleStartLevel(lvl.id)}
                       className={`relative w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-card border-2 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ${
                         isCompleted
-                          ? "border-emerald-500 shadow-lg shadow-emerald-500/20 ring-4 ring-emerald-500/20"
+                          ? "border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
                           ? gameRole === "victim_game"
-                            ? "border-amber-500 shadow-xl shadow-amber-500/30 ring-4 ring-amber-500/30"
-                            : "border-rose-500 shadow-xl shadow-rose-500/30 ring-4 ring-rose-500/30"
-                          : "border-border text-muted-foreground opacity-60"
+                            ? "border-amber-500 shadow-xl ring-4 ring-amber-500/30"
+                            : "border-rose-500 shadow-xl ring-4 ring-rose-500/30"
+                          : "border-border bg-muted/70 text-zinc-500 opacity-80 hover:opacity-100"
                       }`}
                       title={`Level ${lvl.levelNumber}: ${lvl.title}`}
                     >
@@ -1399,12 +1416,16 @@ export function LearnSandbox({
 
                       {/* Status / Play Now Pill */}
                       {isCompleted ? (
-                        <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-emerald-500 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-0.5">
+                        <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-emerald-600 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-0.5">
                           <CheckCircle2 className="w-2.5 h-2.5" /> {lvl.score || 95}
                         </span>
                       ) : isActive ? (
                         <>
-                          <span className="absolute -inset-1 rounded-full animate-ping opacity-25 bg-amber-500 pointer-events-none" />
+                          <span
+                            className={`absolute -inset-1 rounded-full animate-ping opacity-25 pointer-events-none ${
+                              gameRole === "victim_game" ? "bg-amber-500" : "bg-rose-500"
+                            }`}
+                          />
                           <span
                             className={`absolute -top-2.5 px-2.5 py-0.5 rounded-full font-mono text-[9px] font-bold shadow-xs flex items-center gap-1 whitespace-nowrap ${
                               gameRole === "victim_game" ? "bg-amber-500 text-black" : "bg-rose-600 text-white"
@@ -1414,32 +1435,32 @@ export function LearnSandbox({
                           </span>
                         </>
                       ) : (
-                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-muted border border-border text-muted-foreground font-mono text-[9px] flex items-center gap-0.5">
+                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-background border border-border text-zinc-600 dark:text-zinc-400 font-mono text-[9px] flex items-center gap-0.5">
                           <Lock className="w-2.5 h-2.5" /> {lvl.reqXp || 300} XP
                         </span>
                       )}
 
                       {/* Level Number Footprint */}
-                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-foreground">
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-zinc-900 dark:text-zinc-100">
                         {String(lvl.levelNumber).padStart(2, "0")}
                       </span>
                     </button>
                   )}
 
                   {/* Level Text Info Below Node */}
-                  <div className="mt-2 text-center pointer-events-none max-w-[120px]">
-                    <div className="text-xs font-bold font-mono text-foreground truncate">
+                  <div className="mt-2 text-center pointer-events-none max-w-[140px] px-1">
+                    <div className="text-xs font-bold font-mono text-zinc-900 dark:text-zinc-100 truncate">
                       {lvl.title}
                     </div>
                     <div
-                      className={`text-[10px] font-mono font-semibold truncate ${
+                      className={`text-[10px] font-mono font-bold truncate mt-0.5 ${
                         isCompleted
-                          ? "text-emerald-400"
+                          ? "text-emerald-600 dark:text-emerald-400"
                           : isActive
                           ? gameRole === "victim_game"
-                            ? "text-amber-400"
-                            : "text-rose-400"
-                          : "text-muted-foreground"
+                            ? "text-amber-600 dark:text-amber-500"
+                            : "text-rose-600 dark:text-rose-400"
+                          : "text-zinc-500 dark:text-zinc-400"
                       }`}
                     >
                       {lvl.xp} {isCompleted ? "• Selesai" : isLocked ? "• Terkunci" : "• Misi Aktif"}
@@ -1454,7 +1475,7 @@ export function LearnSandbox({
               <button
                 type="button"
                 onClick={() => setIsChestOpen(true)}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500/70 hover:border-amber-400 shadow-xl shadow-amber-500/30 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
+                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500 hover:border-amber-400 shadow-xl shadow-amber-500/20 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
                 title="Buka Master Cyber Sentinel Vault"
               >
                 <span>🎁</span>
@@ -1463,18 +1484,18 @@ export function LearnSandbox({
                 </span>
               </button>
               <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-foreground flex items-center justify-center gap-1">
-                  <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                <div className="text-xs sm:text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 flex items-center justify-center gap-1">
+                  <Trophy className="w-3.5 h-3.5 text-amber-500" />
                   Master Vault
                 </div>
-                <div className="text-[10px] font-mono text-amber-400 font-semibold">
+                <div className="text-[10px] font-mono text-amber-600 dark:text-amber-500 font-bold">
                   Lencana Kehormatan 2026
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ========================================================= */}
+{/* ========================================================= */}
           {/* 3. MODAL CHECKPOINT 1: MINI-QUIZ FORENSIK                 */}
           {/* ========================================================= */}
           {isQuizOpen && (
