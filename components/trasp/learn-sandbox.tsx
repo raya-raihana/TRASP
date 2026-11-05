@@ -1475,10 +1475,10 @@ export function LearnSandbox({
           {/* 1. MODERN GAMIFICATION HUD PANEL (CLEAN & BALANCED)       */}
           {/* ========================================================= */}
           <div
-            className={`border transition-all duration-300 rounded-xl p-4 sm:p-6 space-y-4 ${
+            className={`border transition-all duration-300 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xs ${
               gameRole === "victim_game"
-                ? "bg-card border-border shadow-xs"
-                : "bg-card border-rose-500/30 shadow-xs"
+                ? "bg-[#FAF8F5] dark:bg-card border-neutral-300 dark:border-neutral-700"
+                : "bg-[#FAF8F5] dark:bg-card border-rose-300 dark:border-rose-800 ring-1 ring-rose-500/20"
             }`}
           >
             {/* Top Bar: Profile, Rank, Shields, Streak & Role Switcher */}
@@ -1497,21 +1497,41 @@ export function LearnSandbox({
 
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                      {gameRole === "victim_game" ? "Operasi Blue Team" : "Simulasi Red Team"}
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 ${
-                        gameRole === "victim_game"
-                          ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
-                          : "border-rose-500/30 text-rose-600 dark:text-rose-400 bg-rose-500/10"
-                      }`}
-                    >
-                      {gameRole === "victim_game" ? "Cyber Sentinel (Tier II)" : "Ghost Operator (Tier II)"}
-                    </Badge>
+                    {gameRole === "victim_game" ? (
+                      <>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] font-mono font-bold px-2.5 py-0.5 border-emerald-500/40 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10"
+                        >
+                          Operasi Blue Team
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] font-mono font-bold px-2 py-0.5 border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 bg-white dark:bg-neutral-800"
+                        >
+                          Cyber Sentinel (Tier II)
+                        </Badge>
+                      </>
+                    ) : (
+                      <>
+                        <Badge
+                          className="text-[10px] font-mono font-bold px-2.5 py-0.5 bg-rose-600 text-white border-rose-600 shadow-xs"
+                        >
+                          MODE: RED TEAM (OFFENSE)
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] font-mono font-bold px-2 py-0.5 border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40"
+                        >
+                          Ghost Operator (Tier II)
+                        </Badge>
+                        <span className="text-[11px] font-mono font-bold text-rose-600 dark:text-rose-400">
+                          Simulasi Red Team
+                        </span>
+                      </>
+                    )}
                   </div>
-                  <h2 className="text-base sm:text-lg font-serif font-bold text-foreground leading-tight mt-0.5">
+                  <h2 className="text-base sm:text-xl font-serif font-bold text-neutral-900 dark:text-neutral-100 leading-tight mt-1">
                     {gameRole === "victim_game" ? "Kampanye Investigasi Forensik" : "Simulasi Penetrasi Rekayasa Sosial"}
                   </h2>
                 </div>
@@ -1520,8 +1540,8 @@ export function LearnSandbox({
               {/* Right: Gamification Badges & Dual Mode Switcher */}
               <div className="flex items-center gap-3 flex-wrap">
                 {/* Shield Batteries (3 Lives) */}
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 border border-border/80 rounded-md">
-                  <span className="text-[10px] font-mono text-muted-foreground mr-1">Integritas:</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg shadow-2xs">
+                  <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-300 font-bold mr-1">Integritas:</span>
                   <div className="flex items-center gap-1" title="3 Nyawa / Shield Integrity">
                     <span className="text-xs">🛡️</span>
                     <span className="text-xs">🛡️</span>
@@ -1530,40 +1550,40 @@ export function LearnSandbox({
                 </div>
 
                 {/* Streak Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-md text-amber-600 dark:text-amber-400 text-xs font-mono font-bold">
-                  <Flame className="w-3.5 h-3.5 fill-current" />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-lg text-amber-800 dark:text-amber-300 text-xs font-mono font-bold shadow-2xs">
+                  <Flame className="w-3.5 h-3.5 fill-current text-amber-500" />
                   <span>4 Hari Streak</span>
                 </div>
 
                 {/* Role Switcher Pill */}
                 <div
-                  className={`flex items-center gap-1 p-1 border rounded-lg transition-colors ${
-                    gameRole === "victim_game" ? "bg-muted/50 border-border" : "bg-muted/50 border-rose-500/30"
+                  className={`flex items-center gap-1 p-1 border rounded-lg transition-colors bg-white dark:bg-neutral-800 shadow-2xs ${
+                    gameRole === "victim_game" ? "border-neutral-300 dark:border-neutral-700" : "border-rose-300 dark:border-rose-800"
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => handleSwitchMode("victim_game")}
-                    className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
+                    className={`px-3 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
                       gameRole === "victim_game"
-                        ? "bg-primary text-primary-foreground shadow-xs"
-                        : "text-muted-foreground hover:text-foreground"
+                        ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xs"
+                        : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
                     }`}
                   >
-                    <Shield className="w-3 h-3" />
+                    <Shield className="w-3.5 h-3.5" />
                     <span>Defense</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleSwitchMode("redteam_game")}
-                    className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
+                    className={`px-3 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded-md ${
                       gameRole === "redteam_game"
                         ? "bg-rose-600 text-white shadow-xs"
-                        : "text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400"
+                        : "text-neutral-700 dark:text-neutral-300 hover:text-rose-600 dark:hover:text-rose-400"
                     }`}
                   >
-                    <Crosshair className="w-3 h-3" />
+                    <Crosshair className="w-3.5 h-3.5" />
                     <span>Red Team</span>
                   </button>
                 </div>
@@ -1571,73 +1591,45 @@ export function LearnSandbox({
             </div>
 
             {/* Bottom Bar: Interactive XP Progress Bar */}
-            <div className="space-y-1.5 pt-2 border-t border-border/40">
+            <div className="space-y-2 pt-2 border-t border-neutral-300/80 dark:border-neutral-700/80">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Progres Kampanye: <strong>{currentProgress.xp}</strong> / 1,500 XP</span>
+                <span className="text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5 font-medium">
+                  <Award className="w-4 h-4 text-amber-500" />
+                  <span>Progres Kampanye: <strong className="text-neutral-900 dark:text-neutral-100 font-bold">{currentProgress.xp}</strong> / 1,500 XP</span>
                 </span>
-                <span className="font-bold text-foreground">
+                <span className="font-bold text-neutral-900 dark:text-neutral-100">
                   Level {currentProgress.completedLevels.length}/10 Selesai ({Math.min(100, Math.round((currentProgress.xp / 1500) * 100))}%)
                 </span>
               </div>
-              <Progress value={Math.min(100, (currentProgress.xp / 1500) * 100)} className="h-2.5" />
+              <Progress value={Math.min(100, (currentProgress.xp / 1500) * 100)} className="h-2.5 bg-neutral-200 dark:bg-neutral-800" />
             </div>
 
             {/* Sector Tabs Filter */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setSelectedSector("ALL")}
-                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedSector === "ALL"
-                    ? gameRole === "victim_game"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-rose-600 text-white border-rose-600"
-                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Semua Sektor (10 Level)
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSector(1)}
-                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedSector === 1
-                    ? gameRole === "victim_game"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-rose-600 text-white border-rose-600"
-                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sektor 1: Social Engineering (Lv 1-4)
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSector(2)}
-                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedSector === 2
-                    ? gameRole === "victim_game"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-rose-600 text-white border-rose-600"
-                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sektor 2: Network & Phishing (Lv 5-8)
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedSector(3)}
-                className={`px-3 py-1 rounded border text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedSector === 3
-                    ? gameRole === "victim_game"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-rose-600 text-white border-rose-600"
-                    : "bg-muted/30 border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Sektor 3: Deepfake & AI (Lv 9-10)
-              </button>
+            <div className="flex items-center gap-2 overflow-x-auto pt-1 text-xs font-mono">
+              {[
+                { id: "ALL" as const, label: "Semua Sektor (10 Level)" },
+                { id: 1 as const, label: "Sektor 1: Social Engineering (Lv 1-4)" },
+                { id: 2 as const, label: "Sektor 2: Network & Phishing (Lv 5-8)" },
+                { id: 3 as const, label: "Sektor 3: Deepfake & AI (Lv 9-10)" },
+              ].map((sec) => {
+                const isSelected = selectedSector === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => setSelectedSector(sec.id)}
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-bold transition-all cursor-pointer shrink-0 shadow-2xs ${
+                      isSelected
+                        ? gameRole === "victim_game"
+                          ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 border-neutral-900 dark:border-neutral-100"
+                          : "bg-rose-600 text-white border-rose-600"
+                        : "bg-white dark:bg-neutral-800/90 border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {sec.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -1645,18 +1637,18 @@ export function LearnSandbox({
           {/* 2. DYNAMIC ROADMAP SVG CANVAS WITH BEZIER CONNECTOR       */}
           {/* ========================================================= */}
           <div
-            className={`relative w-full mx-auto min-h-[1100px] h-[1120px] px-4 py-8 sm:px-12 border rounded-xl overflow-hidden select-none transition-colors duration-300 ${
+            className={`relative w-full max-w-4xl mx-auto min-h-[1100px] h-[1120px] px-8 py-10 sm:px-12 border rounded-2xl select-none transition-colors duration-300 shadow-xs ${
               gameRole === "victim_game"
-                ? "bg-card border-border shadow-xs"
-                : "bg-card border-rose-500/30 shadow-xs"
+                ? "bg-[#FAF8F5] dark:bg-card border-neutral-300 dark:border-neutral-700"
+                : "bg-[#FAF8F5] dark:bg-card border-rose-300 dark:border-rose-800 ring-1 ring-rose-500/20"
             }`}
           >
             {/* Ambient Background Grid Pattern */}
-            <div className="absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-[0.03] text-foreground" />
+            <div className="absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-[0.04] text-neutral-900 dark:text-neutral-100" />
 
             {/* Glowing SVG Path Connector (Smooth Bezier) */}
             <svg
-              className="absolute inset-0 w-full h-full pointer-events-none -z-0"
+              className="absolute inset-0 w-full h-full pointer-events-none overflow-visible -z-0"
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
             >
@@ -1669,8 +1661,8 @@ export function LearnSandbox({
 
                 <linearGradient id="questGlowCrimson" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#e11d48" />
-                  <stop offset="50%" stopColor="#f43f5e" />
-                  <stop offset="100%" stopColor="#9333ea" />
+                  <stop offset="50%" stopColor="#dc2626" />
+                  <stop offset="100%" stopColor="#b91c1c" />
                 </linearGradient>
 
                 <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
@@ -1687,9 +1679,9 @@ export function LearnSandbox({
                 d="M 26 5 C 74 7, 74 11, 74 14 C 34 17, 34 20, 34 23 C 76 26, 76 29, 76 32 C 28 35, 28 39, 28 42 C 72 45, 72 48, 72 51 C 30 54, 30 57, 30 60 C 75 63, 75 67, 75 70 C 28 73, 28 77, 28 80 C 72 83, 72 86, 72 89 C 50 91, 50 93, 50 96"
                 fill="none"
                 stroke="currentColor"
-                className="text-border/80"
+                className="text-neutral-300 dark:text-neutral-700"
                 strokeWidth="2.5"
-                strokeDasharray="3 3"
+                strokeDasharray="4 4"
               />
 
               {/* Active / Completed Progress Glow Line */}
@@ -1722,15 +1714,15 @@ export function LearnSandbox({
                     <button
                       type="button"
                       onClick={() => handleStartLevel(lvl.id)}
-                      className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                      className={`relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer rounded-xl rotate-45 shadow-xs ${
                         isCompleted
-                          ? "bg-card border-2 border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
+                          ? "bg-white dark:bg-neutral-900 border-2 border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
                           ? gameRole === "victim_game"
-                            ? "bg-card border-2 border-cyan-500 shadow-lg ring-4 ring-cyan-500/25"
-                            : "bg-card border-2 border-rose-500 shadow-lg ring-4 ring-rose-500/25"
-                          : "bg-muted/70 border border-border text-zinc-500 opacity-80 hover:opacity-100"
-                      } rounded-xl rotate-45`}
+                            ? "bg-white dark:bg-neutral-900 border-2 border-cyan-500 shadow-lg ring-4 ring-cyan-500/25"
+                            : "bg-white dark:bg-neutral-900 border-2 border-rose-500 shadow-lg ring-4 ring-rose-500/25"
+                          : "bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400"
+                      }`}
                       title={`Checkpoint: ${lvl.title}`}
                     >
                       <span className="-rotate-45 text-xl sm:text-2xl">{lvl.icon}</span>
@@ -1749,12 +1741,12 @@ export function LearnSandbox({
                     <button
                       type="button"
                       onClick={() => handleStartLevel(lvl.id)}
-                      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer border-2 ${
+                      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer border-2 shadow-xs ${
                         isCompleted
-                          ? "bg-card border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
+                          ? "bg-white dark:bg-neutral-900 border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
-                          ? "bg-card border-rose-500 shadow-xl ring-4 ring-rose-500/30 animate-pulse"
-                          : "bg-muted/70 border-border text-zinc-500 opacity-80 hover:opacity-100"
+                          ? "bg-white dark:bg-neutral-900 border-rose-500 shadow-xl ring-4 ring-rose-500/30 animate-pulse"
+                          : "bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400"
                       }`}
                       title={`Boss Battle: ${lvl.title}`}
                     >
@@ -1766,7 +1758,7 @@ export function LearnSandbox({
                       </span>
 
                       {/* Level Number */}
-                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded text-[9px] font-mono font-bold text-neutral-900 dark:text-neutral-100 shadow-2xs">
                         {String(lvl.levelNumber).padStart(2, "0")}
                       </span>
                     </button>
@@ -1775,14 +1767,14 @@ export function LearnSandbox({
                     <button
                       type="button"
                       onClick={() => handleStartLevel(lvl.id)}
-                      className={`relative w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-card border-2 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer ${
+                      className={`relative w-14 h-14 sm:w-18 sm:h-18 rounded-full border-2 flex items-center justify-center text-2xl sm:text-3xl transition-all hover:scale-110 active:scale-95 cursor-pointer shadow-xs ${
                         isCompleted
-                          ? "border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
+                          ? "bg-white dark:bg-neutral-900 border-emerald-500 shadow-md ring-4 ring-emerald-500/20"
                           : isActive
                           ? gameRole === "victim_game"
-                            ? "border-amber-500 shadow-xl ring-4 ring-amber-500/30"
-                            : "border-rose-500 shadow-xl ring-4 ring-rose-500/30"
-                          : "border-border bg-muted/70 text-zinc-500 opacity-80 hover:opacity-100"
+                            ? "bg-white dark:bg-neutral-900 border-amber-500 shadow-xl ring-4 ring-amber-500/30"
+                            : "bg-white dark:bg-neutral-900 border-rose-500 shadow-xl ring-4 ring-rose-500/30"
+                          : "bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400"
                       }`}
                       title={`Level ${lvl.levelNumber}: ${lvl.title}`}
                     >
@@ -1802,39 +1794,39 @@ export function LearnSandbox({
                           />
                           <span
                             className={`absolute -top-2.5 px-2.5 py-0.5 rounded-full font-mono text-[9px] font-bold shadow-xs flex items-center gap-1 whitespace-nowrap ${
-                              gameRole === "victim_game" ? "bg-amber-500 text-black" : "bg-rose-600 text-white"
+                              gameRole === "victim_game" ? "bg-amber-500 text-neutral-950" : "bg-rose-600 text-white"
                             }`}
                           >
                             <Play className="w-2.5 h-2.5 fill-current" /> PLAY NOW
                           </span>
                         </>
                       ) : (
-                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-background border border-border text-zinc-600 dark:text-zinc-400 font-mono text-[9px] flex items-center gap-0.5">
+                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-mono text-[9px] font-bold flex items-center gap-0.5 shadow-2xs">
                           <Lock className="w-2.5 h-2.5" /> {lvl.reqXp || 300} XP
                         </span>
                       )}
 
                       {/* Level Number Footprint */}
-                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-background border border-border rounded text-[9px] font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                      <span className="absolute -bottom-1 px-1.5 py-0.2 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 rounded text-[9px] font-mono font-bold text-neutral-900 dark:text-neutral-100 shadow-2xs">
                         {String(lvl.levelNumber).padStart(2, "0")}
                       </span>
                     </button>
                   )}
 
                   {/* Level Text Info Below Node */}
-                  <div className="mt-2 text-center pointer-events-none max-w-[140px] px-1">
-                    <div className="text-xs font-bold font-mono text-zinc-900 dark:text-zinc-100 truncate">
+                  <div className="mt-2 text-center pointer-events-none max-w-[150px] px-1">
+                    <div className="text-xs font-bold font-mono text-neutral-900 dark:text-neutral-100 truncate">
                       {lvl.title}
                     </div>
                     <div
                       className={`text-[10px] font-mono font-bold truncate mt-0.5 ${
                         isCompleted
-                          ? "text-emerald-600 dark:text-emerald-400"
+                          ? "text-emerald-700 dark:text-emerald-400"
                           : isActive
                           ? gameRole === "victim_game"
-                            ? "text-amber-600 dark:text-amber-500"
+                            ? "text-amber-700 dark:text-amber-400"
                             : "text-rose-600 dark:text-rose-400"
-                          : "text-zinc-500 dark:text-zinc-400"
+                          : "text-neutral-600 dark:text-neutral-400"
                       }`}
                     >
                       {lvl.xp} {isCompleted ? "• Selesai" : isLocked ? "• Terkunci" : "• Misi Aktif"}
@@ -1849,20 +1841,20 @@ export function LearnSandbox({
               <button
                 type="button"
                 onClick={() => setIsChestOpen(true)}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-card border-2 border-amber-500 hover:border-amber-400 shadow-xl shadow-amber-500/20 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
+                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white dark:bg-neutral-900 border-2 border-amber-500 hover:border-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
                 title="Buka Master Cyber Sentinel Vault"
               >
                 <span>🎁</span>
-                <span className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-amber-500 text-black font-mono text-[10px] font-bold shadow-xs">
+                <span className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-amber-500 text-neutral-950 font-mono text-[10px] font-bold shadow-xs">
                   VAULT
                 </span>
               </button>
               <div className="mt-2 text-center pointer-events-none">
-                <div className="text-xs sm:text-sm font-bold font-mono text-zinc-900 dark:text-zinc-100 flex items-center justify-center gap-1">
+                <div className="text-xs sm:text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100 flex items-center justify-center gap-1">
                   <Trophy className="w-3.5 h-3.5 text-amber-500" />
                   Master Vault
                 </div>
-                <div className="text-[10px] font-mono text-amber-600 dark:text-amber-500 font-bold">
+                <div className="text-[10px] font-mono text-amber-700 dark:text-amber-400 font-bold">
                   Lencana Kehormatan 2026
                 </div>
               </div>
