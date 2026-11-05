@@ -64,11 +64,30 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   // Verify Simulator Phone View opened
   await expect(screen.getByText(/Level 02: Undangan Pernikahan \.APK/i)).toBeVisible();
   await expect(screen.getByRole('heading', { name: /Kerabat Palsu/i })).toBeVisible();
-  await app.screenshot('quest-05-level2-arena-active');
+  await expect(screen.getByText('09:41')).toBeVisible();
+  await expect(screen.getByText(/Integritas Saldo & Data:/i)).toBeVisible();
+  await expect(screen.getByText(/Tingkat Tekanan Psikologis:/i)).toBeVisible();
+  await expect(screen.getByText(/Pilihan Respon Dialog:/i)).toBeVisible();
+  await expect(screen.getByText(/Taktis \/ Kritis/i)).toBeVisible();
+  await app.screenshot('quest-05-level2-arena-phone-mockup');
 
-  // 9. Test Back to Roadmap
+  // 9. Test Block & Report Action (Debrief Trigger)
+  const blockBtn = screen.getByRole('button', /Blokir & Laporkan Kasus/i);
+  await blockBtn.tap();
+
+  // Verify Debrief Modal Screen
+  await expect(screen.getByRole('heading', { name: /Debrief Forensik: Kasus #2/i })).toBeVisible();
+  await expect(screen.getByText(/ANCAMAN DINETRALISIR DENGAN SUKSES/i)).toBeVisible();
+  await expect(screen.getByText(/UU ITE No\. 1\/2024/i)).toBeVisible();
+  await app.screenshot('quest-06-debrief-modal');
+
+  // Close debrief modal via close button
+  const closeDebriefBtn = screen.getByRole('button', { name: 'Tutup Debrief' });
+  await closeDebriefBtn.tap();
+
+  // 10. Test Back to Roadmap
   const backToRoadmapBtn = screen.getByRole('button', 'Kembali ke Katalog');
   await backToRoadmapBtn.tap();
   await expect(screen.getByRole('heading', { name: /Kampanye Investigasi Forensik/i })).toBeVisible();
-  await app.screenshot('quest-06-back-to-roadmap');
+  await app.screenshot('quest-07-back-to-roadmap');
 });

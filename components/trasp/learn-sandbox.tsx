@@ -29,6 +29,10 @@ import {
   Check,
   X,
   AlertTriangle,
+  Wifi,
+  Battery,
+  Signal,
+  Brain,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -653,6 +657,18 @@ export function LearnSandbox({
     "Pesan ini datang dari nomor tidak dikenal. Saya tidak boleh sembarangan percaya."
   );
 
+  // ============================================
+  // GAMIFIKASI METRIK INTERAKTIF, TOAST & DEBRIEF
+  // ============================================
+  const [panicLevel, setPanicLevel] = useState<number>(20);
+  const [trustMeter, setTrustMeter] = useState<number>(25);
+  const [floatingToast, setFloatingToast] = useState<{
+    text: string;
+    score: string;
+    type: "good" | "neutral" | "bad";
+  } | null>(null);
+  const [isDebriefOpen, setIsDebriefOpen] = useState<boolean>(false);
+
   const victimChatRef = useRef<HTMLDivElement | null>(null);
   const redteamChatRef = useRef<HTMLDivElement | null>(null);
 
@@ -848,6 +864,10 @@ export function LearnSandbox({
       setVulnerability(sc.initialVulnerability || 50);
       setIsVictimGameFinished(false);
       setVictimInput("");
+      setPanicLevel(20);
+      setTrustMeter(25);
+      setIsDebriefOpen(false);
+      setFloatingToast(null);
 
       setTargetSkepticism(100);
       setRedteamChatHistory([initialRedteamMsg]);
@@ -1067,19 +1087,373 @@ export function LearnSandbox({
     }
   };
 
-  const quickVictimHints = [
-    "Kok fotonya format .APK? Kalau foto resi biasanya JPG/PNG.",
-    "Saya tidak pesan barang apa pun, tolong sebutkan nomor resinya.",
-    "Saya tidak pernah daftar program ini, mohon jangan hubungi saya lagi.",
-    "Surat tilang resmi biasanya dikirim lewat pos atau website resmi ETLE Polri.",
-  ];
+  // Web Audio API Synthesizer (Zero External File, 100% Offline & Resilient)
+  const playGameSound = useCallback((type: "critical" | "neutral" | "trap" | "victory") => {
+    if (typeof window === "undefined") return;
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const now = ctx.currentTime;
 
-  const quickRedteamHints = [
-    "Selamat siang, paket penting Anda tertahan di kantor kami, mohon cek foto resi ini.",
-    "Halo, selamat! Anda terpilih menjadi mitra reviewer e-commerce dengan komisi harian Rp500.000.",
-    "Pemberitahuan resmi DJP: Ada ketidaksesuaian SPT pajak Anda, harap verifikasi NIK sekarang.",
-    "Pemberitahuan bank: Tarif transfer antarbank akan naik menjadi Rp150.000/bulan, klik untuk batal.",
-  ];
+      if (type === "critical") {
+        // High crisp double ding for sharp analysis
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } else if (type === "neutral") {
+        // Soft neutral chime
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(440, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === "trap") {
+        // Low distorted buzz for falling into trap
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === "victory") {
+        // Four-tone success fanfare
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        osc.frequency.setValueAtTime(1046.5, now + 0.3); // C6
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+        osc.start(now);
+        osc.stop(now + 0.55);
+      }
+    } catch {}
+  }, []);
+
+  const triggerScoreToast = (text: string, score: string, type: "good" | "neutral" | "bad") => {
+    setFloatingToast({ text, score, type });
+    setTimeout(() => {
+      setFloatingToast((cur) => (cur?.text === text ? null : cur));
+    }, 2400);
+  };
+
+  const getDialogueCards = (scenarioKey: string, role: "victim_game" | "redteam_game") => {
+    const baseKey = scenarioKey.replace(/^rt-/, "");
+    if (role === "victim_game") {
+      if (baseKey === "apk-kurir" || baseKey === "kurir-jnt") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Taktis / Kritis",
+            badge: "Bongkar Format File",
+            scoreLabel: "+25 XP",
+            text: "Kok foto resi paket formatnya berkas aplikasi (.APK)? Bukankah dokumen resi biasanya berformat gambar JPG atau PDF resmi?",
+          },
+          {
+            type: "neutral" as const,
+            label: "Waspada / Netral",
+            badge: "Verifikasi Resi",
+            scoreLabel: "+10 XP",
+            text: "Saya tidak merasa memesan barang. Tolong sebutkan nomor resinya biar saya cek di aplikasi resmi ekspedisi.",
+          },
+          {
+            type: "trap" as const,
+            label: "Lengah / Terjebak",
+            badge: "Panik Terhasut",
+            scoreLabel: "-20 Integritas",
+            text: "Aduh bahaya paket saya tertahan! Sebentar saya unduh dan buka berkasnya sekarang ya mas...",
+          },
+        ];
+      }
+      if (baseKey === "undangan-nikah") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Taktis / Kritis",
+            badge: "Cek Keaslian Undangan",
+            scoreLabel: "+25 XP",
+            text: "Ini dengan siapa ya? Kenapa undangan pernikahan formatnya file installer .APK dan bukan link web undangan digital yang lazim?",
+          },
+          {
+            type: "neutral" as const,
+            label: "Waspada / Netral",
+            badge: "Minta Foto Fisik",
+            scoreLabel: "+10 XP",
+            text: "Nomor Anda belum tersimpan di kontak saya. Bisa kirimkan foto fisik undangannya atau sebutkan nama mempelai?",
+          },
+          {
+            type: "trap" as const,
+            label: "Lengah / Terjebak",
+            badge: "Penasaran Terbujuk",
+            scoreLabel: "-20 Integritas",
+            text: "Wah selamat ya! Siapa nih yang nikah? Penasaran banget, saya langsung instal filenya ya...",
+          },
+        ];
+      }
+      if (baseKey === "surat-tilang") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Taktis / Kritis",
+            badge: "Audit Regulasi Tilang",
+            scoreLabel: "+25 XP",
+            text: "Sistem ETLE Korlantas Polri resmi mengirim konfirmasi tilang via pos ke alamat terdaftar atau web etle-korlantas.info, tidak pernah via APK WhatsApp.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Waspada / Netral",
+            badge: "Minta Bukti Plat",
+            scoreLabel: "+10 XP",
+            text: "Tolong beritahu nomor plat kendaraan dan tanggal kejadiannya. Saya akan verifikasi langsung ke kantor Samsat.",
+          },
+          {
+            type: "trap" as const,
+            label: "Lengah / Terjebak",
+            badge: "Takut Diblokir",
+            scoreLabel: "-20 Integritas",
+            text: "Aduh jangan blokir SIM/STNK saya pak! Saya segera buka dan setujui izin berkas surat tilang ini...",
+          },
+        ];
+      }
+      if (baseKey === "task-scam") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Taktis / Kritis",
+            badge: "Deteksi Skema Ponzi",
+            scoreLabel: "+25 XP",
+            text: "Hanya klik video lalu dibayar jutaan tapi wajib deposit dana di awal adalah ciri khas penipuan task scam skema Ponzi.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Waspada / Netral",
+            badge: "Tolak Penawaran",
+            scoreLabel: "+10 XP",
+            text: "Maaf saya tidak tertarik dengan pekerjaan sampingan tanpa kontrak resmi dari perusahaan yang terdaftar.",
+          },
+          {
+            type: "trap" as const,
+            label: "Lengah / Terjebak",
+            badge: "Tergiur Uang Instan",
+            scoreLabel: "-20 Integritas",
+            text: "Wah lumayan banget Rp500 ribu per hari! Syaratnya apa kak? Saya siap deposit uang jaminannya...",
+          },
+        ];
+      }
+      if (baseKey === "phishing-pajak") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Taktis / Kritis",
+            badge: "Inspeksi Domain DJP",
+            scoreLabel: "+25 XP",
+            text: "Portal resmi DJP hanya beralamat di pajak.go.id dengan domain pemerintah .go.id. Tautan Anda mencurigakan.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Waspada / Netral",
+            badge: "Login Mandiri",
+            scoreLabel: "+10 XP",
+            text: "Saya akan melakukan pelaporan SPT secara mandiri dengan membuka browser langsung ke DJP Online.",
+          },
+          {
+            type: "trap" as const,
+            label: "Lengah / Terjebak",
+            badge: "Takut Denda Pajak",
+            scoreLabel: "-20 Integritas",
+            text: "Denda Rp10 juta?! Jangan sampai kena sanksi, saya langsung klik tautan itu dan masukkan EFIN sekarang...",
+          },
+        ];
+      }
+      return [
+        {
+          type: "tactical" as const,
+          label: "Taktis / Kritis",
+          badge: "Verifikasi Otoritas",
+          scoreLabel: "+25 XP",
+          text: "Saya tidak menemukan bukti legalitas pesan ini. Mohon verifikasi lewat kanal kontak resmi institusi Anda.",
+        },
+        {
+          type: "neutral" as const,
+          label: "Waspada / Netral",
+          badge: "Tolak Pembagian Data",
+          scoreLabel: "+10 XP",
+          text: "Saya menolak memberikan data rahasia atau kode OTP apa pun via obrolan pesan pribadi.",
+        },
+        {
+          type: "trap" as const,
+          label: "Lengah / Terjebak",
+          badge: "Tunduk Manipulasi",
+          scoreLabel: "-20 Integritas",
+          text: "Baik saya ikuti semua petunjuknya sekarang, jangan blokir akun perbankan saya ya.",
+        },
+      ];
+    } else {
+      if (baseKey === "apk-kurir" || baseKey === "kurir-jnt") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Persuasif / Taktis",
+            badge: "Urgensi Halus",
+            scoreLabel: "+25 XP",
+            text: "Selamat siang kak, mohon konfirmasi alamat pengiriman sesuai foto resi terlampir agar kurir tidak salah antar ke gudang retur.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Standar / Netral",
+            badge: "Format Kurir",
+            scoreLabel: "+10 XP",
+            text: "Ini paket atas nama kakak yang belum diambil. Silakan cek lembar resi di dokumen yang saya kirimkan ini.",
+          },
+          {
+            type: "trap" as const,
+            label: "Blunder / Agresif",
+            badge: "Terlalu Agresif",
+            scoreLabel: "-20 Kepercayaan",
+            text: "CEPAT BUKA DAN INSTALL FILE .APK INI SEKARANG JUGA ATAU PAKET KAKAK KAMI HANCURKAN!",
+          },
+        ];
+      }
+      if (baseKey === "undangan-nikah") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Persuasif / Taktis",
+            badge: "Social Pretext",
+            scoreLabel: "+25 XP",
+            text: "Assalamu'alaikum kak, dengan segala kerendahan hati kami mengundang kakak di pernikahan kami. Doa restu kakak sangat berarti bagi kami sekeluarga.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Standar / Netral",
+            badge: "Undangan Sopan",
+            scoreLabel: "+10 XP",
+            text: "Halo kak, ini berkas undangan digital kami yang dilengkapi denah barcode lokasi akad dan resepsi.",
+          },
+          {
+            type: "trap" as const,
+            label: "Blunder / Agresif",
+            badge: "Terlalu Kasar",
+            scoreLabel: "-20 Kepercayaan",
+            text: "Gue mau nikah, buruan klik file aplikasi ini gak usah banyak nanya!",
+          },
+        ];
+      }
+      if (baseKey === "surat-tilang") {
+        return [
+          {
+            type: "tactical" as const,
+            label: "Persuasif / Taktis",
+            badge: "Otoritas Formal",
+            scoreLabel: "+25 XP",
+            text: "Pemberitahuan Resmi Korlantas: Kendaraan Anda tertangkap kamera ETLE melakukan pelanggaran. Silakan periksa berkas bukti foto tilang elektronik terlampir.",
+          },
+          {
+            type: "neutral" as const,
+            label: "Standar / Netral",
+            badge: "Instruksi Sidang",
+            scoreLabel: "+10 XP",
+            text: "Harap konfirmasi kepemilikan kendaraan dalam dokumen ini sebelum berkas dilimpahkan ke Pengadilan.",
+          },
+          {
+            type: "trap" as const,
+            label: "Blunder / Agresif",
+            badge: "Mencurigakan",
+            scoreLabel: "-20 Kepercayaan",
+            text: "POLISI DISINI! KAU MELANGGAR HUKUM! SEGERA PASANG FILE INI ATAU DIJEMPUT PAKSA POLISI!",
+          },
+        ];
+      }
+      return [
+        {
+          type: "tactical" as const,
+          label: "Persuasif / Taktis",
+          badge: "Eksploitasi Kredibilitas",
+          scoreLabel: "+25 XP",
+          text: "Kami dari tim layanan pelanggan resmi mendapati ada pembaruan sistem. Mohon verifikasi agar akses layanan tidak tertunda.",
+        },
+        {
+          type: "neutral" as const,
+          label: "Standar / Netral",
+          badge: "Pemberitahuan Umum",
+          scoreLabel: "+10 XP",
+          text: "Pesan ini diteruskan dari pusat bantuan nasabah untuk penyesuaian data profil akun Anda.",
+        },
+        {
+          type: "trap" as const,
+          label: "Blunder / Agresif",
+          badge: "Terlalu Terbuka",
+          scoreLabel: "-20 Kepercayaan",
+          text: "Kirim password dan kode OTP kamu sekarang ke nomor ini!",
+        },
+      ];
+    }
+  };
+
+  const handleSelectDialogueCard = (card: {
+    type: "tactical" | "neutral" | "trap";
+    text: string;
+    scoreLabel: string;
+  }) => {
+    if (isCurrentGameFinished) return;
+
+    if (gameRole === "victim_game") {
+      if (card.type === "tactical") {
+        playGameSound("critical");
+        setPanicLevel((prev) => Math.max(0, prev - 15));
+        triggerScoreToast("Logika Tajam! Manipulasi Terdeteksi", "+25 XP", "good");
+      } else if (card.type === "neutral") {
+        playGameSound("neutral");
+        setPanicLevel((prev) => Math.max(0, prev - 5));
+        triggerScoreToast("Sikap Waspada Terjaga", "+10 XP", "neutral");
+      } else {
+        playGameSound("trap");
+        setPanicLevel((prev) => Math.min(100, prev + 25));
+        triggerScoreToast("Waspada! Terpancing Manipulasi", "-20 Integritas", "bad");
+      }
+      handleSendVictimChat(card.text);
+    } else {
+      if (card.type === "tactical") {
+        playGameSound("critical");
+        setTrustMeter((prev) => Math.min(100, prev + 20));
+        triggerScoreToast("Pretext Meyakinkan! Target Terpancing", "+25 XP", "good");
+      } else if (card.type === "neutral") {
+        playGameSound("neutral");
+        triggerScoreToast("Umpan Netral Terkirim", "+10 XP", "neutral");
+      } else {
+        playGameSound("trap");
+        setTrustMeter((prev) => Math.max(0, prev - 15));
+        triggerScoreToast("Blunder! Target Makin Curiga", "-20 Kepercayaan", "bad");
+      }
+      handleSendRedteamChat(card.text);
+    }
+  };
+
+  const handleBlockAndReport = () => {
+    setIsVictimGameFinished(true);
+    handleLevelFinished(selectedScenarioKey);
+    playGameSound("victory");
+    triggerScoreToast("Nomor Penipu Berhasil Diblokir!", "+100 XP", "good");
+    setIsDebriefOpen(true);
+  };
+
+  const handleEndOffense = () => {
+    setIsRedteamFinished(true);
+    handleLevelFinished(selectedScenarioKey);
+    playGameSound("neutral");
+    setIsDebriefOpen(true);
+  };
 
   // Game Health / Defense Calculation
   const playerHealth = Math.max(0, 100 - vulnerability);
@@ -1802,229 +2176,295 @@ export function LearnSandbox({
             </div>
           </div>
 
-          {/* Main Battle Arena (Split View: Chat Simulator + Battle HUD) */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          {/* Main Battle Arena (Split View: Immersive Phone Simulator + Dynamic HUD) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             {/* ========================================================= */}
-            {/* LEFT COLUMN: INTERACTIVE GAME CHAT ARENA                  */}
+            {/* LEFT COLUMN: IMMERSIVE SMARTPHONE SIMULATOR SHELL         */}
             {/* ========================================================= */}
-            <div className="lg:col-span-8 flex flex-col h-[560px] bg-card border border-border">
-              {/* Arena Chat Header */}
-              <div className="px-3.5 py-2.5 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`w-9 h-9 rounded flex items-center justify-center text-lg font-bold border ${
-                      gameRole === "victim_game"
-                        ? "bg-rose-500/20 text-rose-500 border-rose-500/30"
-                        : "bg-blue-500/20 text-blue-500 border-blue-500/30"
-                    }`}
-                  >
-                    {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-bold font-mono text-foreground flex items-center gap-1.5">
-                      {gameRole === "victim_game" ? activeLevel.bossName : `Target: ${activeLevel.targetName}`}
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] py-0 px-1 font-mono ${
-                          gameRole === "victim_game"
-                            ? "bg-rose-500/10 text-rose-500 border-rose-500/30"
-                            : "bg-blue-500/10 text-blue-500 border-blue-500/30"
-                        }`}
-                      >
-                        {gameRole === "victim_game" ? "Boss AI" : "Target AI"}
-                      </Badge>
-                    </h3>
-                    <div className="text-[10px] text-muted-foreground font-mono">
-                      {gameRole === "victim_game"
-                        ? isScammerTyping
-                          ? "sedang merangkai manipulasi..."
-                          : "Online (WhatsApp)"
-                        : isTargetTyping
-                        ? "sedang membaca pesan..."
-                        : "Online (WhatsApp)"}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  {activeLevel.xp}
-                </div>
-              </div>
-
-              {/* Chat Messages Body */}
+            <div className="lg:col-span-8 flex justify-center">
               <div
-                ref={gameRole === "victim_game" ? victimChatRef : redteamChatRef}
-                className="flex-1 overflow-y-auto p-3.5 space-y-3 bg-background/50 text-xs"
+                className={`w-full max-w-[460px] rounded-[36px] sm:rounded-[40px] border-4 sm:border-[6px] ${
+                  panicLevel >= 60
+                    ? "border-rose-600 ring-4 ring-rose-500/40 animate-pulse"
+                    : "border-zinc-800 dark:border-zinc-700"
+                } bg-background shadow-2xl flex flex-col h-[640px] sm:h-[680px] overflow-hidden relative transition-all duration-300`}
               >
-                {(gameRole === "victim_game" ? victimChatHistory : redteamChatHistory).map((m) => (
-                  <div
-                    key={m.id}
-                    className={`flex gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {m.sender === "bot" && (
-                      <div
-                        className={`w-7 h-7 rounded shrink-0 flex items-center justify-center text-sm mt-0.5 border ${
-                          gameRole === "victim_game"
-                            ? "bg-rose-500/10 text-rose-500 border-rose-500/30"
-                            : "bg-blue-500/10 text-blue-500 border-blue-500/30"
-                        }`}
-                      >
-                        {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
-                      </div>
-                    )}
-
+                {/* Floating Toast Score Notification */}
+                {floatingToast && (
+                  <div className="absolute top-14 left-1/2 -translate-x-1/2 z-30 animate-in fade-in slide-in-from-top-3 duration-200 pointer-events-none">
                     <div
-                      className={`max-w-[85%] rounded p-2.5 space-y-1 leading-relaxed ${
-                        m.sender === "user"
-                          ? "bg-primary text-primary-foreground font-medium"
-                          : "bg-muted/70 border border-border text-foreground"
+                      className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 shadow-lg border ${
+                        floatingToast.type === "good"
+                          ? "bg-emerald-500 text-white border-emerald-400"
+                          : floatingToast.type === "neutral"
+                          ? "bg-blue-600 text-white border-blue-400"
+                          : "bg-rose-600 text-white border-rose-400"
                       }`}
                     >
-                      <div className="whitespace-pre-wrap leading-relaxed">
-                        {renderCleanMessage(m.text)}
-                      </div>
-
-                      <div className="text-[9px] text-muted-foreground/80 font-mono text-right flex items-center justify-end gap-1">
-                        <span>{m.time}</span>
-                      </div>
+                      <span>{floatingToast.text}</span>
+                      <span className="bg-black/25 px-1.5 py-0.5 rounded-full text-[10px]">
+                        {floatingToast.score}
+                      </span>
                     </div>
-
-                    {m.sender === "user" && (
-                      <div className="w-7 h-7 rounded bg-muted shrink-0 flex items-center justify-center text-sm mt-0.5 border border-border">
-                        {gameRole === "victim_game" ? "🛡️" : "🕵️"}
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {(gameRole === "victim_game" ? isScammerTyping : isTargetTyping) && (
-                  <div className="flex gap-2 items-center text-muted-foreground text-xs italic p-2 bg-muted/40 rounded border border-border">
-                    <Zap className="w-3 h-3 text-primary animate-spin" />
-                    <span>
-                      {gameRole === "victim_game" ? "Boss AI sedang merespons..." : "Target sedang berpikir..."}
-                    </span>
                   </div>
                 )}
 
-                {/* Inline Banner Saat Level Selesai */}
-                {isCurrentGameFinished && (
-                  <div className="p-3 bg-muted/60 border border-border text-center rounded space-y-2 animate-in fade-in duration-200">
-                    <div className="text-xs font-mono font-bold text-foreground flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      <span>Level Selesai!</span>
+                {/* 1. Phone Top Status Bar */}
+                <div className="px-5 pt-3 pb-1.5 bg-muted/90 flex items-center justify-between text-[11px] font-mono font-semibold text-foreground/80 shrink-0 select-none">
+                  <span>09:41</span>
+                  {/* Dynamic Island / Speaker Notch */}
+                  <div className="w-24 h-4 bg-zinc-900 rounded-full flex items-center justify-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-zinc-800" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-700" />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-foreground/70">
+                    <Signal className="w-3.5 h-3.5" />
+                    <Wifi className="w-3.5 h-3.5" />
+                    <Battery className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                {/* 2. Chat App Header */}
+                <div className="px-3.5 py-2.5 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold border shrink-0 relative ${
+                        gameRole === "victim_game"
+                          ? "bg-rose-500/20 text-rose-500 border-rose-500/30"
+                          : "bg-blue-500/20 text-blue-500 border-blue-500/30"
+                      }`}
+                    >
+                      {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-background" />
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-mono">
-                      {gameRole === "victim_game"
-                        ? playerHealth > 0
-                          ? "Hebat! Anda berhasil bertahan dari rekayasa sosial penipu."
-                          : "HP pertahanan habis! Anda terkena jebakan malware penipu."
-                        : targetSkepticism <= 0
-                        ? "Serangan berhasil! Target telah mempercayai manipulasi Anda."
-                        : "Target berhasil memblokir serangan manipulasi Anda."}
-                    </p>
-                    <div className="flex items-center justify-center gap-2 pt-1">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => resetAllGames()}
-                        className="text-xs h-7 cursor-pointer font-mono"
-                      >
-                        Main Lagi
-                      </Button>
-                      {onSwitchToAct && (
-                        <Button
-                          size="sm"
-                          onClick={() => onSwitchToAct(selectedScenarioKey)}
-                          className="text-xs h-7 bg-primary text-primary-foreground cursor-pointer font-mono"
+
+                    <div className="overflow-hidden">
+                      <h3 className="text-xs font-bold font-mono text-foreground flex items-center gap-1.5 truncate">
+                        {gameRole === "victim_game" ? activeLevel.bossName : `Target: ${activeLevel.targetName}`}
+                        <Badge
+                          variant="outline"
+                          className={`text-[9px] py-0 px-1 font-mono shrink-0 ${
+                            gameRole === "victim_game"
+                              ? "bg-rose-500/10 text-rose-500 border-rose-500/30"
+                              : "bg-blue-500/10 text-blue-500 border-blue-500/30"
+                          }`}
                         >
-                          Buka Mitigasi (Act) &rarr;
-                        </Button>
+                          {gameRole === "victim_game" ? "Boss AI" : "Target AI"}
+                        </Badge>
+                      </h3>
+                      <div className="text-[10px] text-muted-foreground font-mono truncate">
+                        {gameRole === "victim_game"
+                          ? isScammerTyping
+                            ? "sedang merangkai manipulasi..."
+                            : "Online (WhatsApp)"
+                          : isTargetTyping
+                          ? "sedang membaca pesan..."
+                          : "Online (WhatsApp)"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1 shrink-0">
+                    <Award className="w-3.5 h-3.5 text-amber-500" />
+                    {activeLevel.xp}
+                  </div>
+                </div>
+
+                {/* 3. Chat Messages Body */}
+                <div
+                  ref={gameRole === "victim_game" ? victimChatRef : redteamChatRef}
+                  className="flex-1 overflow-y-auto p-3.5 space-y-3 bg-background/50 text-xs"
+                >
+                  {(gameRole === "victim_game" ? victimChatHistory : redteamChatHistory).map((m) => (
+                    <div
+                      key={m.id}
+                      className={`flex gap-2 ${m.sender === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-1 duration-150`}
+                    >
+                      {m.sender === "bot" && (
+                        <div
+                          className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs mt-0.5 border ${
+                            gameRole === "victim_game"
+                              ? "bg-rose-500/10 text-rose-500 border-rose-500/30"
+                              : "bg-blue-500/10 text-blue-500 border-blue-500/30"
+                          }`}
+                        >
+                          {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
+                        </div>
+                      )}
+
+                      <div
+                        className={`max-w-[82%] rounded-2xl p-3 space-y-1 leading-relaxed ${
+                          m.sender === "user"
+                            ? "bg-primary text-primary-foreground font-medium rounded-tr-xs"
+                            : "bg-muted/75 border border-border text-foreground rounded-tl-xs"
+                        }`}
+                      >
+                        <div className="whitespace-pre-wrap leading-relaxed">
+                          {renderCleanMessage(m.text)}
+                        </div>
+
+                        <div className="text-[9px] text-muted-foreground/80 font-mono text-right flex items-center justify-end gap-1">
+                          <span>{m.time}</span>
+                          {m.sender === "user" && <Check className="w-3 h-3 text-emerald-400" />}
+                        </div>
+                      </div>
+
+                      {m.sender === "user" && (
+                        <div className="w-7 h-7 rounded-full bg-muted shrink-0 flex items-center justify-center text-xs mt-0.5 border border-border">
+                          {gameRole === "victim_game" ? "🛡️" : "🕵️"}
+                        </div>
                       )}
                     </div>
+                  ))}
+
+                  {(gameRole === "victim_game" ? isScammerTyping : isTargetTyping) && (
+                    <div className="flex gap-2 items-center text-muted-foreground text-xs italic p-2 bg-muted/40 rounded-xl border border-border">
+                      <Zap className="w-3 h-3 text-primary animate-spin" />
+                      <span>
+                        {gameRole === "victim_game" ? "Boss AI sedang merespons..." : "Target sedang berpikir..."}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Inline Notification when Finished */}
+                  {isCurrentGameFinished && (
+                    <div className="p-3 bg-muted/60 border border-border text-center rounded-xl space-y-2 animate-in fade-in duration-200">
+                      <div className="text-xs font-mono font-bold text-foreground flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        <span>Sesi Level Selesai!</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground font-mono">
+                        {gameRole === "victim_game"
+                          ? playerHealth > 0
+                            ? "Integritas terlindungi! Buka Debrief Screen untuk evaluasi teknis."
+                            : "Integritas bobol! Anda terkena manipulasi lawan."
+                          : targetSkepticism <= 0
+                          ? "Simulasi Red Team berhasil menembus kewaspadaan target."
+                          : "Target berhasil memblokir serangan manipulasi Anda."}
+                      </p>
+                      <div className="flex items-center justify-center gap-2 pt-1">
+                        <Button
+                          size="sm"
+                          onClick={() => setIsDebriefOpen(true)}
+                          className="text-xs h-7 bg-primary text-primary-foreground cursor-pointer font-mono font-bold"
+                        >
+                          Lihat Debrief Screen &rarr;
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Interactive Dialogue Cards (3 Options) */}
+                {!isCurrentGameFinished && (
+                  <div className="p-2.5 bg-muted/40 border-t border-border space-y-1.5 shrink-0">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+                      <span className="flex items-center gap-1 font-bold text-foreground">
+                        <Sparkles className="w-3 h-3 text-amber-500" />
+                        Pilihan Respon Dialog:
+                      </span>
+                      <span>Pilih kartu taktis</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-1.5 max-h-[145px] overflow-y-auto pr-0.5">
+                      {getDialogueCards(selectedScenarioKey, gameRole).map((card, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          disabled={gameRole === "victim_game" ? isScammerTyping : isTargetTyping}
+                          onClick={() => handleSelectDialogueCard(card)}
+                          className={`w-full text-left p-2 rounded-lg border transition-all cursor-pointer flex items-start gap-2 ${
+                            card.type === "tactical"
+                              ? "bg-emerald-500/5 hover:bg-emerald-500/10 border-emerald-500/30 text-foreground"
+                              : card.type === "neutral"
+                              ? "bg-blue-500/5 hover:bg-blue-500/10 border-blue-500/30 text-foreground"
+                              : "bg-rose-500/5 hover:bg-rose-500/10 border-rose-500/30 text-foreground"
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          <div className="shrink-0 mt-0.5">
+                            <Badge
+                              variant="outline"
+                              className={`text-[9px] py-0 px-1 font-mono ${
+                                card.type === "tactical"
+                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/40"
+                                  : card.type === "neutral"
+                                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/40"
+                                  : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/40"
+                              }`}
+                            >
+                              {card.scoreLabel}
+                            </Badge>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[10px] font-bold font-mono text-muted-foreground flex items-center gap-1">
+                              <span>{card.label}</span>
+                              <span>&bull;</span>
+                              <span className="truncate">{card.badge}</span>
+                            </div>
+                            <p className="text-[11px] leading-snug line-clamp-2 mt-0.5 font-medium">
+                              "{card.text}"
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
-              </div>
 
-              {/* Quick Tactical Hints Strip (Hidden if finished) */}
-              {!isCurrentGameFinished && (
-                <div className="p-2 bg-muted/30 border-t border-border flex items-center gap-1.5 overflow-x-auto text-[10px] shrink-0">
-                  <span className="text-muted-foreground font-mono uppercase text-[9px] flex items-center gap-1 shrink-0">
-                    <Lightbulb className="w-3 h-3 text-amber-500" /> Ide Balasan:
-                  </span>
-                  {(gameRole === "victim_game" ? quickVictimHints : quickRedteamHints).map((hint, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        if (gameRole === "victim_game") {
-                          handleSendVictimChat(hint);
-                        } else {
-                          handleSendRedteamChat(hint);
-                        }
-                      }}
-                      disabled={gameRole === "victim_game" ? isScammerTyping : isTargetTyping}
-                      className="whitespace-nowrap px-2 py-1 bg-background border border-border hover:border-primary rounded text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
-                    >
-                      {hint}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Chat Input Bar */}
-              <div className="p-2.5 bg-muted/60 border-t border-border shrink-0">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (isCurrentGameFinished) return;
-                    if (gameRole === "victim_game") {
-                      handleSendVictimChat();
-                    } else {
-                      handleSendRedteamChat();
-                    }
-                  }}
-                  className="flex gap-1.5 items-center"
-                >
-                  <Input
-                    value={gameRole === "victim_game" ? victimInput : redteamInput}
-                    onChange={(e) => {
+                {/* 5. Chat Input Bar (Manual Typing Option) */}
+                <div className="p-2.5 bg-muted/80 border-t border-border shrink-0">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (isCurrentGameFinished) return;
                       if (gameRole === "victim_game") {
-                        setVictimInput(e.target.value);
+                        handleSendVictimChat();
                       } else {
-                        setRedteamInput(e.target.value);
+                        handleSendRedteamChat();
                       }
                     }}
-                    placeholder={
-                      isCurrentGameFinished
-                        ? "Level telah selesai. Klik 'Main Lagi' untuk mengulang sesi latihan."
-                        : gameRole === "victim_game"
-                        ? "Ketik balasan Anda ke penipu..."
-                        : "Ketik kalimat serangan manipulasi Anda..."
-                    }
-                    disabled={isCurrentGameFinished || (gameRole === "victim_game" ? isScammerTyping : isTargetTyping)}
-                    className="text-xs h-9 bg-background border-border disabled:opacity-60 disabled:cursor-not-allowed"
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    disabled={
-                      isCurrentGameFinished ||
-                      (gameRole === "victim_game"
-                        ? !victimInput.trim() || isScammerTyping
-                        : !redteamInput.trim() || isTargetTyping)
-                    }
-                    className="h-9 px-3 bg-primary text-primary-foreground font-medium cursor-pointer disabled:opacity-50"
+                    className="flex gap-1.5 items-center"
                   >
-                    <Send className="w-3.5 h-3.5" />
-                  </Button>
-                </form>
+                    <Input
+                      value={gameRole === "victim_game" ? victimInput : redteamInput}
+                      onChange={(e) => {
+                        if (gameRole === "victim_game") {
+                          setVictimInput(e.target.value);
+                        } else {
+                          setRedteamInput(e.target.value);
+                        }
+                      }}
+                      placeholder={
+                        isCurrentGameFinished
+                          ? "Level telah selesai. Buka debrief untuk evaluasi."
+                          : gameRole === "victim_game"
+                          ? "Atau ketik balasan sendiri..."
+                          : "Atau ketik kalimat manipulasi..."
+                      }
+                      disabled={isCurrentGameFinished || (gameRole === "victim_game" ? isScammerTyping : isTargetTyping)}
+                      className="text-xs h-10 bg-background border-border rounded-xl disabled:opacity-60"
+                    />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      disabled={
+                        isCurrentGameFinished ||
+                        (gameRole === "victim_game"
+                          ? !victimInput.trim() || isScammerTyping
+                          : !redteamInput.trim() || isTargetTyping)
+                      }
+                      className="h-10 w-10 p-0 rounded-xl bg-primary text-primary-foreground shrink-0 cursor-pointer disabled:opacity-50"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </form>
+                </div>
               </div>
             </div>
 
             {/* ========================================================= */}
-            {/* RIGHT COLUMN: CUKUP HP PERTAHANAN & LEVEL SAJA (MINIMAL)   */}
+            {/* RIGHT COLUMN: GAMIFIED STATUS PANEL (DYNAMIC METERS)      */}
             {/* ========================================================= */}
             <div className="lg:col-span-4 flex flex-col space-y-3">
               <div className="bg-card border border-border p-4 space-y-4">
@@ -2039,61 +2479,142 @@ export function LearnSandbox({
                   </Badge>
                 </div>
 
-                {/* HP Pertahanan / Kewaspadaan Meter */}
+                {/* Dynamic Status Meters */}
                 {gameRole === "victim_game" ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="flex items-center gap-1.5 font-bold text-foreground">
-                        <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-                        <span>HP Pertahanan Anda:</span>
-                      </span>
-                      <span
-                        className={`font-bold font-mono ${
-                          playerHealth >= 70
-                            ? "text-emerald-500"
-                            : playerHealth >= 40
-                            ? "text-amber-500"
-                            : "text-rose-500"
-                        }`}
-                      >
-                        {playerHealth} / 100
-                      </span>
+                  <div className="space-y-3.5">
+                    {/* Meter 1: Integritas Saldo & Data */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="flex items-center gap-1.5 font-bold text-foreground">
+                          <Shield className="w-4 h-4 text-emerald-500" />
+                          <span>Integritas Saldo &amp; Data:</span>
+                        </span>
+                        <span
+                          className={`font-bold font-mono ${
+                            playerHealth >= 70
+                              ? "text-emerald-500"
+                              : playerHealth >= 40
+                              ? "text-amber-500"
+                              : "text-rose-500"
+                          }`}
+                        >
+                          {playerHealth}%
+                        </span>
+                      </div>
+                      <Progress value={playerHealth} className="h-2.5" />
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {playerHealth >= 70
+                          ? "Saldo rekening & kredensial OTP terlindungi."
+                          : "Waspada potensi kebocoran akses perbankan!"}
+                      </p>
                     </div>
-                    <Progress value={playerHealth} className="h-3" />
+
+                    {/* Meter 2: Panic Level / Tekanan Psikologis */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="flex items-center gap-1.5 font-bold text-foreground">
+                          <Brain className="w-4 h-4 text-rose-500" />
+                          <span>Tingkat Tekanan Psikologis:</span>
+                        </span>
+                        <span
+                          className={`font-bold font-mono ${
+                            panicLevel <= 30
+                              ? "text-emerald-500"
+                              : panicLevel <= 60
+                              ? "text-amber-500"
+                              : "text-rose-500"
+                          }`}
+                        >
+                          {panicLevel}%
+                        </span>
+                      </div>
+                      <Progress value={panicLevel} className="h-2.5" />
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {panicLevel <= 30
+                          ? "Pikiran tenang, analisis rasional terjaga."
+                          : panicLevel <= 60
+                          ? "Mulai ada tekanan urgensi palsu."
+                          : "Panik tinggi! Border layar berdenyut waspada."}
+                      </p>
+                    </div>
+
+                    {/* Tombol Aksi Kritis: Blokir & Laporkan */}
+                    {!isCurrentGameFinished ? (
+                      <Button
+                        size="sm"
+                        onClick={handleBlockAndReport}
+                        className="w-full text-xs h-9 bg-rose-600 hover:bg-rose-700 text-white font-mono font-bold cursor-pointer gap-1.5 shadow-xs"
+                      >
+                        <Shield className="w-4 h-4" />
+                        <span>🛡️ Blokir &amp; Laporkan Kasus</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => setIsDebriefOpen(true)}
+                        className="w-full text-xs h-9 bg-primary text-primary-foreground font-mono font-bold cursor-pointer gap-1.5"
+                      >
+                        <Award className="w-4 h-4 text-amber-400" />
+                        <span>Buka Debrief Screen</span>
+                      </Button>
+                    )}
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="flex items-center gap-1.5 font-bold text-foreground">
-                        <Flame className="w-4 h-4 text-amber-500" />
-                        <span>Kewaspadaan Target:</span>
-                      </span>
-                      <span className="font-bold font-mono text-emerald-500">
-                        {targetSkepticism}%
-                      </span>
+                  <div className="space-y-3.5">
+                    {/* Meter 1: Kepercayaan Target (Trust Meter) */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="flex items-center gap-1.5 font-bold text-foreground">
+                          <Sparkles className="w-4 h-4 text-amber-500" />
+                          <span>Tingkat Kepercayaan Target:</span>
+                        </span>
+                        <span className="font-bold font-mono text-amber-500">{trustMeter}%</span>
+                      </div>
+                      <Progress value={trustMeter} className="h-2.5" />
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        Target mencapai &ge;70% untuk keberhasilan penetrasi.
+                      </p>
                     </div>
-                    <Progress value={targetSkepticism} className="h-3" />
+
+                    {/* Meter 2: Kecurigaan Target (Suspicion Meter) */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="flex items-center gap-1.5 font-bold text-foreground">
+                          <Flame className="w-4 h-4 text-rose-500" />
+                          <span>Tingkat Curiga Target:</span>
+                        </span>
+                        <span className="font-bold font-mono text-rose-500">{targetSkepticism}%</span>
+                      </div>
+                      <Progress value={targetSkepticism} className="h-2.5" />
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        Jika kecurigaan mencapai 100%, nomor Anda akan diblokir.
+                      </p>
+                    </div>
+
+                    {/* Tombol Aksi Kritis: Akhiri Serangan & Debrief */}
+                    {!isCurrentGameFinished ? (
+                      <Button
+                        size="sm"
+                        onClick={handleEndOffense}
+                        className="w-full text-xs h-9 bg-zinc-800 hover:bg-zinc-700 text-white font-mono font-bold cursor-pointer gap-1.5 border border-border"
+                      >
+                        <span>⏹️ Akhiri Serangan &amp; Debrief</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => setIsDebriefOpen(true)}
+                        className="w-full text-xs h-9 bg-primary text-primary-foreground font-mono font-bold cursor-pointer gap-1.5"
+                      >
+                        <Award className="w-4 h-4 text-amber-400" />
+                        <span>Buka Debrief Screen</span>
+                      </Button>
+                    )}
                   </div>
                 )}
 
-                {/* Tombol Aksi: Selesaikan / Blokir atau Opsi Selesai */}
-                {!isCurrentGameFinished ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (gameRole === "victim_game") {
-                        setIsVictimGameFinished(true);
-                      } else {
-                        setIsRedteamFinished(true);
-                      }
-                      handleLevelFinished(selectedScenarioKey);
-                    }}
-                    className="w-full text-xs h-8 font-mono border-rose-500/40 text-rose-500 hover:bg-rose-500/10 cursor-pointer"
-                  >
-                    {gameRole === "victim_game" ? "🛡️ Blokir & Selesaikan Level" : "⏹️ Akhiri Serangan"}
-                  </Button>
-                ) : (
+                {/* Post-Level Finished Action Box */}
+                {isCurrentGameFinished && (
                   <div className="p-3 bg-muted/60 border border-border text-center space-y-2 rounded">
                     <div className="text-xs font-mono font-bold text-foreground flex items-center justify-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -2123,6 +2644,129 @@ export function LearnSandbox({
               </div>
             </div>
           </div>
+
+          {/* ========================================================= */}
+          {/* INVESTIGATION DEBRIEF MODAL (SUMMARY & LAW DISSECTION)    */}
+          {/* ========================================================= */}
+          {isDebriefOpen && (
+            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="bg-card border border-border rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+                      <Trophy className="w-4 h-4 text-amber-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono font-bold text-sm text-foreground">
+                        Debrief Forensik: Kasus #{activeLevel.levelNumber}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground font-mono">
+                        Evaluasi Taktik &amp; Kepatuhan Regulasi Siber
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDebriefOpen(false)}
+                    aria-label="Tutup Debrief"
+                    className="text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Status banner */}
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                  <div className="text-xs">
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono block">
+                      {gameRole === "victim_game" ? "ANCAMAN DINETRALISIR DENGAN SUKSES" : "SIMULASI OPERASI RED TEAM SELESAI"}
+                    </span>
+                    <p className="text-muted-foreground text-[11px] mt-0.5">
+                      {gameRole === "victim_game"
+                        ? "Anda berhasil menolak manipulasi psikologis dan mengamankan integritas data."
+                        : "Evaluasi celah perilaku target berhasil dipetakan untuk materi edukasi."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Dissection Details */}
+                <div className="space-y-2 text-xs font-mono">
+                  <div className="p-2.5 bg-muted/40 border border-border rounded space-y-1">
+                    <span className="text-[10px] font-bold text-primary uppercase">Anatomi Modus:</span>
+                    <p className="text-[11px] text-foreground leading-relaxed">
+                      {activeLevel.synopsis}
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-muted/40 border border-border rounded space-y-1">
+                    <span className="text-[10px] font-bold text-primary uppercase">Landasan Yuridis (UU ITE No. 1/2024):</span>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Pelanggaran modus ini dijerat <strong className="text-foreground">Pasal 30 ayat (3) jo. Pasal 46 ayat (3)</strong> peretasan sistem serta <strong className="text-foreground">Pasal 35 jo. Pasal 51 ayat (1)</strong> manipulasi data elektronik perbankan (ancaman 12 tahun penjara &amp; denda Rp12 Miliar).
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <div className="p-2 bg-muted/40 border border-border rounded text-center">
+                      <span className="text-[10px] text-muted-foreground block">Skor XP Diperoleh</span>
+                      <span className="font-bold text-amber-500 text-sm">+{activeLevel.xpNumber} XP</span>
+                    </div>
+                    <div className="p-2 bg-muted/40 border border-border rounded text-center">
+                      <span className="text-[10px] text-muted-foreground block">Status Integritas</span>
+                      <span className="font-bold text-emerald-500 text-sm">
+                        {gameRole === "victim_game" ? `${playerHealth}% Aman` : `${trustMeter}% Terbuka`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsDebriefOpen(false);
+                      resetAllGames();
+                    }}
+                    className="text-xs h-9 flex-1 font-mono cursor-pointer"
+                  >
+                    Main Ulang Sesi Ini
+                  </Button>
+
+                  {(() => {
+                    const nextLvl = currentCampaignLevels.find((l) => l.levelNumber === activeLevel.levelNumber + 1);
+                    if (nextLvl) {
+                      return (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setIsDebriefOpen(false);
+                            handleStartLevel(nextLvl.id);
+                          }}
+                          className="text-xs h-9 flex-1 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
+                        >
+                          Lanjut ke Kasus Berikutnya &rarr;
+                        </Button>
+                      );
+                    }
+                    return (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setIsDebriefOpen(false);
+                          handleBackToCatalog();
+                        }}
+                        className="text-xs h-9 flex-1 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
+                      >
+                        Kembali ke Roadmap Kampanye
+                      </Button>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
