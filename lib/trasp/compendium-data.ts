@@ -270,6 +270,126 @@ export const COMPENDIUM_CASES: ScamCaseItem[] = [
     officialSourceCitation:
       "Kajian Ilmiah arXiv:2601.20184 (Hatami et al., 2026) & Laporan Penipuan AI Siber Bareskrim Polri.",
     workbenchPresetId: "m-banking-palsu"
+  },
+  {
+    id: "romance-pig-butchering",
+    number: 7,
+    title: "Romance Scam & Pig Butchering (Sha Zhu Pan / Investasi Bodong)",
+    shortName: "Romance Scam & Love Bait",
+    category: "Manipulasi Emosional & Investasi Fiktif",
+    riskLevel: "CRITICAL",
+    dangerScore: 93,
+    modusOperandi:
+      "Pelaku membangun hubungan asmara palsu secara intensif di media sosial/aplikasi kencan (Love Bombing) selama berminggu-minggu, lalu secara halus mengajak korban 'investasi bersama' di website kripto/trading fiktif yang tampilannya dapat dimanipulasi.",
+    characteristics: [
+      "Profil media sosial berpenampilan sangat mapan, menarik, dan perhatian penuh",
+      "Selalu menolak melakukan panggilan video (video call) dengan dalih kamera rusak atau sinyal buruk",
+      "Mengaku memiliki 'orang dalam' atau sistem rahasia trading dengan keuntungan pasti",
+      "Pada awal deposit, korban diizinkan mencairkan keuntungan kecil untuk memancing setoran modal jutaan rupiah"
+    ],
+    psychologicalBiases: [
+      {
+        biasName: "Love Bombing & Emotional Attachment",
+        description: "Memanfaatkan kesepian dan rasa percaya korban melalui perhatian emosional harian yang intensif."
+      },
+      {
+        biasName: "Sunk-Cost Fallacy",
+        description: "Ketika saldo tertahan, korban terus menyetor uang pajak/biaya pencairan fiktif demi menyelamatkan uang modal sebelumnya."
+      }
+    ],
+    technicalMechanism:
+      "Sindikat mengoperasikan platform web trading palsu (MetaTrader tiruan atau bursa kripto custom) yang angkanya diatur manual oleh penipu. Ketika korban ingin menarik dana (withdraw), sistem mengunci akun dan menuntut biaya 'verifikasi pajak internasional' hingga korban kehabisan dana.",
+    realCasesIndonesia:
+      "Laporan Satgas PASTI OJK (2025) terkait kerugian warga akibat love scam berkedok bursa kripto palsu di aplikasi kencan.",
+    emergencyActionSteps: [
+      "Hentikan segera seluruh transfer dana tambahan, jangan pernah membayar 'biaya pencairan pajak'.",
+      "Simpan seluruh riwayat percakapan, nomor rekening, dan alamat dompet kripto pelaku.",
+      "Laporkan nomor rekening ke portal iasc.ojk.go.id dan buat Laporan Polisi di SPKT/patrolisiber.id."
+    ],
+    legalClauses:
+      "Pasal 28 ayat (1) UU ITE No. 1/2024 (Kerugian Konsumen Transaksi Elektronik), Pasal 378 KUHP (Penipuan), dan UU TPPU No. 8/2010.",
+    officialSourceCitation:
+      "Satgas PASTI OJK & Direktorat Tindak Pidana Siber Bareskrim Polri.",
+    workbenchPresetId: "loker-bumn"
+  },
+  {
+    id: "sextortion-blackmail",
+    number: 8,
+    title: "Sextortion & Pemerasan Digital (Video Call Trap & Rekayasa AI)",
+    shortName: "Sextortion & Pemerasan Digital",
+    category: "Pemerasan Siber & Manipulasi Privasi",
+    riskLevel: "CRITICAL",
+    dangerScore: 96,
+    modusOperandi:
+      "Pelaku memancing korban melakukan panggilan video asusila atau merekayasa foto wajah korban dengan kecerdasan buatan, lalu mengancam menyebarkan rekaman ke daftar kontak keluarga, teman sekolah, atau media sosial jika tidak mentransfer sejumlah uang.",
+    characteristics: [
+      "Ajakan video call yang intens dari akun baru dengan foto profil menarik",
+      "Tiba-tiba mengirim rekaman tangkapan layar video dan daftar follower/kontak korban",
+      "Batas waktu ancaman sangat mendesak (10-30 menit) disertai intimidasi verbal",
+      "Permintaan uang ditransfer via dompet digital (e-wallet) tanpa verifikasi identitas"
+    ],
+    psychologicalBiases: [
+      {
+        biasName: "Extreme Shame & Panic Bias",
+        description: "Rasa malu dan takut reputasi hancur di depan keluarga/sekolah melumpuhkan pertimbangan logis korban."
+      },
+      {
+        biasName: "Blackmail Compliance",
+        description: "Korban mengira membayar sekali akan menyelesaikan masalah, padahal pelaku akan terus memeras berulang kali."
+      }
+    ],
+    technicalMechanism:
+      "Pelaku menggunakan aplikasi screen recorder saat video call atau model face-swap AI untuk menempelkan wajah korban ke rekaman orang lain. Daftar kontak korban biasanya dikumpulkan sebelumnya melalui phishing tautan Instagram atau scraping data publik.",
+    realCasesIndonesia:
+      "Peringatan BSSN & Bareskrim Polri mengenai sindikat pemerasan seksual digital lintas negara yang menyasar pelajar dan remaja.",
+    emergencyActionSteps: [
+      "JANGAN PERNAH mentransfer uang sepeser pun! Membayar hanya membuat pelaku menuntut jumlah yang lebih besar.",
+      "Ambil tangkapan layar ancaman, nomor telepon, dan nomor rekening penipu untuk bukti hukum.",
+      "Kunci akun media sosial menjadi private, aktifkan 2FA, dan segera ceritakan kepada orang tua/konselor terpercaya.",
+      "Laporkan ke portal aduankonten.id (Komdigi) dan patrolisiber.id Bareskrim Polri."
+    ],
+    legalClauses:
+      "Pasal 27B ayat (2) jo. Pasal 45 ayat (10) UU ITE No. 1/2024 (Pemerasan dan Pengancaman melalui Elektronik, pidana 6 tahun) serta Pasal 368 KUHP.",
+    officialSourceCitation:
+      "Kementerian Komunikasi dan Digital (Komdigi) & Bareskrim Polri.",
+    workbenchPresetId: "m-banking-palsu"
+  },
+  {
+    id: "game-social-phishing",
+    number: 9,
+    title: "Phishing Akun Game & Media Sosial (Diamond Gratis & Centang Biru)",
+    shortName: "Phishing Akun Game & Sosmed",
+    category: "Pencurian Akun & Kredensial",
+    riskLevel: "HIGH",
+    dangerScore: 82,
+    modusOperandi:
+      "Penyebaran tautan di kolom komentar TikTok/YouTube yang menjanjikan skin senjata Free Fire, diamond Mobile Legends gratis, atau formulir verifikasi centang biru Instagram dengan meminta login akun media sosial.",
+    characteristics: [
+      "Domain menggunakan ekstensi tidak lazim (misal: claim-diamond-mlbb.xyz atau verifikasi-ig-badge.top)",
+      "Tampilan halaman web dibuat sangat mirip dengan portal login resmi Google, Facebook, atau Moonton",
+      "Meminta kata sandi dan kode OTP masuk akun",
+      "Setelah data dikirim, kata sandi dan email pemulihan langsung diganti oleh bot penipu"
+    ],
+    psychologicalBiases: [
+      {
+        biasName: "Greed & Freebie Bias",
+        description: "Keinginan mendapatkan item digital mahal secara cuma-cuma mengabaikan kewaspadaan alamat website."
+      }
+    ],
+    technicalMechanism:
+      "Halaman phishing meniru form OAuth login dan langsung mengirimkan string username serta password ke webhook Telegram atau database penipu. Akun korban lalu dijual di forum gelap atau digunakan untuk mengirimkan spam ke kontak korban.",
+    realCasesIndonesia:
+      "Laporan literasi keamanan siber Komdigi mengenai maraknya pencurian akun gamer pelajar melalui turnamen fiktif dan web klaim skin gratis.",
+    emergencyActionSteps: [
+      "Segera buka halaman pemulihan akun resmi (accounts.google.com atau facebook.com/hacked) untuk ganti kata sandi.",
+      "Periksa sesi perangkat yang aktif dan pilih 'Keluar dari semua perangkat'.",
+      "Aktifkan Google Authenticator / Two-Factor Authentication (2FA) berbasis aplikasi, hindari 2FA via SMS biasa."
+    ],
+    legalClauses:
+      "Pasal 30 jo. Pasal 46 UU ITE (Illegal Access) dan Pasal 35 UU ITE (Manipulasi Dokumen Otentik).",
+    officialSourceCitation:
+      "Direktorat Tata Kelola Aplikasi Informatika Komdigi & BSSN.",
+    workbenchPresetId: "phishing-pajak"
   }
 ];
 

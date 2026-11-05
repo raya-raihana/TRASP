@@ -40,27 +40,29 @@ SAMPEL YANG DIANALISIS:
 - Teks Pesan: "${text}"
 - Tautan / URL: "${url}"
 
-ATURAN PENTING DETEKSI KONTEN:
+ATURAN PENTING DETEKSI KONTEKSTUAL (INTENT & FORENSIC CONTEXT):
 1. JIKA INPUT ADALAH TAUTAN PLATFORM RESMI TERVERIFIKASI (seperti youtube.com, youtu.be, google.com, wikipedia.org, github.com, domain pemerintah .go.id, portal universitas .ac.id):
    - Wajib berikan dangerScore: 0 dan riskLevel: "LOW".
-   - summaryVerdict: "Tautan Platform Resmi Sah (YouTube / Google / dsb)"
+   - summaryVerdict: "Tautan Platform Resmi Sah"
    - biasExploited: []
    - technicalThreats: []
-   - deepForensicReasoning: Jelaskan secara cerdas dan spesifik bahwa tautan ini mengarah ke infrastruktur resmi platform publik terkait (misal YouTube video streaming), bukan phishing, bukan malware APK, dan bukan formulir penipuan perbankan.
+   - deepForensicReasoning: Jelaskan secara cerdas dan spesifik bahwa tautan ini mengarah ke infrastruktur resmi platform publik terkait, bukan phishing, bukan malware APK, dan bukan formulir penipuan.
    - mitigationRecommendation: "Tautan aman untuk dibuka sebagai konten publik biasa. Tidak diperlukan mitigasi darurat siber." (DILARANG memberikan peringatan OTP/PIN yang tidak nyambung).
-2. JIKA INPUT ADALAH KONTEN NETRAL / NON-ANCAMAN / MATEMATIKA / TUGAS SEKOLAH / GAMBAR NETRAL (seperti [Tangkapan Layar Unggahan Pengguna...], soal matematika, teks obrolan kerja biasa):
+2. JIKA INPUT ADALAH OBROLAN SEHARI-HARI / TEKS UMUM / PERTANYAAN BIASA / BUKAN KASUS PENIPUAN:
+   (Contoh: sapaan "halo", koordinasi belajar kelompok/kerja biasa, tugas sekolah, resep makanan, pertanyaan sains/sejarah/matematika, obrolan keluarga yang wajar):
    - Wajib berikan dangerScore: 0 dan riskLevel: "LOW".
-   - summaryVerdict: "Konten Netral / Non-Ancaman Siber"
+   - summaryVerdict: "Pesan Wajar / Bukan Ancaman Siber"
    - biasExploited: []
    - technicalThreats: []
-   - deepForensicReasoning: "Sampel yang diperiksa adalah konten netral/umum yang tidak memuat pola rekayasa sosial, ancaman malware APK liar, maupun phishing penipuan finansial."
-   - mitigationRecommendation: "Tidak ada ancaman siber yang terdeteksi. Berkas/pesan aman."
-3. JIKA INPUT TERBUKTI KEJAHATAN SIBER / PHISHING / TROJAN APK / TASK SCAM:
+   - deepForensicReasoning: "Analisis linguistik dan forensik menunjukkan pesan ini merupakan komunikasi wajar sehari-hari atau pertanyaan netral. Sama sekali tidak ditemukan unsur rekayasa sosial (social engineering), manipulasi urgensi palsu, upaya phishing, penyebaran trojan APK, maupun jebakan penipuan finansial."
+   - mitigationRecommendation: "Pesan ini aman. Tidak ada indikasi bahaya siber yang memerlukan tindakan mitigasi darurat." (DILARANG KERAS memaksakan peringatan OTP, PIN, atau rekening penipu jika pesan tidak meminta hal tersebut).
+3. JIKA INPUT TERBUKTI KEJAHATAN SIBER / REKAYASA SOSIAL:
+   (Cakupan: APK Trojan Sniffer, Impersonasi Otoritas Resmi, Loker Paruh Waktu/Task Scam, Phishing Perbankan, Romance Scam/Investasi Bodong, Begal Akun WhatsApp/OTP, Sextortion, Pinjol Ilegal):
    - Berikan skor bahaya ilmiah (60-100) dan riskLevel: "HIGH" atau "MEDIUM".
-   - Sebutkan bias psikologis (Authority Bias, Urgency Bias, Sunk-Cost Fallacy, Greed Bait).
-   - Sebutkan ancaman teknis (Android Accessibility Trojan, Raw IP Address, Quishing QRIS, Form Phishing).
-   - deepForensicReasoning: Uraian ilmiah membongkar niat terselubung dan trik pelaku.
-   - mitigationRecommendation: Langkah darurat Golden Time 15 Menit (Air-Gap, Call Center Bank, dan lapor ke iasc.ojk.go.id).
+   - Sebutkan bias psikologis (Authority Bias, Urgency Bias, Sunk-Cost Fallacy, Greed Bait, Isolation Tactic).
+   - Sebutkan ancaman teknis (Android Accessibility Trojan, Raw IP Address, Quishing QRIS, Form Phishing, Credential Harvester).
+   - deepForensicReasoning: Uraian ilmiah membongkar niat terselubung dan trik psikologis pelaku.
+   - mitigationRecommendation: Langkah darurat Golden Time 15 Menit (Air-Gap, Call Center Bank, dan lapor ke iasc.ojk.go.id / patrolisiber.id).
 
 FORMAT OUTPUT WAJIB JSON PERSIS:
 {

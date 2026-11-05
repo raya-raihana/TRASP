@@ -357,6 +357,13 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     (financialScore >= 60 && assetScore >= 35) ||
     (channelScore >= 70 && urgencyScore >= 70);
 
+  const hasAttackVector =
+    assetScore > 0 ||
+    channelScore >= 70 ||
+    authorityScore > 0 ||
+    (financialScore >= 30 && urgencyScore >= 35) ||
+    financialScore >= 60;
+
   if (urlAnalysis?.isTrustedPlatform && redFlags.length === 0) {
     calculatedScore = 0;
     riskLevel = "LOW";
@@ -367,11 +374,16 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     riskLevel = "LOW";
     statusLabel = "Berkas / Gambar Netral (Bukan Ancaman)";
     summary = "Gambar yang diunggah tidak memuat teks atau pola manipulasi rekayasa sosial, urgensi palsu, maupun ancaman siber berbahaya. Berkas netral dan aman.";
+  } else if (!hasAttackVector) {
+    calculatedScore = 0;
+    riskLevel = "LOW";
+    statusLabel = "Pesan Normal / Bukan Ancaman Siber";
+    summary = "Pesan ini teridentifikasi sebagai komunikasi wajar sehari-hari. Tidak ditemukan kombinasi pola manipulasi rekayasa sosial, permintaan kode OTP/PIN, tautan phishing, maupun ancaman file malware.";
   } else if (isHighCondition) {
     riskLevel = "HIGH";
     statusLabel = "Indikator Bahaya Tinggi (High Risk)";
     summary = "Pesan ini memiliki pola manipulasi psikologis tingkat tinggi dengan indikasi kuat serangan rekayasa sosial, pencurian dana, atau malware berbahaya!";
-  } else if (calculatedScore >= 25 || assetScore >= 35 || urgencyScore >= 35) {
+  } else if (calculatedScore >= 35 || assetScore >= 35 || (authorityScore >= 35 && urgencyScore >= 35)) {
     riskLevel = "MEDIUM";
     statusLabel = "Indikator Waspada (Medium Risk)";
     summary = "Ditemukan beberapa indikator kecurigaan. Verifikasi kanal resmi sebelum menanggapi atau mengklik tautan apa pun.";
@@ -427,7 +439,13 @@ export function analyzeForensics(text: string, urlInput?: string): ForensicResul
     "Beri jeda 15 menit dan konsultasikan pesan ini dengan rekan atau keluarga sebelum mengambil tindakan apa pun."
   ];
 
-  if (urlAnalysis?.isTrustedPlatform && redFlags.length === 0) {
+  if (calculatedScore === 0) {
+    safeRecommendations = [
+      "Tidak ada indikasi kejahatan siber, rekayasa sosial, atau manipulasi data yang ditemukan.",
+      "Pesan atau tautan ini tergolong aman untuk interaksi wajar sehari-hari.",
+      "Tetap jaga kebiasaan baik dengan tidak membagikan kata sandi atau data pribadi sensitif kepada pihak asing."
+    ];
+  } else if (urlAnalysis?.isTrustedPlatform && redFlags.length === 0) {
     safeRecommendations = [
       `Tautan ini terverifikasi aman mengarah ke ${urlAnalysis.trustedPlatformName}.`,
       "Aman untuk diakses sebagai konten publik biasa.",

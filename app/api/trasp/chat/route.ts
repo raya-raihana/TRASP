@@ -50,6 +50,49 @@ function createFallbackVictimResponse(userMessage: string, currentSkepticism: nu
 
 function createFallbackAssistantResponse(userMessage: string) {
   const lower = (userMessage || "").toLowerCase();
+  
+  const isScamQuery =
+    lower.includes("apk") ||
+    lower.includes("kurir") ||
+    lower.includes("resi") ||
+    lower.includes("undangan") ||
+    lower.includes("ojk") ||
+    lower.includes("iasc") ||
+    lower.includes("lapor") ||
+    lower.includes("polisi") ||
+    lower.includes("hukum") ||
+    lower.includes("pasal") ||
+    lower.includes("ite") ||
+    lower.includes("loker") ||
+    lower.includes("deposit") ||
+    lower.includes("penipu") ||
+    lower.includes("tipu") ||
+    lower.includes("phishing") ||
+    lower.includes("rekening") ||
+    lower.includes("otp") ||
+    lower.includes("pin") ||
+    lower.includes("scam");
+
+  if (!isScamQuery) {
+    if (lower.includes("halo") || lower.includes("hai") || lower.includes("pagi") || lower.includes("siang") || lower.includes("malam")) {
+      return {
+        ok: true,
+        source: "local-context-assistant",
+        assistantResponse: "Halo! Saya Ras, asisten AI dari platform TRASP (The Trust Trap). Senang bisa menyapamu! Ada yang bisa saya bantu diskusikan hari ini? Jika kamu menemukan pesan mencurigakan, link aneh, atau tawaran loker yang meragukan di WhatsApp atau media sosial, kirimkan ke sini agar kita periksa bersama.",
+        detectedVectors: ["Dialog Interaktif", "Asisten Terbuka"],
+        recommendedAction: "Tanyakan pesan atau tautan yang membuatmu ragu kapan saja.",
+      };
+    }
+
+    return {
+      ok: true,
+      source: "local-context-assistant",
+      assistantResponse: `Pertanyaan yang bagus! Saya adalah Ras, asisten AI TRASP. Saya siap menjawab pertanyaanmu dan berdiskusi secara kontekstual. Fungsi utama saya di platform ini adalah menjadi rekan navigasi keamanan siber — membantumu mengenali manipulasi digital, rekayasa sosial, dan jebakan penipuan online. Jika ada hal yang ingin kamu ketahui atau ada pesan yang terasa janggal, tanyakan langsung ya!`,
+      detectedVectors: ["Dialog Kontekstual", "Asisten AI"],
+      recommendedAction: "Gunakan TRASP untuk memverifikasi interaksi digital yang meragukan.",
+    };
+  }
+
   let reply = "Halo! Saya Ras. Berdasarkan analisis pola digital deception, selalu waspadai berkas asing (.apk) dan tautan yang mendesak tindakan finansial atau kode OTP.";
 
   if (lower.includes("apk") || lower.includes("kurir") || lower.includes("resi") || lower.includes("undangan")) {
@@ -58,7 +101,7 @@ function createFallbackAssistantResponse(userMessage: string) {
     reply = "Untuk penanganan darurat penipuan finansial, laporkan nomor rekening penipu dalam 15-30 menit pertama ke Indonesia Anti-Scam Centre (IASC) OJK via portal iasc.ojk.go.id atau kontak 157 untuk blokir kilat rekening penampung. Untuk jerat pidana UU ITE, laporkan ke patrolisiber.id Bareskrim Polri.";
   } else if (lower.includes("hukum") || lower.includes("pasal") || lower.includes("ite")) {
     reply = "Pelaku kejahatan siber penipuan online dijerat secara khusus (lex specialis) melalui Pasal 28 ayat (1) jo. Pasal 45A ayat (1) UU ITE No. 1/2024 dengan ancaman penjara hingga 6 tahun dan/atau denda Rp1 Miliar, serta Pasal 378 KUHP (lex generali) penipuan.";
-  } else if (lower.includes("loker") || lower.includes("tugas") || lower.includes("deposit")) {
+  } else if (lower.includes("loker") || lower.includes("deposit")) {
     reply = "Waspadai skema Task Scam atau komisi kerja lepas. Awalnya korban diberi komisi kecil asli untuk membangun kepercayaan, lalu diarahkan menyetor deposit talangan bertingkat yang tidak akan pernah bisa ditarik kembali.";
   }
 
@@ -156,17 +199,28 @@ BASIS PENGETAHUAN RESMI OTORITAS (OJK, BARESKRIM, BSSN):
 
 ${contextEvidence ? `BUKTI YANG SEDANG DIPERIKSA OLEH PENGGUNA:\n${contextEvidence}\n` : ""}
 ${historyFormatted}
-TUGASMU:
-1. Bedah bukti pesan/tautan yang ditanyakan dengan presisi forensik (jelaskan taktik psikologis dan ancaman teknisnya).
-2. Jika pengguna panik atau sudah telanjur transfer/instal APK, prioritaskan instruksi darurat Golden Time 15 Menit pertama (Air-gap, Call Center Bank, dan lapor ke iasc.ojk.go.id).
-3. Kutip pasal UU ITE 2024 dan alur Laporan Polisi (patrolisiber.id) secara proporsional.
-4. Jawab pertanyaan pengguna secara padat, lugas, mengalir, dan solutif.
+ATURAN KECERDASAN KONTEKSTUAL & PENGENALAN INTENT (WAJIB DIPATUHI):
+1. JIKA PENGGUNA BERTANYA/BERBICARA TENTANG HAL DI LUAR PENIPUAN SIBER:
+   (Contoh: sapaan ramah "Halo", tanya "Kamu siapa?", "Bisa bantu apa?", pertanyaan sains, matematika, sejarah, tugas sekolah umum, curhat santai, atau ngobrol biasa):
+   - Jawablah pertanyaan pengguna secara cerdas, ramah, luwes, dan berwawasan tinggi seperti asisten AI handal.
+   - DILARANG KERAS memaksakan peringatan penipuan, ancaman APK, atau pasal UU ITE jika pengguna TIDAK menanyakan hal tersebut!
+   - Tetap perkenalkan dirimu secara elegan sebagai "Ras", AI dari TRASP. Kamu boleh menyisipkan penutup singkat yang ramah bahwa jika sewaktu-waktu mereka menemukan pesan mencurigakan atau penipuan, mereka bisa bertanya padamu.
+   - detectedVectors: ["Komunikasi Interaktif", "Asisten Terbuka"]
+   - recommendedAction: "Tanyakan pesan atau tautan mencurigakan kapan saja ke Ras."
+
+2. JIKA PENGGUNA MEMBAHAS / MENANYAKAN / MELAPORKAN KEJAHATAN SIBER ATAU KASUS PENIPUAN:
+   (Contoh: pesan mencurigakan, file .apk, ancaman pemblokiran, loker paruh waktu like YouTube, tawaran investasi pacar online/pig butchering, begal OTP/WhatsApp, pinjol ilegal, sextortion):
+   - Bedah kasusnya secara tajam dan ilmiah: jelaskan trik psikologisnya dan ancaman teknisnya.
+   - Jika pengguna panik atau sudah telanjur transfer/instal APK, prioritaskan instruksi darurat Golden Time 15 Menit pertama (Air-gap/Mode Pesawat, Call Center Bank, dan lapor ke iasc.ojk.go.id).
+   - Kutip pasal UU ITE No. 1/2024 dan alur Laporan Polisi di patrolisiber.id secara proporsional.
+   - detectedVectors: [1-3 vektor analisis relevan]
+   - recommendedAction: [1 rekomendasi aksi nyata dan cepat]
 
 FORMAT OUTPUT WAJIB JSON PERSIS:
 {
-  "assistantResponse": "Jawaban mendalam, solutif, dan berwibawa dari Ras tanpa simbol bintang berantakan",
+  "assistantResponse": "Jawaban mendalam, cerdas, solutif, dan mengalir dari Ras tanpa simbol bintang berlebihan",
   "detectedVectors": ["1-3 vektor analisis relevan"],
-  "recommendedAction": "1 rekomendasi aksi cepat paling penting bagi pengguna"
+  "recommendedAction": "1 rekomendasi aksi paling tepat bagi pengguna"
 }`;
 
       for (const model of CANDIDATE_GEMINI_MODELS) {
