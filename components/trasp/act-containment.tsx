@@ -120,8 +120,7 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
   const activeCase: ScamCaseItem =
     COMPENDIUM_CASES.find((c) => c.id === selectedCaseId) || COMPENDIUM_CASES[0];
 
-  // Segment Tab dalam View Detail: "mitigasi" | "pencegahan" | "laporan" | "regulasi"
-  const [activeSegment, setActiveSegment] = useState<"mitigasi" | "pencegahan" | "laporan" | "regulasi">("mitigasi");
+  // Mode Tampilan: Dokumen Naratif Utuh (Single-Scroll View)
 
   // Step Checklist state
   const [completedSteps, setCompletedSteps] = useState<Record<string, boolean>>({});
@@ -417,9 +416,9 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
       {/* VIEW 2: DETAIL KHUSUS MITIGASI & INFORMASI KASUS           */}
       {/* ========================================================= */}
       {currentView === "detail" && (
-        <div className="space-y-3 animate-in fade-in duration-200">
+        <article className="space-y-5 animate-in fade-in duration-200">
           {/* Top Navigation & Breadcrumb */}
-          <div className="flex items-center justify-between gap-2 p-2 bg-muted/30 border border-border rounded">
+          <div className="flex items-center justify-between gap-2 p-2.5 bg-muted/30 border border-border rounded">
             <Button
               variant="outline"
               size="sm"
@@ -431,7 +430,7 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </Button>
 
             <span className="text-[11px] font-mono text-muted-foreground hidden sm:inline">
-              Detail Kasus #{String(activeCase.number).padStart(2, "0")} • {activeCase.shortName}
+              Laporan Investigasi Forensik #{String(activeCase.number).padStart(2, "0")} • {activeCase.shortName}
             </span>
 
             <Button
@@ -444,357 +443,428 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
             </Button>
           </div>
 
-          {/* Main Detail Container */}
-          <Card className="border-border shadow-xs">
-            {/* Header Banner */}
-            <div className="p-3.5 border-b border-border bg-muted/20">
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] font-mono ${
-                    activeCase.riskLevel === "CRITICAL"
-                      ? "border-rose-500/40 text-rose-500 bg-rose-500/10"
-                      : "border-amber-500/40 text-amber-500 bg-amber-500/10"
-                  }`}
-                >
-                  BAHAYA: {activeCase.riskLevel} ({activeCase.dangerScore}/100)
-                </Badge>
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  {activeCase.category}
-                </span>
+          {/* Continuous Investigative Document Sheet */}
+          <div className="bg-card border border-border p-5 sm:p-8 space-y-8 rounded-lg shadow-xs">
+
+            {/* ========================================================= */}
+            {/* 1. HEADER DOKUMEN & METADATA                              */}
+            {/* ========================================================= */}
+            <header className="space-y-4 pb-6 border-b border-border">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                    LAPORAN INVESTIGASI FORENSIK #{String(activeCase.number).padStart(2, "0")}
+                  </span>
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {activeCase.category}
+                  </span>
+                </div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-foreground leading-tight">
+                  {activeCase.title}
+                </h1>
               </div>
-              <h3 className="text-sm sm:text-base font-serif font-bold text-foreground mt-1.5">
-                {activeCase.title}
-              </h3>
-            </div>
 
-            {/* 4 Clean Segmented Navigation Tabs */}
-            <div className="border-b border-border bg-muted/40 grid grid-cols-2 sm:grid-cols-4 p-1 gap-1">
-              <button
-                onClick={() => setActiveSegment("mitigasi")}
-                className={`py-1.5 px-2 text-xs font-medium font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                  activeSegment === "mitigasi"
-                    ? "bg-background text-foreground font-bold border border-border shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5 text-rose-500" />
-                <span>1. Mitigasi 15 Menit</span>
-              </button>
-
-              <button
-                onClick={() => setActiveSegment("pencegahan")}
-                className={`py-1.5 px-2 text-xs font-medium font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                  activeSegment === "pencegahan"
-                    ? "bg-background text-foreground font-bold border border-border shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Shield className="w-3.5 h-3.5 text-emerald-500" />
-                <span>2. Pencegahan</span>
-              </button>
-
-              <button
-                onClick={() => setActiveSegment("laporan")}
-                className={`py-1.5 px-2 text-xs font-medium font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                  activeSegment === "laporan"
-                    ? "bg-background text-foreground font-bold border border-border shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <FileText className="w-3.5 h-3.5 text-blue-500" />
-                <span>3. Penanganan &amp; Laporan</span>
-              </button>
-
-              <button
-                onClick={() => setActiveSegment("regulasi")}
-                className={`py-1.5 px-2 text-xs font-medium font-mono transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                  activeSegment === "regulasi"
-                    ? "bg-background text-foreground font-bold border border-border shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Scale className="w-3.5 h-3.5 text-amber-500" />
-                <span>4. Regulasi &amp; Hukum</span>
-              </button>
-            </div>
-
-            {/* Tab Contents */}
-            <CardContent className="p-4 sm:p-5 space-y-4">
-              {/* ========================================= */}
-              {/* SEGMENT 1: MITIGASI 15 MENIT (GOLDEN TIME)*/}
-              {/* ========================================= */}
-              {activeSegment === "mitigasi" && (
-                <div className="space-y-4">
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/30 flex items-center justify-between text-xs font-mono">
-                    <span className="font-bold text-rose-500 flex items-center gap-1.5">
-                      <Zap className="w-4 h-4 text-rose-500" />
-                      Protokol Darurat Golden Time (15-30 Menit Pertama)
-                    </span>
-                    <span className="text-muted-foreground text-[10px]">
-                      {Object.values(completedSteps).filter(Boolean).length} dari {activeCase.emergencyActionSteps.length} Selesai
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {activeCase.emergencyActionSteps.map((stepText, idx) => {
-                      const isChecked = !!completedSteps[stepText];
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => toggleStep(stepText)}
-                          className={`p-3 rounded border transition-all cursor-pointer flex items-center gap-3 ${
-                            isChecked
-                              ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
-                              : "bg-card border-border hover:border-muted-foreground/30"
-                          }`}
-                        >
-                          <div className="shrink-0">
-                            <div
-                              className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
-                                isChecked ? "bg-emerald-600 border-emerald-600 text-white" : "border-border bg-background"
-                              }`}
-                            >
-                              {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="font-mono font-bold text-primary text-[11px] px-1.5 py-0.2 bg-muted rounded">
-                              Langkah {idx + 1}
-                            </span>
-                            <span className={`font-medium ${isChecked ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                              {stepText}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Call Center Hotlines Bar */}
-                  <div className="pt-2 border-t border-border space-y-2">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-foreground font-mono">
-                      <PhoneCall className="w-3.5 h-3.5 text-emerald-500" />
-                      Panggilan Cepat Call Center Resmi:
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {OFFICIAL_HOTLINES.slice(0, 4).map((h, i) => (
-                        <a
-                          key={i}
-                          href={`tel:${h.number}`}
-                          className="p-2 border border-border bg-background hover:bg-muted/40 transition-colors rounded flex flex-col justify-between"
-                        >
-                          <span className="text-[11px] font-bold text-foreground">{h.name}</span>
-                          <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">{h.number}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ========================================= */}
-              {/* SEGMENT 2: PENCEGAHAN (PREVENTIVE)       */}
-              {/* ========================================= */}
-              {activeSegment === "pencegahan" && (
-                <div className="space-y-4 text-xs">
-                  {/* Modus Operandi */}
-                  <div className="p-3.5 bg-muted/30 border border-border space-y-2">
-                    <div className="font-bold text-foreground flex items-center gap-1.5 text-xs font-mono uppercase">
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                      Modus Operandi &amp; Pola Serangan:
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed pl-5">
-                      {activeCase.modusOperandi}
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 text-muted-foreground pl-5 pt-1">
-                      {activeCase.characteristics.map((c, i) => (
-                        <li key={i}>{c}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Bias Psikologis */}
-                  <div className="p-3.5 bg-muted/30 border border-border space-y-2">
-                    <div className="font-bold text-foreground flex items-center gap-1.5 text-xs font-mono uppercase">
-                      <Sparkles className="w-3.5 h-3.5 text-primary" />
-                      Celah Bias Psikologis yang Diserang:
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-5">
-                      {activeCase.psychologicalBiases.map((b, idx) => (
-                        <div key={idx} className="space-y-0.5">
-                          <span className="font-semibold text-foreground text-[11px]">• {b.biasName}:</span>
-                          <p className="text-[11px] text-muted-foreground">{b.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ========================================= */}
-              {/* SEGMENT 3: PENANGANAN & LAPORAN RESMI    */}
-              {/* ========================================= */}
-              {activeSegment === "laporan" && (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                  {/* Report Generator Form (7 Cols) */}
-                  <div className="lg:col-span-7 space-y-3">
-                    <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5 text-blue-500" />
-                      Formulir Draf Laporan Resmi (Siap Kirim ke Bank &amp; OJK)
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-muted-foreground">Kategori Insiden:</label>
-                        <Input
-                          className="h-8 text-xs font-medium"
-                          value={reportData.incidentType}
-                          onChange={(e) => setReportData({ ...reportData, incidentType: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-muted-foreground">Kontak Pelaku:</label>
-                        <Input
-                          className="h-8 text-xs font-mono"
-                          value={reportData.scammerContact}
-                          onChange={(e) => setReportData({ ...reportData, scammerContact: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-muted-foreground">Rekening Penampung Penipu:</label>
-                      <Input
-                        className="h-8 text-xs font-mono"
-                        value={reportData.scammerBankDetails}
-                        onChange={(e) => setReportData({ ...reportData, scammerBankDetails: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-muted-foreground">Kronologi Singkat:</label>
-                      <Textarea
-                        rows={3}
-                        className="text-xs font-mono resize-none leading-relaxed"
-                        value={reportData.chronology}
-                        onChange={(e) => setReportData({ ...reportData, chronology: e.target.value })}
-                      />
-                    </div>
-
-                    <Button
-                      onClick={handleCopyReport}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 cursor-pointer shadow-xs"
-                    >
-                      {copiedReport ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 mr-1.5" />
-                          Tersalin ke Clipboard!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5 mr-1.5" />
-                          Salin Draf Laporan
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* Vaccine Chat Broadcast (5 Cols) */}
-                  <div className="lg:col-span-5 space-y-3">
-                    <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
-                      <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
-                      Draf Peringatan Edukasi Grup
-                    </div>
-
-                    <div className="p-2.5 bg-background border border-border rounded text-[11px] font-mono leading-relaxed whitespace-pre-line text-foreground/90 max-h-48 overflow-y-auto">
-                      {vaccineText}
-                    </div>
-
-                    <Button
-                      onClick={handleCopyVaccine}
+              {/* Baris Metadata Ringkas */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
+                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
+                    Tingkat Risiko
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Badge
                       variant="outline"
-                      size="sm"
-                      className="w-full text-xs h-8 cursor-pointer"
+                      className={`text-[10px] font-mono px-2 py-0.5 font-bold ${
+                        activeCase.riskLevel === "CRITICAL"
+                          ? "border-rose-500/40 text-rose-500 bg-rose-500/10"
+                          : "border-amber-500/40 text-amber-500 bg-amber-500/10"
+                      }`}
                     >
-                      {copiedVaccine ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 mr-1.5" />
-                          Tersalin!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5 mr-1.5" />
-                          Salin Teks Edukasi
-                        </>
-                      )}
-                    </Button>
+                      {activeCase.riskLevel} ({activeCase.dangerScore}/100)
+                    </Badge>
                   </div>
                 </div>
-              )}
 
-              {/* ========================================= */}
-              {/* SEGMENT 4: REGULASI & JERAT HUKUM       */}
-              {/* ========================================= */}
-              {activeSegment === "regulasi" && (
-                <div className="space-y-4 text-xs">
-                  <div className="p-3.5 bg-muted/30 border border-border space-y-2">
-                    <div className="font-bold text-foreground flex items-center gap-1.5 text-xs font-mono uppercase">
-                      <Scale className="w-3.5 h-3.5 text-amber-500" />
-                      Dasar Hukum &amp; Jerat Pidana:
-                    </div>
-                    <div className="p-2.5 bg-background border border-border rounded space-y-1">
-                      <span className="font-semibold text-foreground text-xs block">
-                        {activeCase.legalClauses}
-                      </span>
-                      <p className="text-[11px] text-muted-foreground">
-                        Sumber Regulasi: {activeCase.officialSourceCitation}
+                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
+                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
+                    Vektor Serangan
+                  </span>
+                  <span className="text-xs font-mono font-bold text-foreground line-clamp-1">
+                    {activeCase.id === "apk-sniffer"
+                      ? "Accessibility & SMS Dropper"
+                      : activeCase.id === "authority-impersonation"
+                      ? "Domain Spoofing & Phishing"
+                      : activeCase.id === "task-scam"
+                      ? "Multi-Tier Ponzi Deposit"
+                      : activeCase.id === "sms-blast-phishing"
+                      ? "SIM Card Box & SMS Masking"
+                      : activeCase.id === "account-takeover-quishing"
+                      ? "QR Tampering & Begal OTP"
+                      : "Voice Cloning Generatif AI"}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
+                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
+                    Respons Kritis
+                  </span>
+                  <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    ≤ 15 Menit Pertama
+                  </span>
+                </div>
+
+                <div className="p-3 bg-muted/40 border border-border/60 rounded space-y-1">
+                  <span className="text-[10px] font-mono text-muted-foreground block uppercase">
+                    Rujukan Otoritatif
+                  </span>
+                  <span className="text-xs font-mono text-muted-foreground line-clamp-1" title={activeCase.officialSourceCitation}>
+                    {activeCase.officialSourceCitation}
+                  </span>
+                </div>
+              </div>
+            </header>
+
+            {/* ========================================================= */}
+            {/* 2. BEDAH KASUS & ANATOMI MODUS OPERANDI (NARATIF)         */}
+            {/* ========================================================= */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
+                <span className="text-xs font-mono font-bold text-primary">BAGIAN I.</span>
+                <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
+                  Bedah Kasus &amp; Anatomi Modus Operandi
+                </h2>
+              </div>
+
+              {/* Narasi Esai Latar Belakang */}
+              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+                <p>
+                  Tindak kejahatan digital dengan modus <strong>{activeCase.shortName}</strong> merefleksikan pergeseran taktik sindikat siber dari serangan acak menuju penargetan presisi yang mengeksploitasi celah kognitif manusia (*human cognitive vulnerabilities*). Alih-alih meretas server perbankan dengan sistem pertahanan berlapis, penyerang memanfaatkan korban sebagai jembatan pembobol otorisasi melalui serangkaian manipulasi psikologis terstruktur.
+                </p>
+
+                <p>
+                  {activeCase.modusOperandi} Serangan umumnya diawali melalui kanal perpesanan instan personal dengan membangun legitimasi palsu. Sindikat kerap menyamar sebagai representasi institusi formal atau entitas berwenang—mulai dari kurir pengantar paket logistik, panitia undangan pernikahan digital, notifikasi tilang elektronik ETLE Korlantas Polri, petugas Ditjen Pajak (Coretax), hingga pengelola tawaran kerja paruh waktu. Pelaku menyisipkan tenggat waktu semu yang sangat ketat (1 hingga 2 jam) guna menekan target agar segera mengambil tindakan tanpa sempat memverifikasi keabsahan pesan.
+                </p>
+
+                <p>
+                  Secara teknis, {activeCase.technicalMechanism} Dalam skema berkas aplikasi, manipulasi ekstensi ganda diterapkan untuk mengaburkan muatan trojan di hadapan pengguna awam. Begitu izin sistem operasi yang diminta (seperti izin layanan aksesibilitas atau pembacaan SMS masuk) diberikan oleh korban, malware segera menjalankan fungsi mata-mata (*surveillance*): mencegat kode *One-Time Password* (OTP) m-Banking, menyadap notifikasi transaksi dua arah, dan mentransmisikan kredensial akun secara terenkripsi ke server *Command & Control* (C2) penipu.
+                </p>
+              </div>
+
+              {/* Editorial Callout: Studi Kasus Riil di Indonesia */}
+              <div className="p-4 bg-muted/30 border-l-3 border-l-primary rounded-r space-y-1.5 my-3">
+                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-primary uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Studi Kasus &amp; Bukti Empiris di Indonesia
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {activeCase.realCasesIndonesia} Kasus-kasus tersebut membuktikan bahwa kerentanan fatal kerap terjadi pada fase interaksi awal, di mana korban tidak menyadari bahwa berkas atau tautan yang diakses telah mengambil alih sesi otentikasi gawai.
+                </p>
+              </div>
+
+              {/* Analisis Bias Psikologis & Anomali Serangan */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                <div className="p-3.5 bg-muted/20 border border-border/80 rounded space-y-2">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                    Celah Eksploitasi Psikologis Target
+                  </span>
+                  <div className="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
+                    {activeCase.psychologicalBiases.map((b, i) => (
+                      <div key={i}>
+                        <strong className="text-foreground font-mono text-[11px]">• {b.biasName}:</strong> {b.description}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-3.5 bg-muted/20 border border-border/80 rounded space-y-2">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                    Indikator Teknis Anomali Serangan
+                  </span>
+                  <ul className="space-y-1 text-xs text-muted-foreground list-disc list-inside leading-relaxed">
+                    {activeCase.characteristics.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* ========================================================= */}
+            {/* 3. PROSEDUR TANGGAP DARURAT & ESKALASI LAPORAN            */}
+            {/* ========================================================= */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
+                <span className="text-xs font-mono font-bold text-rose-500">BAGIAN II.</span>
+                <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
+                  Prosedur Tanggap Darurat &amp; Eskalasi Laporan
+                </h2>
+              </div>
+
+              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+                <p>
+                  Kecepatan eksekusi pada rentang waktu <strong>Golden Time (15 hingga 30 menit pertama)</strong> pasca-insiden merupakan penentu mutlak terselamatkannya saldo dan identitas perbankan korban. Sebelum penipu menyelesaikan proses *layering* dana ke rekening penampung (*mule accounts*), korban atau pendamping wajib menjalankan mitigasi teknis dan alur eskalasi pelaporan secara berkesinambungan.
+                </p>
+
+                {/* Panduan Runtut Langkah Mitigasi */}
+                <div className="space-y-2.5 font-sans pt-1">
+                  {activeCase.emergencyActionSteps.map((step, idx) => {
+                    const isChecked = !!completedSteps[step];
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => toggleStep(step)}
+                        className={`p-3 rounded border transition-all cursor-pointer flex items-start gap-3 ${
+                          isChecked
+                            ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
+                            : "bg-muted/20 border-border hover:border-muted-foreground/30"
+                        }`}
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          <div
+                            className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                              isChecked ? "bg-emerald-600 border-emerald-600 text-white" : "border-border bg-background"
+                            }`}
+                          >
+                            {isChecked && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                          </div>
+                        </div>
+
+                        <div className="text-xs leading-relaxed">
+                          <strong className="text-foreground block font-mono text-[11px] mb-0.5">
+                            {idx === 0
+                              ? "Langkah 1: Isolasi Fisik & Pemutusan Koneksi (Air-Gap)"
+                              : idx === 1
+                              ? "Langkah 2: Pencabutan Hak Akses & Penonaktifan Layanan Ilegal"
+                              : idx === 2
+                              ? "Langkah 3: Eliminasi Malware & Pemulihan Sistem Operasi"
+                              : "Langkah 4: Pergantian Kredensial & Remediasi Akun Keuangan"}
+                          </strong>
+                          <span className={isChecked ? "line-through text-muted-foreground" : "text-foreground/90"}>
+                            {step}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Callout Box Editorial: Kontak Darurat Call Center Perbankan */}
+              <div className="p-4 bg-muted/40 border border-border rounded space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5 uppercase">
+                    <PhoneCall className="w-3.5 h-3.5 text-emerald-500" />
+                    Panggilan Darurat Pemblokiran Rekening Bank &amp; OJK (24 Jam)
+                  </span>
+                  <span className="text-[10px] font-mono text-rose-600 dark:text-rose-400 font-bold">
+                    Hubungi Dalam 15 Menit Pertama
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {OFFICIAL_HOTLINES.slice(0, 4).map((h, i) => (
+                    <a
+                      key={i}
+                      href={`tel:${h.number}`}
+                      className="p-2.5 border border-border bg-background hover:bg-muted/60 transition-colors rounded flex flex-col justify-between"
+                    >
+                      <span className="text-xs font-bold text-foreground">{h.name}</span>
+                      <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1">{h.number}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Alur Eskalasi Resmi ke Lembaga Negara */}
+              <div className="space-y-2.5">
+                <h4 className="text-xs font-mono font-bold text-foreground uppercase tracking-wider">
+                  Alur Eskalasi Pelaporan ke Institusi Otoritas Resmi:
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <a
+                    href="https://iasc.ojk.go.id"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3.5 bg-background border border-border hover:border-primary rounded-lg flex items-center justify-between transition-colors group"
+                  >
+                    <div>
+                      <div className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
+                        Indonesia Anti-Scam Centre (IASC - OJK 157)
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                        Pusat penanganan penipuan transaksi keuangan terintegrasi OJK dan perbankan nasional untuk percepatan pemblokiran rekening penampung.
                       </p>
+                      <span className="text-[10px] font-mono text-primary font-bold mt-1 inline-block">
+                        iasc.ojk.go.id / Hotline 157
+                      </span>
                     </div>
+                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
+                  </a>
+
+                  <a
+                    href="https://patrolisiber.id"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3.5 bg-background border border-border hover:border-primary rounded-lg flex items-center justify-between transition-colors group"
+                  >
+                    <div>
+                      <div className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
+                        Patroli Siber Polri (Dittipidsiber Bareskrim)
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                        Penerbitan Surat Tanda Terima Laporan Polisi (STTLP) elektronik secara sah guna penyidikan pro-justitia dan pelacakan digital forensik.
+                      </p>
+                      <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold mt-1 inline-block">
+                        patrolisiber.id
+                      </span>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 ml-2" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Generator Draf Laporan & Edukasi Warga */}
+              <div className="pt-3 border-t border-border/60 grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div className="lg:col-span-7 space-y-2.5">
+                  <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-blue-500" />
+                    Generator Draf Laporan Resmi Bank &amp; Kepolisian
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Input
+                      className="h-8 text-xs font-medium"
+                      value={reportData.incidentType}
+                      onChange={(e) => setReportData({ ...reportData, incidentType: e.target.value })}
+                      placeholder="Jenis Insiden"
+                    />
+                    <Input
+                      className="h-8 text-xs font-mono"
+                      value={reportData.scammerContact}
+                      onChange={(e) => setReportData({ ...reportData, scammerContact: e.target.value })}
+                      placeholder="Kontak Penipu"
+                    />
+                  </div>
+                  <Input
+                    className="h-8 text-xs font-mono"
+                    value={reportData.scammerBankDetails}
+                    onChange={(e) => setReportData({ ...reportData, scammerBankDetails: e.target.value })}
+                    placeholder="Rekening Penampung Pelaku"
+                  />
+                  <Textarea
+                    rows={2}
+                    className="text-xs font-mono resize-none leading-relaxed"
+                    value={reportData.chronology}
+                    onChange={(e) => setReportData({ ...reportData, chronology: e.target.value })}
+                    placeholder="Kronologi Singkat Kejadian"
+                  />
+                  <Button
+                    onClick={handleCopyReport}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-mono font-bold text-xs h-8 cursor-pointer"
+                  >
+                    {copiedReport ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 mr-1.5" />
+                        Draf Laporan Tersalin ke Clipboard!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 mr-1.5" />
+                        Salin Draf Laporan Resmi
+                      </>
+                    )}
+                  </Button>
+                </div>
 
-                  {/* Official Portals */}
-                  <div className="space-y-2">
-                    <div className="font-mono text-[11px] font-bold text-foreground uppercase">
-                      Kanal Pengaduan Resmi:
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <a
-                        href="https://iasc.ojk.go.id"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 bg-background border border-border hover:border-primary rounded flex items-center justify-between transition-colors"
-                      >
-                        <div>
-                          <div className="font-bold text-xs text-foreground">IASC OJK (Indonesia Anti-Scam Centre)</div>
-                          <div className="text-[10px] text-muted-foreground font-mono">iasc.ojk.go.id / Kontak 157</div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-primary" />
-                      </a>
+                <div className="lg:col-span-5 space-y-2.5">
+                  <div className="text-xs font-bold font-mono uppercase text-foreground flex items-center gap-1.5">
+                    <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+                    Draf Edukasi Peringatan Grup / Keluarga
+                  </div>
+                  <div className="p-2.5 bg-muted/40 border border-border rounded text-[11px] font-mono leading-relaxed whitespace-pre-line text-foreground/90 max-h-36 overflow-y-auto">
+                    {vaccineText}
+                  </div>
+                  <Button
+                    onClick={handleCopyVaccine}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs h-8 cursor-pointer font-mono font-medium"
+                  >
+                    {copiedVaccine ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 mr-1.5" />
+                        Tersalin!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 mr-1.5" />
+                        Salin Pesan Edukasi Grup
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </section>
 
-                      <a
-                        href="https://patrolisiber.id"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-3 bg-background border border-border hover:border-primary rounded flex items-center justify-between transition-colors"
-                      >
-                        <div>
-                          <div className="font-bold text-xs text-foreground">Patroli Siber Polri</div>
-                          <div className="text-[10px] text-muted-foreground font-mono">patrolisiber.id (STTLP Digital)</div>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-emerald-500" />
-                      </a>
-                    </div>
+            {/* ========================================================= */}
+            {/* 4. TINJAUAN YURIDIS & LANDASAN HUKUM                      */}
+            {/* ========================================================= */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
+                <span className="text-xs font-mono font-bold text-amber-500">BAGIAN III.</span>
+                <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
+                  Tinjauan Yuridis &amp; Landasan Hukum (Legal Framework)
+                </h2>
+              </div>
+
+              <div className="space-y-3.5 text-xs sm:text-sm leading-relaxed text-foreground/90 font-serif">
+                <p>
+                  Dalam kerangka hukum positif Indonesia, tindak pidana siber bermodus <strong>{activeCase.shortName}</strong> memenuhi unsur perbuatan melawan hukum yang diancam pidana secara kumulatif maupun alternatif (*concursus realis*). Pelaku tidak semata-mata dapat dijerat dengan pasal penipuan konvensional, melainkan tunduk pada regulasi khusus mengenai transaksi elektronik dan perlindungan data pribadi.
+                </p>
+
+                {/* Callout Rujukan Regulasi Formal */}
+                <div className="p-4 bg-muted/30 border border-border rounded-lg space-y-2.5 font-sans">
+                  <span className="text-xs font-mono font-bold text-foreground flex items-center gap-1.5 uppercase">
+                    <Scale className="w-3.5 h-3.5 text-amber-500" />
+                    Konstruksi Pasal &amp; Ketentuan Hukum Terkait
+                  </span>
+                  <div className="p-3 bg-background border border-border rounded text-xs leading-relaxed space-y-2">
+                    <p className="font-semibold text-foreground">
+                      {activeCase.legalClauses}
+                    </p>
+                    <p className="text-muted-foreground text-[11px]">
+                      Rujukan Dokumen Otoritatif: <em>{activeCase.officialSourceCitation}</em>
+                    </p>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
-      {/* ========================================================= */}
+                <p>
+                  Berdasarkan instrumen <strong>UU ITE No. 1 Tahun 2024 (Perubahan Kedua atas UU No. 11/2008)</strong>:
+                </p>
+                <ul className="list-disc list-inside space-y-1.5 pl-2 font-sans text-xs text-foreground/90 leading-relaxed">
+                  <li>
+                    <strong>Pasal 30 jo. Pasal 46 UU ITE:</strong> Mengatur perbuatan pengaksesan sistem elektronik dan gawai tanpa hak (*Illegal Access*), diancam pidana penjara paling lama 8 tahun dan/atau denda paling banyak Rp800 juta.
+                  </li>
+                  <li>
+                    <strong>Pasal 32 jo. Pasal 48 UU ITE:</strong> Menjerat intersepsi data, penyadapan pesan SMS OTP, dan pemindahan dokumen elektronik tanpa izin, dengan sanksi penjara hingga 8 tahun dan denda hingga Rp2 miliar.
+                  </li>
+                  <li>
+                    <strong>Pasal 35 jo. Pasal 51 ayat (1) UU ITE:</strong> Dikenakan pada pembuatan dokumen atau situs elektronik manipulatif (seperti domain tiruan Coretax atau situs phishing bank), diancam pidana penjara hingga 12 tahun dan denda maksimal Rp12 miliar.
+                  </li>
+                  <li>
+                    <strong>Pasal 378 KUHP &amp; UU Perlindungan Data Pribadi (UU No. 27/2022):</strong> Melindungi hak subjek data dari pemanfaatan identitas secara melawan hukum serta mempidanakan penipuan bermotif keuntungan finansial melawan hukum.
+                  </li>
+                </ul>
+
+                <p>
+                  <strong>Hak Perlindungan Hukum Bagi Korban:</strong> Korban penipuan siber memiliki hak mutlak untuk mengajukan permohonan pemblokiran rekening penampung kepada bank terkait berdasarkan Peraturan OJK (POJK), memperoleh ganti rugi atau restitusi aset melalui mekanisme pengadilan tindak pidana siber, serta mendapatkan pemulihan nama baik apabila data identitas kependudukan (NIK) disalahgunakan oleh sindikat untuk pembukaan rekening nominee.
+                </p>
+              </div>
+            </section>
+
+          </div>
+        </article>
+      )}      {/* ========================================================= */}
       {/* FLOATING CHATBOT WIDGET (POJOK KANAN BAWAH)                */}
       {/* ========================================================= */}
       {!isChatOpen ? (
