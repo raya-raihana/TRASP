@@ -70,14 +70,38 @@ export interface GameLevel {
   synopsis: string;
   objective: string;
   tags: string[];
-  status: "completed" | "active" | "locked";
+  status?: "completed" | "active" | "locked";
   score?: number;
   reqXp?: number;
   xPct: number;
   yPct: number;
 }
 
-const GAME_LEVELS: GameLevel[] = [
+export interface ModeProgress {
+  completedLevels: string[];
+  currentLevel: number;
+  xp: number;
+}
+
+export interface UserProgressState {
+  defense: ModeProgress;
+  offense: ModeProgress;
+}
+
+export const DEFAULT_PROGRESS: UserProgressState = {
+  defense: {
+    completedLevels: ["apk-kurir"],
+    currentLevel: 2,
+    xp: 100,
+  },
+  offense: {
+    completedLevels: [],
+    currentLevel: 1,
+    xp: 0,
+  },
+};
+
+export const DEFENSE_LEVELS: GameLevel[] = [
   // SEKTOR 1: SOCIAL ENGINEERING & INFILTRATION
   {
     id: "apk-kurir",
@@ -97,7 +121,6 @@ const GAME_LEVELS: GameLevel[] = [
     synopsis: "Berkas LIHAT_FOTO_PAKET.apk disamarkan sebagai foto resi untuk menyusupkan trojan penyadap SMS OTP m-Banking.",
     objective: "Pertahankan HP di atas 50% dengan menolak instalasi file APK liar dan mintalah nomor resi resmi.",
     tags: ["Trojan Dropper", "Sadap OTP SMS", "Urgensi 2 Jam"],
-    status: "completed",
     score: 95,
     xPct: 26,
     yPct: 5,
@@ -120,7 +143,6 @@ const GAME_LEVELS: GameLevel[] = [
     synopsis: "Eksploitasi rasa sungkan dan penasaran via berkas Surat_Undangan_Pernikahan.apk di WhatsApp.",
     objective: "Identifikasi kejanggalan ekstensi dan tolak unduhan di luar Google Play Store.",
     tags: ["Curiosity Bias", "Undangan Digital", "Malware Android"],
-    status: "active",
     xPct: 74,
     yPct: 14,
   },
@@ -142,7 +164,6 @@ const GAME_LEVELS: GameLevel[] = [
     synopsis: "Checkpoint taktis: uji pemahaman dalam mendeteksi penyalahgunaan Android Accessibility Service oleh malware perbankan.",
     objective: "Selesaikan 3 soal evaluasi teknis izin sistem dengan skor sempurna.",
     tags: ["Checkpoint Quiz", "Accessibility Tree", "Play Protect"],
-    status: "active",
     xPct: 34,
     yPct: 23,
   },
@@ -161,35 +182,32 @@ const GAME_LEVELS: GameLevel[] = [
     icon: "🚔",
     xp: "+300 XP",
     xpNumber: 300,
-    synopsis: "Ancaman pemblokiran STNK dalam 24 jam dengan lampiran Surat_Tilang_ETLE.apk mencatut Korlantas Polri.",
-    objective: "Hadapi gertak sambal denda tilang dan tegakkan protokol konfirmasi resmi Polri.",
-    tags: ["Boss Battle Sektor 1", "Pencatutan Polri", "Ancaman STNK"],
-    status: "locked",
+    synopsis: "Manipulasi ketakutan denda tilang kendaraan bermotor disertai ancaman pemblokiran STNK oleh pihak kepolisian.",
+    objective: "Klarifikasi prosedur resmi tilang digital dan tolak membuka berkas APK Surat_Tilang.",
+    tags: ["Boss Battle Sektor 1", "Intimidasi Otoritas", "ETLE Palsu"],
     reqXp: 300,
     xPct: 76,
     yPct: 32,
   },
-
-  // SEKTOR 2: NETWORK, SPOOFING & PHISHING
+  // SEKTOR 2: NETWORK & PHISHING
   {
     id: "loker-bumn",
     levelNumber: 5,
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
     title: "Task Scam & Ponzi Like Video",
-    category: "Reciprocity Trap / Deposit Bertingkat",
+    category: "Advance Fee / Task Fraud",
     type: "battle",
-    bossName: "HRD Gadungan BUMN",
-    targetName: "Pencari Kerja",
+    bossName: "HR BUMN Palsu",
+    targetName: "Pencari Kerja Freelance",
     difficulty: "Medium",
     diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
     icon: "💼",
     xp: "+200 XP",
     xpNumber: 200,
-    synopsis: "Umpan komisi awal Rp30.000 cair instan sebelum menjebak korban dengan setoran deposit VIP jutaan rupiah.",
-    objective: "Patahkan logika setoran uang kerja dan cegah sindikat menguras modal Anda.",
-    tags: ["Task Fraud", "Foot-in-the-Door", "Mule Accounts"],
-    status: "locked",
+    synopsis: "Iming-iming gaji freelance like video TikTok ratusan ribu berujung jebakan deposit modal bertingkat.",
+    objective: "Patahkan janji manis komisi dan tolak menyetorkan uang deposit sepeser pun.",
+    tags: ["Tugas Freelance", "Deposit Ponzi", "Grup Telegram"],
     reqXp: 450,
     xPct: 28,
     yPct: 42,
@@ -200,19 +218,18 @@ const GAME_LEVELS: GameLevel[] = [
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
     title: "Phishing DJP Coretax & Denda",
-    category: "Domain Spoofing / Credential Harvesting",
+    category: "Typosquatting & Credential Harvester",
     type: "battle",
-    bossName: "Oknum Pajak Gadungan",
-    targetName: "Wajib Pajak",
-    difficulty: "Hard",
-    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    bossName: "Petugas Pajak Gadungan",
+    targetName: "Wajib Pajak Pribadi",
+    difficulty: "Medium",
+    diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
     icon: "🏛️",
     xp: "+250 XP",
     xpNumber: 250,
-    synopsis: "Pencatutan Ditjen Pajak menggunakan domain murah (.top) untuk mencuri kredensial m-Banking wajib pajak.",
-    objective: "Inspeksi root domain .go.id dan tolak memasukkan user ID/PIN di situs tiruan.",
-    tags: ["Subdomain Spoofing", "DJP Coretax", "Kring Pajak 1500200"],
-    status: "locked",
+    synopsis: "Domain palsu mirip portal pajak resmi untuk memanen NIK, kata sandi DJP, dan nomor rekening wajib pajak.",
+    objective: "Identifikasi anomali domain dan tolak memasukkan NIK atau nomor rekening pada portal tiruan.",
+    tags: ["Domain Spoofing", "Pencurian Kredensial", "UU PDP"],
     reqXp: 650,
     xPct: 72,
     yPct: 51,
@@ -223,47 +240,44 @@ const GAME_LEVELS: GameLevel[] = [
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
     title: "Timed Incident Drill: 15-Menit Air-Gap",
-    category: "Emergency Incident Drill",
+    category: "Incident Response Simulation",
     type: "drill",
-    bossName: "Incident Handler Bareskrim",
-    targetName: "First Responder",
+    bossName: "Security Incident Commander",
+    targetName: "Korban Terinfeksi",
     difficulty: "Hard",
-    diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
     icon: "⏱️",
     xp: "+150 XP",
     xpNumber: 150,
-    synopsis: "Simulasi tanggap darurat golden time: lakukan isolasi sinyal radio dan pemulihan kredensial dalam hitungan menit.",
-    objective: "Eksekusi 4 langkah teknis mitigasi air-gap sebelum trojan mengeksfiltrasi data m-Banking.",
-    tags: ["Incident Drill", "Air-Gap Isolation", "Golden Time"],
-    status: "locked",
+    synopsis: "Simulasi darurat cepat: korban tanpa sengaja mengklik berkas APK. Eksekusi 3 SOP penahanan insiden dalam 15 menit.",
+    objective: "Centang 3 tindakan darurat isolasi perangkat dan kontak perbankan secara urut.",
+    tags: ["Speed Drill", "Air-Gap Protocol", "OJK IASC"],
     reqXp: 800,
     xPct: 30,
     yPct: 60,
   },
   {
-    id: "m-banking-palsu",
+    id: "sms-perbankan",
     levelNumber: 8,
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
     title: "Boss Sektor 2: SMS Masking Tarif Bank",
-    category: "SIM Box Phishing / Boss Battle",
+    category: "Sender ID Spoofing / Banking Phishing",
     type: "boss",
-    bossName: "Sindikat SMS Blast Bank",
-    targetName: "Nasabah Bank",
-    difficulty: "Insane",
-    diffColor: "text-purple-400 border-purple-500/40 bg-purple-950/40",
+    bossName: "Operator Spoofing Bank",
+    targetName: "Nasabah Tabungan",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
     icon: "🏦",
     xp: "+400 XP",
     xpNumber: 400,
-    synopsis: "Serangan SMS blast masif mencatut bank besar dengan isu kenaikan biaya transfer Rp150.000/bulan.",
-    objective: "Bongkar manipulasi kepanikan dan lindungi kode OTP serta CVV kartu debit Anda.",
+    synopsis: "Pencegatan SMS dengan identitas pengirim resmi bank yang menyatakan kenaikan tarif transfer menjadi Rp150.000/bulan.",
+    objective: "Patahkan manipulasi kenaikan tarif dan tolak mengklik tautan pembatalan fiktif.",
     tags: ["Boss Battle Sektor 2", "SMS Masking", "Begal OTP"],
-    status: "locked",
     reqXp: 950,
     xPct: 75,
     yPct: 70,
   },
-
   // SEKTOR 3: ADVANCED DEEPFAKE & AI FRAUD
   {
     id: "quishing-qris",
@@ -283,7 +297,6 @@ const GAME_LEVELS: GameLevel[] = [
     synopsis: "Manipulasi belas kasihan salah kirim voucher pulsa demi membegal 6 digit kode autentikasi WhatsApp.",
     objective: "Tolak menyerahkan 6 digit kode verifikasi dan pertahankan kendali akun Anda.",
     tags: ["Account Takeover", "Quishing QRIS", "Verifikasi 2FA"],
-    status: "locked",
     reqXp: 1200,
     xPct: 28,
     yPct: 80,
@@ -306,7 +319,230 @@ const GAME_LEVELS: GameLevel[] = [
     synopsis: "Panggilan telepon suara tiruan pimpinan perusahaan yang menginstruksikan transfer darurat Rp25 juta.",
     objective: "Tegakkan integritas SOP keuangan kantor dan tolak intimidasi pimpinan palsu berbasis AI.",
     tags: ["Final Boss Battle", "AI Voice Clone", "CEO Fraud"],
-    status: "locked",
+    reqXp: 1500,
+    xPct: 72,
+    yPct: 89,
+  },
+];
+
+export const OFFENSE_LEVELS: GameLevel[] = [
+  // SEKTOR 1: ADVERSARY INFILTRATION & DELIVERY
+  {
+    id: "rt-kurir-apk",
+    levelNumber: 1,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Dropper Pretexting Resi .APK",
+    category: "Adversary Payload Delivery",
+    type: "battle",
+    bossName: "Lead Red Team Specialist",
+    targetName: "Penerima Paket Ekspedisi",
+    difficulty: "Easy",
+    diffColor: "text-emerald-400 border-emerald-500/40 bg-emerald-950/40",
+    icon: "📦",
+    xp: "+100 XP",
+    xpNumber: 100,
+    synopsis: "Rancang skenario kurir paket tertahan untuk menguji tingkat kewaspadaan target mengunduh installer APK.",
+    objective: "Turunkan skeptisisme target hingga di bawah 30% dengan alasan paket darurat tanpa membuat target curiga.",
+    tags: ["Pretexting", "Social Engineering", "Dropper Simulation"],
+    score: 90,
+    xPct: 26,
+    yPct: 5,
+  },
+  {
+    id: "rt-undangan-nikah",
+    levelNumber: 2,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Pretexting Undangan Resepsi",
+    category: "Social Engineering Engagement",
+    type: "battle",
+    bossName: "Red Team Infiltrator",
+    targetName: "Kontak Personal Target",
+    difficulty: "Easy",
+    diffColor: "text-emerald-400 border-emerald-500/40 bg-emerald-950/40",
+    icon: "💌",
+    xp: "+150 XP",
+    xpNumber: 150,
+    synopsis: "Bangun komunikasi emosional kekeluargaan yang santun untuk menguji respon penerima terhadap lampiran digital.",
+    objective: "Bangkitkan rasa penasaran target agar bersedia membuka berkas undangan tanpa mempertanyakan ekstensi.",
+    tags: ["Emotional Hook", "Curiosity Lure", "Engagement"],
+    xPct: 74,
+    yPct: 14,
+  },
+  {
+    id: "rt-checkpoint-quiz-1",
+    levelNumber: 3,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Red Team Drill: Evasion AV & Play Protect",
+    category: "Adversary Knowledge Checkpoint",
+    type: "quiz",
+    bossName: "Instruktur Red Team",
+    targetName: "Red Team Operator",
+    difficulty: "Medium",
+    diffColor: "text-cyan-400 border-cyan-500/40 bg-cyan-950/40",
+    icon: "📝",
+    xp: "+100 XP",
+    xpNumber: 100,
+    synopsis: "Uji pemahaman taktik evasi: bagaimana malware modern membypass deteksi signature antivirus & Google Play Protect.",
+    objective: "Selesaikan 3 pertanyaan evaluasi teknik penetrasi siber dengan skor maksimal.",
+    tags: ["AV Evasion", "Obfuscation", "Signature Bypass"],
+    xPct: 34,
+    yPct: 23,
+  },
+  {
+    id: "rt-tilang-etle",
+    levelNumber: 4,
+    sectorId: 1,
+    sectorName: "Sektor 1: Social Engineering",
+    title: "Boss Sektor 1: Authority Coercion (ETLE)",
+    category: "Authority Impersonation / Boss Battle",
+    type: "boss",
+    bossName: "Senior Red Team Adversary",
+    targetName: "Pelanggar Lalu Lintas",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "🚔",
+    xp: "+300 XP",
+    xpNumber: 300,
+    synopsis: "Simulasikan persona penegak hukum untuk menguji ketahanan mental target terhadap ancaman pembekuan izin berkendara.",
+    objective: "Eksploitasi bias kepatuhan target melalui format pemberitahuan tilang resmi berbatas waktu.",
+    tags: ["Boss Battle Sektor 1", "Authority Bias", "Stress Induction"],
+    reqXp: 300,
+    xPct: 76,
+    yPct: 32,
+  },
+  // SEKTOR 2: CREDENTIAL HARVESTER & LATERAL MOVEMENT
+  {
+    id: "rt-task-scam",
+    levelNumber: 5,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Task Scam Baiting & Funneling",
+    category: "Financial Incentive Engineering",
+    type: "battle",
+    bossName: "Social Engineer Specialist",
+    targetName: "Pencari Kerja Freelance",
+    difficulty: "Medium",
+    diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
+    icon: "💼",
+    xp: "+200 XP",
+    xpNumber: 200,
+    synopsis: "Susun alur umpan komisi mikro bertahap untuk memandu target masuk ke grup komunikasi privat.",
+    objective: "Uji batas rasionalitas target terhadap imbal hasil instan yang tidak wajar.",
+    tags: ["Funneling", "Advance Fee Lure", "Greed Factor"],
+    reqXp: 450,
+    xPct: 28,
+    yPct: 42,
+  },
+  {
+    id: "rt-phishing-pajak",
+    levelNumber: 6,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Typosquatting Portal Pajak",
+    category: "Credential Harvesting Simulation",
+    type: "battle",
+    bossName: "Phishing Assessment Lead",
+    targetName: "Wajib Pajak Korporat",
+    difficulty: "Medium",
+    diffColor: "text-amber-400 border-amber-500/40 bg-amber-950/40",
+    icon: "🏛️",
+    xp: "+250 XP",
+    xpNumber: 250,
+    synopsis: "Gunakan narasi sinkronisasi data Coretax DJP mendesak untuk menguji kewaspadaan target memverifikasi sertifikat SSL dan URL.",
+    objective: "Pandu target mengisi formulir pengujian kredensial tanpa menimbulkan alarm kecurigaan.",
+    tags: ["Typosquatting", "Reverse Proxy", "Credential Harvest"],
+    reqXp: 650,
+    xPct: 72,
+    yPct: 51,
+  },
+  {
+    id: "rt-checkpoint-drill-2",
+    levelNumber: 7,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Timed Drill: Credential Intercept",
+    category: "Adversary Speed Drill",
+    type: "drill",
+    bossName: "Red Team Coordinator",
+    targetName: "Operator Simulasi",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "⏱️",
+    xp: "+150 XP",
+    xpNumber: 150,
+    synopsis: "Simulasi kecepatan intercept token autentikasi sebelum target menyadari anomali sesi.",
+    objective: "Selesaikan 3 langkah operasional penangkapan data simulasi secara aman dan terkontrol.",
+    tags: ["Speed Drill", "Token Capture", "Controlled Harvest"],
+    reqXp: 800,
+    xPct: 30,
+    yPct: 60,
+  },
+  {
+    id: "rt-sms-perbankan",
+    levelNumber: 8,
+    sectorId: 2,
+    sectorName: "Sektor 2: Network & Phishing",
+    title: "Boss Sektor 2: SMS Sender ID Spoofing",
+    category: "Telephony Manipulation / Boss Battle",
+    type: "boss",
+    bossName: "Master Telephony Adversary",
+    targetName: "Nasabah Prioritas Bank",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "🏦",
+    xp: "+400 XP",
+    xpNumber: 400,
+    synopsis: "Gunakan masking nama bank resmi untuk menguji sejauh mana nasabah memercayai kanal SMS dibanding aplikasi perbankan.",
+    objective: "Tuntun target mengklik tautan pembatalan simulasi dengan memicu kecemasan biaya administrasi.",
+    tags: ["Boss Battle Sektor 2", "Sender ID Spoof", "Banking Pretext"],
+    reqXp: 950,
+    xPct: 75,
+    yPct: 70,
+  },
+  // SEKTOR 3: AUTONOMOUS AI & DEEPFAKE SYNTHESIS
+  {
+    id: "rt-quishing-qris",
+    levelNumber: 9,
+    sectorId: 3,
+    sectorName: "Sektor 3: Advanced Deepfake",
+    title: "QR Tag Tampering & Social 2FA",
+    category: "Physical-to-Digital Social Breach",
+    type: "battle",
+    bossName: "Adversary Social Engineer",
+    targetName: "Pengelola Toko Retail",
+    difficulty: "Hard",
+    diffColor: "text-rose-400 border-rose-500/40 bg-rose-950/40",
+    icon: "📱",
+    xp: "+350 XP",
+    xpNumber: 350,
+    synopsis: "Rancang pretexting kesalahan transaksi voucher pulsa untuk memancing korban memberikan 6 digit kode autentikasi WhatsApp.",
+    objective: "Dapatkan konfirmasi autentikasi sekunder target melalui manipulasi rasa simpati dan kekeliruan kasir.",
+    tags: ["2FA Hijack", "Quishing Vector", "Sympathy Exploitation"],
+    reqXp: 1200,
+    xPct: 28,
+    yPct: 80,
+  },
+  {
+    id: "rt-deepfake-bos",
+    levelNumber: 10,
+    sectorId: 3,
+    sectorName: "Sektor 3: Advanced Deepfake",
+    title: "Final Boss: AI Voice Cloning Synthesis",
+    category: "Generative AI Audio Spoofing / Boss Battle",
+    type: "boss",
+    bossName: "Apex AI Threat Actor",
+    targetName: "Manajer Keuangan Senior",
+    difficulty: "Insane",
+    diffColor: "text-red-500 border-red-500/50 bg-red-950/50",
+    icon: "🎙️",
+    xp: "+500 XP",
+    xpNumber: 500,
+    synopsis: "Gunakan model sintesis audio kecerdasan buatan untuk menirukan timbre suara pimpinan dalam instruksi transfer darurat.",
+    objective: "Bypass verifikasi human-in-the-loop target dengan intonasi otoritatif dan batas waktu tender kritis.",
+    tags: ["Final Boss Battle", "Vishing Deepfake", "Executive Impersonation"],
     reqXp: 1500,
     xPct: 72,
     yPct: 89,
@@ -352,18 +588,24 @@ export function LearnSandbox({
   const [drillChecks, setDrillChecks] = useState<Record<number, boolean>>({});
   const [isDrillDone, setIsDrillDone] = useState(false);
 
-  // User Stats & Gamification
-  const [userXp, setUserXp] = useState(850);
-  const [completedLevels, setCompletedLevels] = useState<string[]>(["apk-kurir"]);
+  // User Stats & Gamification per Mode
+  const [progress, setProgress] = useState<UserProgressState>(DEFAULT_PROGRESS);
+
+  const currentModeKey: "defense" | "offense" = gameRole === "victim_game" ? "defense" : "offense";
+  const currentProgress = progress[currentModeKey];
+  const currentCampaignLevels = currentModeKey === "defense" ? DEFENSE_LEVELS : OFFENSE_LEVELS;
 
   const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>(
     SANDBOX_SCENARIOS[initialScenarioId] ? initialScenarioId : "apk-kurir"
   );
+  const baseScenarioKey = selectedScenarioKey.replace(/^rt-/, "");
   const scenario =
-    SANDBOX_SCENARIOS[selectedScenarioKey] || SANDBOX_SCENARIOS["apk-kurir"];
+    SANDBOX_SCENARIOS[selectedScenarioKey] ||
+    SANDBOX_SCENARIOS[baseScenarioKey] ||
+    SANDBOX_SCENARIOS["apk-kurir"];
 
   const activeLevel =
-    GAME_LEVELS.find((l) => l.id === selectedScenarioKey) || GAME_LEVELS[0];
+    currentCampaignLevels.find((l) => l.id === selectedScenarioKey) || currentCampaignLevels[0];
 
   // ==========================================
   // STATE MODE 1: USER = KORBAN, LAWAN = PENIPU AI
@@ -428,9 +670,33 @@ export function LearnSandbox({
         const savedRole = localStorage.getItem("trasp_learn_role") as "victim_game" | "redteam_game" | null;
         if (savedRole) setGameRole(savedRole);
 
+        const savedProgDefense = localStorage.getItem("cyberquest_progress_defense");
+        const savedProgOffense = localStorage.getItem("cyberquest_progress_offense");
+        let restoredDefense = DEFAULT_PROGRESS.defense;
+        let restoredOffense = DEFAULT_PROGRESS.offense;
+
+        if (savedProgDefense) {
+          try { restoredDefense = JSON.parse(savedProgDefense); } catch {}
+        }
+        if (savedProgOffense) {
+          try { restoredOffense = JSON.parse(savedProgOffense); } catch {}
+        }
+
+        setProgress({
+          defense: restoredDefense,
+          offense: restoredOffense,
+        });
+
+        const activeModeKey = (savedRole || "victim_game") === "victim_game" ? "defense" : "offense";
+        const activeProg = activeModeKey === "defense" ? restoredDefense : restoredOffense;
+        const activeCamp = activeModeKey === "defense" ? DEFENSE_LEVELS : OFFENSE_LEVELS;
+
         const savedScenario = localStorage.getItem("trasp_learn_scenario");
-        if (savedScenario && SANDBOX_SCENARIOS[savedScenario]) {
+        if (savedScenario) {
           setSelectedScenarioKey(savedScenario);
+        } else {
+          const currentActive = activeCamp.find((l) => l.levelNumber === activeProg.currentLevel) || activeCamp[0];
+          setSelectedScenarioKey(currentActive.id);
         }
 
         const savedVictimHistory = localStorage.getItem("trasp_learn_victim_history");
@@ -481,6 +747,8 @@ export function LearnSandbox({
         localStorage.setItem("trasp_learn_redteam_input", redteamInput);
         localStorage.setItem("trasp_learn_victim_history", JSON.stringify(victimChatHistory));
         localStorage.setItem("trasp_learn_redteam_history", JSON.stringify(redteamChatHistory));
+        localStorage.setItem("cyberquest_progress_defense", JSON.stringify(progress.defense));
+        localStorage.setItem("cyberquest_progress_offense", JSON.stringify(progress.offense));
       } catch (e) {}
     }
   }, [
@@ -493,6 +761,7 @@ export function LearnSandbox({
     redteamInput,
     victimChatHistory,
     redteamChatHistory,
+    progress,
   ]);
 
   // Auto scroll
@@ -507,6 +776,52 @@ export function LearnSandbox({
       redteamChatRef.current.scrollTop = redteamChatRef.current.scrollHeight;
     }
   }, [redteamChatHistory, isTargetTyping]);
+
+  const handleLevelFinished = (levelId: string) => {
+    const modeKey: "defense" | "offense" = gameRole === "victim_game" ? "defense" : "offense";
+    const campaignLevels = modeKey === "defense" ? DEFENSE_LEVELS : OFFENSE_LEVELS;
+    const currentLvl = campaignLevels.find((l) => l.id === levelId) || campaignLevels[0];
+    const nextLvl = campaignLevels.find((l) => l.levelNumber === currentLvl.levelNumber + 1);
+
+    setProgress((prev) => {
+      const currentMode = prev[modeKey];
+      if (currentMode.completedLevels.includes(levelId)) return prev;
+
+      const nextCompleted = [...currentMode.completedLevels, levelId];
+      const nextXp = currentMode.xp + (currentLvl.xpNumber || 100);
+      const nextCurrentLevel = nextLvl ? Math.max(currentMode.currentLevel, nextLvl.levelNumber) : currentMode.currentLevel;
+
+      const updatedMode: ModeProgress = {
+        completedLevels: nextCompleted,
+        currentLevel: nextCurrentLevel,
+        xp: nextXp,
+      };
+
+      const updatedAll: UserProgressState = {
+        ...prev,
+        [modeKey]: updatedMode,
+      };
+
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(
+            modeKey === "defense" ? "cyberquest_progress_defense" : "cyberquest_progress_offense",
+            JSON.stringify(updatedMode)
+          );
+        } catch {}
+      }
+      return updatedAll;
+    });
+  };
+
+  const handleSwitchMode = (newRole: "victim_game" | "redteam_game") => {
+    setGameRole(newRole);
+    const newModeKey: "defense" | "offense" = newRole === "victim_game" ? "defense" : "offense";
+    const newCampaign = newRole === "victim_game" ? DEFENSE_LEVELS : OFFENSE_LEVELS;
+    const modeProg = progress[newModeKey];
+    const activeLvl = newCampaign.find((l) => l.levelNumber === modeProg.currentLevel) || newCampaign[0];
+    setSelectedScenarioKey(activeLvl.id);
+  };
 
   // Reset Sesi Game
   const resetAllGames = useCallback(
@@ -851,7 +1166,7 @@ export function LearnSandbox({
                 >
                   <button
                     type="button"
-                    onClick={() => setGameRole("victim_game")}
+                    onClick={() => handleSwitchMode("victim_game")}
                     className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
                       gameRole === "victim_game"
                         ? "bg-primary text-primary-foreground shadow-xs"
@@ -864,7 +1179,7 @@ export function LearnSandbox({
 
                   <button
                     type="button"
-                    onClick={() => setGameRole("redteam_game")}
+                    onClick={() => handleSwitchMode("redteam_game")}
                     className={`px-2.5 py-1 text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer rounded ${
                       gameRole === "redteam_game"
                         ? "bg-rose-600 text-white shadow-xs"
@@ -883,13 +1198,13 @@ export function LearnSandbox({
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-muted-foreground flex items-center gap-1">
                   <Award className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Progres Kampanye: <strong>{userXp}</strong> / 1,500 XP</span>
+                  <span>Progres Kampanye: <strong>{currentProgress.xp}</strong> / 1,500 XP</span>
                 </span>
                 <span className="font-bold text-foreground">
-                  Level 1/10 Selesai ({Math.round((userXp / 1500) * 100)}%)
+                  Level {currentProgress.completedLevels.length}/10 Selesai ({Math.min(100, Math.round((currentProgress.xp / 1500) * 100))}%)
                 </span>
               </div>
-              <Progress value={(userXp / 1500) * 100} className="h-2.5" />
+              <Progress value={Math.min(100, (currentProgress.xp / 1500) * 100)} className="h-2.5" />
             </div>
 
             {/* Sector Tabs Filter */}
@@ -1003,10 +1318,10 @@ export function LearnSandbox({
             </svg>
 
             {/* Render All Campaign Level Nodes */}
-            {GAME_LEVELS.map((lvl) => {
+            {currentCampaignLevels.map((lvl) => {
               const isFilteredOut = selectedSector !== "ALL" && lvl.sectorId !== selectedSector;
-              const isCompleted = completedLevels.includes(lvl.id);
-              const isActive = lvl.id === "undangan-nikah" || lvl.id === "checkpoint-quiz-1";
+              const isCompleted = currentProgress.completedLevels.includes(lvl.id);
+              const isActive = (lvl.levelNumber === currentProgress.currentLevel || (currentModeKey === "defense" && lvl.id === "checkpoint-quiz-1")) && !isCompleted;
               const isLocked = !isCompleted && !isActive;
 
               return (
@@ -1171,7 +1486,7 @@ export function LearnSandbox({
                       QUIZ
                     </span>
                     <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
-                      Mini-Quiz: Izin Aksesibilitas Android
+                      {gameRole === "victim_game" ? "Mini-Quiz: Izin Aksesibilitas Android" : "Red Team Drill: Evasion AV & Play Protect"}
                     </h3>
                   </div>
                   <button
@@ -1248,10 +1563,8 @@ export function LearnSandbox({
                   <Button
                     size="sm"
                     onClick={() => {
-                      setUserXp((prev) => prev + 100);
-                      if (!completedLevels.includes("checkpoint-quiz-1")) {
-                        setCompletedLevels((prev) => [...prev, "checkpoint-quiz-1"]);
-                      }
+                      const quizId = gameRole === "victim_game" ? "checkpoint-quiz-1" : "rt-checkpoint-quiz-1";
+                      handleLevelFinished(quizId);
                       setIsQuizOpen(false);
                     }}
                     disabled={quizAnswers[1] === undefined || quizAnswers[2] === undefined}
@@ -1276,7 +1589,7 @@ export function LearnSandbox({
                       <Timer className="w-3.5 h-3.5" /> DRILL
                     </span>
                     <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
-                      Timed Incident Drill: 15-Menit Air-Gap
+                      {gameRole === "victim_game" ? "Timed Incident Drill: 15-Menit Air-Gap" : "Timed Drill: Pretexting & Credential Intercept"}
                     </h3>
                   </div>
                   <button
@@ -1292,12 +1605,20 @@ export function LearnSandbox({
                 </p>
 
                 <div className="space-y-2 text-xs">
-                  {[
-                    "Aktifkan Mode Pesawat (Airplane Mode) seketika untuk memutus server C2.",
-                    "Matikan seluruh koneksi Wi-Fi, Bluetooth, dan cabut kartu SIM fisik.",
-                    "Masuk ke Pengaturan > Aksesibilitas > Cabut izin aplikasi mencurigakan.",
-                    "Lakukan pergantian kredensial m-Banking dari perangkat lain yang aman.",
-                  ].map((stepText, idx) => (
+                  {(gameRole === "victim_game"
+                    ? [
+                        "Aktifkan Mode Pesawat (Airplane Mode) seketika untuk memutus server C2.",
+                        "Matikan seluruh koneksi Wi-Fi, Bluetooth, dan cabut kartu SIM fisik.",
+                        "Masuk ke Pengaturan > Aksesibilitas > Cabut izin aplikasi mencurigakan.",
+                        "Lakukan pergantian kredensial m-Banking dari perangkat lain yang aman.",
+                      ]
+                    : [
+                        "Validasi form landing page pengujian dan pastikan payload tersanitasi aman.",
+                        "Kirimkan simulasi broadcast SMS spoofing ke nomor perangkat uji internal.",
+                        "Verifikasi penerimaan session token pada listener forensik terkontrol.",
+                        "Dokumentasikan resistensi target ke dalam laporan red team audit.",
+                      ]
+                  ).map((stepText, idx) => (
                     <div
                       key={idx}
                       onClick={() => setDrillChecks({ ...drillChecks, [idx]: !drillChecks[idx] })}
@@ -1335,10 +1656,8 @@ export function LearnSandbox({
                   <Button
                     size="sm"
                     onClick={() => {
-                      setUserXp((prev) => prev + 150);
-                      if (!completedLevels.includes("checkpoint-drill-2")) {
-                        setCompletedLevels((prev) => [...prev, "checkpoint-drill-2"]);
-                      }
+                      const drillId = gameRole === "victim_game" ? "checkpoint-drill-2" : "rt-checkpoint-drill-2";
+                      handleLevelFinished(drillId);
                       setIsDrillOpen(false);
                     }}
                     disabled={Object.values(drillChecks).filter(Boolean).length < 4}
@@ -1362,20 +1681,22 @@ export function LearnSandbox({
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-base text-foreground">
-                    Master Cyber Sentinel Vault
+                    {gameRole === "victim_game" ? "Master Cyber Sentinel Vault" : "Master Ghost Operator Vault"}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Lencana Kehormatan Cyber Guardian 2026 UNMUL terbuka untuk Anda.
+                    {gameRole === "victim_game"
+                      ? "Lencana Kehormatan Cyber Guardian 2026 UNMUL terbuka untuk Anda."
+                      : "Lencana Kehormatan Apex Adversary 2026 UNMUL terbuka untuk Anda."}
                   </p>
                 </div>
                 <div className="p-3 bg-muted/40 border border-border rounded text-xs font-mono text-foreground space-y-1.5 text-left">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Kampanye XP:</span>
-                    <span className="font-bold text-amber-500">+{userXp} XP</span>
+                    <span className="font-bold text-amber-500">+{currentProgress.xp} XP</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Peringkat Agen:</span>
-                    <span className="font-bold text-emerald-500">Tier III (Elite Sentinel)</span>
+                    <span className="font-bold text-emerald-500">{gameRole === "victim_game" ? "Tier III (Elite Sentinel)" : "Tier III (Apex Ghost Operator)"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Status Sertifikasi:</span>
@@ -1745,6 +2066,7 @@ export function LearnSandbox({
                       } else {
                         setIsRedteamFinished(true);
                       }
+                      handleLevelFinished(selectedScenarioKey);
                     }}
                     className="w-full text-xs h-8 font-mono border-rose-500/40 text-rose-500 hover:bg-rose-500/10 cursor-pointer"
                   >
