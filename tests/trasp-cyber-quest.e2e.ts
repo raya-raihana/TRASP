@@ -45,7 +45,7 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   await app.screenshot('quest-03-defense-progress-preserved');
 
   // 7. Test Checkpoint: Mini-Quiz (Level 3)
-  const quizNode = screen.getByRole('button', '📝 QUIZ');
+  const quizNode = screen.getByRole('button', /QUIZ/i);
   await quizNode.tap();
 
   // Verify Mini-Quiz Modal is opened with Defense specific questions
@@ -57,7 +57,7 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   await closeQuizBtn.tap();
 
   // 8. Test Playing Level 2 (Play Now node)
-  const level2Btn = screen.getByRole('button', '💌 PLAY NOW 02');
+  const level2Btn = screen.getByRole('button', /PLAY NOW.*02|02.*PLAY NOW/i);
   await level2Btn.tap();
 
   // Verify Simulator Phone View opened

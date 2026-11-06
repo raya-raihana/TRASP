@@ -33,6 +33,18 @@ import {
   Battery,
   Signal,
   Brain,
+  Package,
+  Mail,
+  FileText,
+  Siren,
+  Briefcase,
+  Landmark,
+  Building,
+  Smartphone,
+  Mic,
+  Gift,
+  User,
+  Square,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -79,6 +91,55 @@ export interface GameLevel {
   reqXp?: number;
   xPct: number;
   yPct: number;
+}
+
+export function renderQuestIcon(iconKey: string, className = "w-5 h-5") {
+  switch (iconKey) {
+    case "📦":
+    case "package":
+      return <Package className={className} />;
+    case "💌":
+    case "mail":
+      return <Mail className={className} />;
+    case "📝":
+    case "quiz":
+    case "file-text":
+      return <FileText className={className} />;
+    case "🚔":
+    case "police":
+    case "siren":
+      return <Siren className={className} />;
+    case "💼":
+    case "briefcase":
+      return <Briefcase className={className} />;
+    case "🏛️":
+    case "landmark":
+      return <Landmark className={className} />;
+    case "⏱️":
+    case "timer":
+      return <Timer className={className} />;
+    case "🏦":
+    case "bank":
+    case "building":
+      return <Building className={className} />;
+    case "📱":
+    case "smartphone":
+    case "phone":
+      return <Smartphone className={className} />;
+    case "🎙️":
+    case "mic":
+      return <Mic className={className} />;
+    case "🎁":
+    case "vault":
+    case "gift":
+      return <Gift className={className} />;
+    case "🧑":
+    case "target":
+    case "user":
+      return <User className={className} />;
+    default:
+      return <Shield className={className} />;
+  }
 }
 
 export interface ModeProgress {
@@ -1193,13 +1254,17 @@ export function LearnSandbox({
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl border shadow-2xs shrink-0 ${
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-2xs shrink-0 ${
                     gameRole === "victim_game"
                       ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                       : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
                   }`}
                 >
-                  {gameRole === "victim_game" ? "🛡️" : "🕵️"}
+                  {gameRole === "victim_game" ? (
+                    <Shield className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Crosshair className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                  )}
                 </div>
 
                 <div>
@@ -1258,10 +1323,10 @@ export function LearnSandbox({
                 {/* Status Nyawa / Integritas */}
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-2xs">
                   <span className="text-[10px] text-neutral-700 dark:text-neutral-300 font-bold">Integritas:</span>
-                  <div className="flex items-center gap-0.5" title="3 Nyawa / Shield Integrity">
-                    <span className="text-xs">🛡️</span>
-                    <span className="text-xs">🛡️</span>
-                    <span className="text-xs">🛡️</span>
+                  <div className="flex items-center gap-1" title="3 Nyawa / Shield Integrity">
+                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
+                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
+                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
                   </div>
                 </div>
 
@@ -1398,7 +1463,9 @@ export function LearnSandbox({
                       }`}
                       title={`Checkpoint: ${lvl.title}`}
                     >
-                      <span className="-rotate-45 text-xl sm:text-2xl">{lvl.icon}</span>
+                      <div className="-rotate-45 flex items-center justify-center">
+                        {renderQuestIcon(lvl.icon, "w-6 h-6 text-foreground")}
+                      </div>
 
                       {/* Milestone Badge */}
                       <span
@@ -1423,7 +1490,9 @@ export function LearnSandbox({
                       }`}
                       title={`Boss Battle: ${lvl.title}`}
                     >
-                      <span>{lvl.icon}</span>
+                      <div className="flex items-center justify-center text-rose-600 dark:text-rose-400">
+                        {renderQuestIcon(lvl.icon, "w-7 h-7")}
+                      </div>
 
                       {/* Boss Badge */}
                       <span className="absolute -top-3 px-2 py-0.5 rounded-full bg-rose-600 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-1 whitespace-nowrap">
@@ -1451,7 +1520,9 @@ export function LearnSandbox({
                       }`}
                       title={`Level ${lvl.levelNumber}: ${lvl.title}`}
                     >
-                      <span>{lvl.icon}</span>
+                      <div className="flex items-center justify-center text-foreground">
+                        {renderQuestIcon(lvl.icon, "w-6 h-6")}
+                      </div>
 
                       {/* Status / Play Now Pill */}
                       {isCompleted ? (
@@ -1514,10 +1585,10 @@ export function LearnSandbox({
               <button
                 type="button"
                 onClick={() => setIsChestOpen(true)}
-                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white dark:bg-neutral-900 border-2 border-amber-500 hover:border-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center text-3xl sm:text-4xl transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
+                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white dark:bg-neutral-900 border-2 border-amber-500 hover:border-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-amber-500/20"
                 title="Buka Master Cyber Sentinel Vault"
               >
-                <span>🎁</span>
+                <Gift className="w-7 h-7 sm:w-8 sm:h-8 text-amber-500 fill-amber-500/20" />
                 <span className="absolute -top-2.5 px-2.5 py-0.5 rounded-full bg-amber-500 text-neutral-950 font-mono text-[10px] font-bold shadow-xs">
                   VAULT
                 </span>
@@ -1736,8 +1807,8 @@ export function LearnSandbox({
           {isChestOpen && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
               <div className="bg-card border border-border max-w-sm w-full p-5 text-center space-y-3.5 rounded-lg shadow-2xl animate-in zoom-in-95 duration-150">
-                <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-4xl shadow-inner">
-                  🎁
+                <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-inner">
+                  <Gift className="w-8 h-8 fill-amber-500/20 text-amber-500" />
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-base text-foreground">
@@ -1893,13 +1964,13 @@ export function LearnSandbox({
                 <div className="px-3.5 py-2.5 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-2.5">
                     <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold border shrink-0 relative ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold border shrink-0 relative ${
                         gameRole === "victim_game"
                           ? "bg-rose-500/20 text-rose-500 border-rose-500/30"
                           : "bg-blue-500/20 text-blue-500 border-blue-500/30"
                       }`}
                     >
-                      {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
+                      {gameRole === "victim_game" ? renderQuestIcon(activeLevel.icon, "w-4 h-4") : <User className="w-4 h-4" />}
                       <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-background" />
                     </div>
 
@@ -1938,7 +2009,7 @@ export function LearnSandbox({
                               : "bg-blue-500/10 text-blue-500 border-blue-500/30"
                           }`}
                         >
-                          {gameRole === "victim_game" ? activeLevel.icon : "🧑"}
+                          {gameRole === "victim_game" ? renderQuestIcon(activeLevel.icon, "w-3.5 h-3.5") : <User className="w-3.5 h-3.5" />}
                         </div>
                       )}
 
@@ -1961,7 +2032,11 @@ export function LearnSandbox({
 
                       {m.sender === "user" && (
                         <div className="w-7 h-7 rounded-full bg-muted shrink-0 flex items-center justify-center text-xs mt-0.5 border border-border">
-                          {gameRole === "victim_game" ? "🛡️" : "🕵️"}
+                          {gameRole === "victim_game" ? (
+                            <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <Crosshair className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -1971,7 +2046,7 @@ export function LearnSandbox({
                     <div className="flex gap-2 items-center text-muted-foreground text-xs italic p-2 bg-muted/40 rounded-xl border border-border">
                       <Zap className="w-3 h-3 text-primary animate-spin" />
                       <span>
-                        {gameRole === "victim_game" ? "Boss AI sedang merespons..." : "Target sedang berpikir..."}
+                        {gameRole === "victim_game" ? "Lawan sedang merespons..." : "Target sedang berpikir..."}
                       </span>
                     </div>
                   )}
@@ -2127,7 +2202,7 @@ export function LearnSandbox({
                         className="w-full text-xs h-9 bg-rose-600 hover:bg-rose-700 text-white font-mono font-bold cursor-pointer gap-1.5 shadow-xs"
                       >
                         <Shield className="w-4 h-4" />
-                        <span>🛡️ Blokir &amp; Laporkan Kasus</span>
+                        <span>Blokir &amp; Laporkan Kasus</span>
                       </Button>
                     ) : (
                       <Button
@@ -2173,7 +2248,8 @@ export function LearnSandbox({
                         onClick={handleEndOffense}
                         className="w-full text-xs h-9 bg-zinc-800 hover:bg-zinc-700 text-white font-mono font-bold cursor-pointer gap-1.5 border border-border"
                       >
-                        <span>⏹️ Akhiri Serangan &amp; Debrief</span>
+                        <Square className="w-3.5 h-3.5 fill-current" />
+                        <span>Akhiri Serangan &amp; Debrief</span>
                       </Button>
                     ) : (
                       <Button
