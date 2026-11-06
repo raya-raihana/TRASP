@@ -119,10 +119,9 @@ function createFallbackAssistantResponse(userMessage: string) {
 }
 
 const CANDIDATE_GEMINI_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3.5-flash-lite",
 ];
 
 export async function POST(req: NextRequest) {
@@ -233,7 +232,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
       for (const model of CANDIDATE_GEMINI_MODELS) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const timeoutId = setTimeout(() => controller.abort(), 4000);
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
           const res = await fetch(apiUrl, {
@@ -252,6 +251,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
               generationConfig: {
                 responseMimeType: "application/json",
                 temperature: 0.6,
+                maxOutputTokens: 300,
               },
             }),
             signal: controller.signal,
@@ -352,7 +352,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
       for (const model of CANDIDATE_GEMINI_MODELS) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 6000);
+          const timeoutId = setTimeout(() => controller.abort(), 4000);
           const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
           const res = await fetch(apiUrl, {
@@ -363,6 +363,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS:
               generationConfig: {
                 responseMimeType: "application/json",
                 temperature: 0.7,
+                maxOutputTokens: 250,
               },
             }),
             signal: controller.signal,
@@ -435,7 +436,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
     for (const model of CANDIDATE_GEMINI_MODELS) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         const res = await fetch(apiUrl, {
@@ -446,6 +447,7 @@ FORMAT OUTPUT WAJIB JSON PERSIS TANPA FORMAT LAIN:
             generationConfig: {
               responseMimeType: "application/json",
               temperature: 0.7,
+              maxOutputTokens: 250,
             },
           }),
           signal: controller.signal,

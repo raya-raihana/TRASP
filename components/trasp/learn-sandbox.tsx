@@ -1317,28 +1317,10 @@ export function LearnSandbox({
               </div>
             </div>
 
-            {/* Baris 2: Indikator ringkas dalam satu baris horizontal */}
-            <div className="pt-2.5 border-t border-neutral-300/80 dark:border-neutral-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
-              <div className="flex items-center gap-3">
-                {/* Status Nyawa / Integritas */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-2xs">
-                  <span className="text-[10px] text-neutral-700 dark:text-neutral-300 font-bold">Integritas:</span>
-                  <div className="flex items-center gap-1" title="3 Nyawa / Shield Integrity">
-                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
-                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
-                    <Shield className="w-3.5 h-3.5 fill-cyan-500 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                </div>
-
-                {/* Streak Harian */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-md text-amber-800 dark:text-amber-300 font-bold shadow-2xs">
-                  <Flame className="w-3.5 h-3.5 fill-current text-amber-500" />
-                  <span>4 Hari Streak</span>
-                </div>
-              </div>
-
+            {/* Baris 2: XP & Progres Bar Level */}
+            <div className="pt-2.5 border-t border-neutral-300/80 dark:border-neutral-700/80 text-xs font-mono">
               {/* XP & Progres Bar Level */}
-              <div className="flex items-center gap-3 flex-1 sm:max-w-md">
+              <div className="w-full">
                 <div className="w-full space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="text-neutral-700 dark:text-neutral-300 font-medium flex items-center gap-1">

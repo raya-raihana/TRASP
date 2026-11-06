@@ -14,7 +14,6 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   // 3. Verify HUD Header & Initial Defense Mode Progress
   await expect(screen.getByRole('heading', { name: /Kampanye Investigasi Forensik/i })).toBeVisible();
   await expect(screen.getByText(/Cyber Sentinel \(Tier II\)/i)).toBeVisible();
-  await expect(screen.getByText(/Integritas:/i)).toBeVisible();
   // Defense initial progress: Level 1/10 Selesai (7%), 100 XP
   await expect(screen.getByText(/Level 1\/10 Selesai/i)).toBeVisible();
   await expect(screen.getByText(/Undangan & Resi Kurir \.APK/i)).toBeVisible();

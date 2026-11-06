@@ -2,13 +2,13 @@ import { test } from '@e2e-dev/web';
 import { expect } from 'e2e';
 import { loginToHero } from './e2e-auth-helper';
 
-test('TRASP Full Suite: All Features, Dynamic Indicators, Unified Learn & Assistant AI, and Kompendium', async ({ app, screen }) => {
+test('TRASP Full Suite: All Features, Dynamic Indicators, Unified Learn & Assistant AI', async ({ app, screen }) => {
   // 1. Open the workbench application
   await app.open('/');
   await loginToHero(app, screen);
 
   // Verify workbench title is loaded
-  await expect(screen.getByText('TRASP Workbench')).toBeVisible();
+  await expect(screen.getByRole('button', 'Recognize')).toBeVisible();
 
   // Verify that the dedicated /mobile button is completely REMOVED from the header
   const mobileHeaderBtn = screen.getByText('/mobile');
@@ -146,45 +146,9 @@ test('TRASP Full Suite: All Features, Dynamic Indicators, Unified Learn & Assist
   await app.screenshot('11-final-clean-responsive-verified');
 
   // -------------------------------------------------------------
-  // FITUR 7: DEDICATED KOMPENDIUM & KATALOG EDUKASI KASUS SIBER
+  // VERIFIKASI SIDEBAR MINIMALIS (Kompendium telah dibersihkan)
   // -------------------------------------------------------------
-  // Navigate to Kompendium page via sidebar link
-  const kompendiumBtn = screen.getByRole('link', 'Katalog & Regulasi Siber');
-  await kompendiumBtn.tap();
-
-  // Verify Kompendium page loaded with official research badges & statistics
-  await expect(screen.getByRole('heading', { name: /Kompendium Forensik Digital/i })).toBeVisible();
-  await expect(screen.getByText(/405\.000\+/i)).toBeVisible();
-  await app.screenshot('12-kompendium-page-initial');
-
-  // Test search filter: type "Coretax"
-  const searchInput = screen.getByPlaceholder(/Cari kasus, modus, atau kata kunci/i);
-  await searchInput.fill('Coretax');
-  await expect(screen.getByText(/Impersonasi Otoritas Resmi/i)).toBeVisible();
-  await app.screenshot('13-kompendium-filtered-coretax');
-
-  // Switch to Tab 2: Protokol Darurat Resmi
-  const protokolTab = screen.getByRole('button', /2\. Protokol Darurat Resmi/i);
-  await protokolTab.tap();
-  await expect(screen.getByText(/Konsep Golden Time/i)).toBeVisible();
-  await app.screenshot('14-kompendium-golden-time-protocols');
-
-  // Switch to Tab 3: Tinjauan Yuridis & KUHP/UU ITE
-  const yuridisTab = screen.getByRole('button', /3\. Tinjauan Yuridis/i);
-  await yuridisTab.tap();
-  await expect(screen.getByText(/LEX SPECIALIS DEROGAT LEGI GENERALI/i)).toBeVisible();
-  await app.screenshot('15-kompendium-juridical-analysis');
-
-  // Switch to Tab 4: Daftar Pustaka Otoritas
-  const referensiTab = screen.getByRole('button', /4\. Daftar Pustaka Otoritas/i);
-  await referensiTab.tap();
-  await expect(screen.getByText(/Kementerian Komunikasi dan Digital/i)).toBeVisible();
-  await expect(screen.getByText('Otoritas Jasa Keuangan & Satgas PASTI')).toBeVisible();
-  await app.screenshot('16-kompendium-official-references');
-
-  // Return back to workbench
-  const backBtn = screen.getByRole('link', /Kembali ke Workbench/i);
-  await backBtn.tap();
-  await expect(screen.getByText('TRASP Workbench')).toBeVisible();
-  await app.screenshot('17-returned-to-workbench');
+  const kompendiumLink = screen.getByRole('link', /Kompendium/i);
+  expect(await kompendiumLink.count()).toBe(0);
+  await app.screenshot('12-clean-sidebar-verified');
 });
