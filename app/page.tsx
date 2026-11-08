@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
 import { RecognizeEngine } from "@/components/trasp/recognize-engine";
 import { LearnSandbox } from "@/components/trasp/learn-sandbox";
 import { ActContainment } from "@/components/trasp/act-containment";
@@ -81,7 +80,6 @@ export default function Home() {
         />
 
         <div className="flex flex-1 flex-col p-4 md:p-6 space-y-5 max-w-6xl w-full mx-auto">
-          <EducationalDisclaimer />
 
           {/* Compact Mobile-Only Tool Switcher (3 Tools Only) */}
           <div className="grid grid-cols-3 gap-1 p-1 rounded-none bg-muted/40 border border-border md:hidden text-xs">

@@ -26,7 +26,6 @@ import {
   QrCode,
   Mic,
   ChevronRight,
-  FolderOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -301,16 +300,7 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
           {/* Header Katalog */}
           <div className="border border-border bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-primary/10 text-primary border border-primary/20">
-                  <FolderOpen className="w-3 h-3" />
-                  KATALOG FORENSIK RESMI
-                </span>
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  6 Modus Kasus Nyata Indonesia
-                </span>
-              </div>
-              <h2 className="text-base sm:text-lg font-serif font-bold text-foreground mt-1">
+              <h2 className="text-base sm:text-lg font-serif font-bold text-foreground">
                 Katalog Kasus &amp; Modus Kejahatan Siber
               </h2>
               <p className="text-xs text-muted-foreground max-w-2xl mt-0.5 leading-relaxed">
@@ -344,15 +334,10 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                   className="group relative border border-border/80 bg-card hover:border-foreground/40 transition-all duration-200 p-4 sm:p-5 rounded-lg flex flex-col justify-between cursor-pointer hover:shadow-xs space-y-3"
                 >
                   <div className="space-y-2.5">
-                    {/* Top Row: Case Code (#01) & Neutral Badge */}
-                    <div className="flex items-center justify-between pb-1">
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <IconComp className="w-3.5 h-3.5" />
-                        <span className="text-xs font-mono font-medium">#{String(item.number).padStart(2, "0")}</span>
-                      </div>
-                      <span className="text-[10px] font-mono text-muted-foreground/80 px-2 py-0.5 rounded border border-border/60 bg-muted/20">
-                        {item.riskLevel === "CRITICAL" ? "Bahaya Tinggi" : "Bahaya Sedang"}
-                      </span>
+                    {/* Top Row: Case Code (#01) */}
+                    <div className="flex items-center gap-1.5 text-muted-foreground pb-1">
+                      <IconComp className="w-3.5 h-3.5" />
+                      <span className="text-xs font-mono font-medium">#{String(item.number).padStart(2, "0")}</span>
                     </div>
 
                     {/* Case Title (Max 1-2 lines, clean & bold) */}
@@ -420,9 +405,6 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                     KASUS #{String(activeCase.number).padStart(2, "0")}
                   </span>
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {activeCase.category}
-                  </span>
                 </div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-foreground leading-tight">
                   {activeCase.title}
@@ -431,10 +413,6 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
 
               {/* Sub-header minimalis biasa di bawah judul utama */}
               <div className="text-xs text-muted-foreground font-mono flex items-center gap-2 flex-wrap pt-1 leading-relaxed">
-                <span>Status: <strong className="text-foreground">{activeCase.riskLevel === "CRITICAL" ? "Bahaya Tinggi" : "Bahaya Sedang"}</strong></span>
-                <span>|</span>
-                <span>Kategori: <strong className="text-foreground">{activeCase.category}</strong></span>
-                <span>|</span>
                 <span>Rujukan: <strong className="text-foreground">{activeCase.officialSourceCitation}</strong></span>
               </div>
             </header>

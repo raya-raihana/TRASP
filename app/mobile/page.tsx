@@ -16,7 +16,6 @@ import {
 import { RecognizeEngine } from "@/components/trasp/recognize-engine";
 import { LearnSandbox } from "@/components/trasp/learn-sandbox";
 import { ActContainment } from "@/components/trasp/act-containment";
-import { EducationalDisclaimer } from "@/components/trasp/educational-disclaimer";
 import { TeamInfoDialog } from "@/components/trasp/team-info-dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -123,7 +122,6 @@ export default function MobilePage() {
 
       {/* Main Container */}
       <main className="flex-1 p-3 space-y-4 max-w-2xl w-full mx-auto">
-        <EducationalDisclaimer />
 
         {/* Dynamic Tool Content */}
         <div className="space-y-4">
