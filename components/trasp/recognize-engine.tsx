@@ -638,7 +638,7 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
                   />
                 </TabsContent>
 
-                <TabsContent value="canvas" className="mt-0">
+                <TabsContent value="canvas" forceMount className={activeInputTab === "canvas" ? "mt-0" : "hidden"}>
                   <CanvasRedactor
                     onRedactedChange={(count) => setCanvasRedactedCount(count)}
                     onSampleLoaded={(text, url) => {

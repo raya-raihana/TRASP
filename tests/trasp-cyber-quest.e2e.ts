@@ -20,9 +20,9 @@ test('TRASP Cyber Quest: Independent Progress Tracking (Defense vs Offense) & Mi
   await app.screenshot('quest-01-defense-initial-hud');
 
   // 4. Verify Sector Chapter Dividers in roadmap
-  await expect(screen.getByText(/Sektor 1: Social Engineering/i)).toBeVisible();
-  await expect(screen.getByText(/Sektor 2: Network & Phishing/i)).toBeVisible();
-  await expect(screen.getByText(/Sektor 3: Deepfake & AI/i)).toBeVisible();
+  await expect(screen.getByText(/Sektor 1 \(Lv 1-4\)/i)).toBeVisible();
+  await expect(screen.getByText(/Sektor 2 \(Lv 5-8\)/i)).toBeVisible();
+  await expect(screen.getByText(/Sektor 3 \(Lv 9-10\)/i)).toBeVisible();
 
   // 5. Switch to Red Team (Offense Mode) & Verify Independent Zero-Progress
   const redTeamBtn = screen.getByRole('button', 'Red Team');

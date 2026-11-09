@@ -237,7 +237,7 @@ export const DEFENSE_LEVELS: GameLevel[] = [
     levelNumber: 4,
     sectorId: 1,
     sectorName: "Sektor 1: Social Engineering",
-    title: "Boss Sektor 1: Tilang ETLE Polri",
+    title: "Boss Sektor 1: Tilang ETLE",
     category: "Authority Coercion / Boss Battle",
     type: "boss",
     bossName: "Sindikat ETLE Palsu",
@@ -326,7 +326,7 @@ export const DEFENSE_LEVELS: GameLevel[] = [
     levelNumber: 8,
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
-    title: "Boss Sektor 2: SMS Masking Tarif Bank",
+    title: "Boss Sektor 2: SMS Masking",
     category: "Sender ID Spoofing / Banking Phishing",
     type: "boss",
     bossName: "Operator Spoofing Bank",
@@ -371,7 +371,7 @@ export const DEFENSE_LEVELS: GameLevel[] = [
     levelNumber: 10,
     sectorId: 3,
     sectorName: "Sektor 3: Advanced Deepfake",
-    title: "Final Boss: AI Voice Cloning Pimpinan",
+    title: "Final Boss: AI Voice Clone",
     category: "Generative AI Audio Spoofing / CEO Fraud",
     type: "boss",
     bossName: "Sindikat AI Deepfake Vishing",
@@ -461,7 +461,7 @@ export const OFFENSE_LEVELS: GameLevel[] = [
     levelNumber: 4,
     sectorId: 1,
     sectorName: "Sektor 1: Social Engineering",
-    title: "Boss Sektor 1: Authority Coercion (ETLE)",
+    title: "Boss Sektor 1: Coercion ETLE",
     category: "Authority Impersonation / Boss Battle",
     type: "boss",
     bossName: "Senior Red Team Adversary",
@@ -550,7 +550,7 @@ export const OFFENSE_LEVELS: GameLevel[] = [
     levelNumber: 8,
     sectorId: 2,
     sectorName: "Sektor 2: Network & Phishing",
-    title: "Boss Sektor 2: SMS Sender ID Spoofing",
+    title: "Boss Sektor 2: SMS Sender ID",
     category: "Telephony Manipulation / Boss Battle",
     type: "boss",
     bossName: "Master Telephony Adversary",
@@ -595,7 +595,7 @@ export const OFFENSE_LEVELS: GameLevel[] = [
     levelNumber: 10,
     sectorId: 3,
     sectorName: "Sektor 3: Advanced Deepfake",
-    title: "Final Boss: AI Voice Cloning Synthesis",
+    title: "Final Boss: AI Voice Clone",
     category: "Generative AI Audio Spoofing / Boss Battle",
     type: "boss",
     bossName: "Apex AI Threat Actor",
@@ -1345,7 +1345,7 @@ export function LearnSandbox({
           {/* 2. DYNAMIC ROADMAP SVG CANVAS WITH BEZIER CONNECTOR       */}
           {/* ========================================================= */}
           <div
-            className={`relative w-full max-w-4xl mx-auto min-h-[1100px] h-[1120px] px-8 py-10 sm:px-12 border rounded-2xl select-none transition-colors duration-300 shadow-xs ${
+            className={`relative w-full max-w-4xl mx-auto min-h-[1200px] h-[1220px] px-4 py-8 sm:px-12 border rounded-2xl select-none transition-colors duration-300 shadow-xs ${
               gameRole === "victim_game"
                 ? "bg-[#FAF8F5] dark:bg-card border-neutral-300 dark:border-neutral-700"
                 : "bg-[#FAF8F5] dark:bg-card border-rose-300 dark:border-rose-800 ring-1 ring-rose-500/20"
@@ -1403,21 +1403,21 @@ export function LearnSandbox({
             </svg>
 
             {/* Chapter Dividers / Milestone Track Labels */}
-            <div className="absolute left-1/2 top-[1.2%] -translate-x-1/2 z-0 pointer-events-none">
-              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
-                Sektor 1: Social Engineering (Lv 1-4)
+            <div className="absolute left-1/2 top-[1%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase whitespace-nowrap">
+                Sektor 1 (Lv 1-4)
               </span>
             </div>
 
-            <div className="absolute left-1/2 top-[37%] -translate-x-1/2 z-0 pointer-events-none">
-              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
-                Sektor 2: Network &amp; Phishing (Lv 5-8)
+            <div className="absolute left-1/2 top-[36.5%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase whitespace-nowrap">
+                Sektor 2 (Lv 5-8)
               </span>
             </div>
 
-            <div className="absolute left-1/2 top-[75%] -translate-x-1/2 z-0 pointer-events-none">
-              <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase">
-                Sektor 3: Deepfake &amp; AI (Lv 9-10)
+            <div className="absolute left-1/2 top-[74.5%] -translate-x-1/2 z-0 pointer-events-none">
+              <span className="px-2.5 py-0.5 rounded-full bg-white/95 dark:bg-neutral-800/95 border border-neutral-300 dark:border-neutral-700 text-[10px] font-mono font-bold text-neutral-700 dark:text-neutral-300 shadow-2xs tracking-wider uppercase whitespace-nowrap">
+                Sektor 3 (Lv 9-10)
               </span>
             </div>
 
@@ -1512,8 +1512,8 @@ export function LearnSandbox({
 
                       {/* Status / Play Now Pill */}
                       {isCompleted ? (
-                        <span className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-emerald-600 text-white font-mono text-[9px] font-bold shadow-xs flex items-center gap-0.5">
-                          <CheckCircle2 className="w-2.5 h-2.5" /> {lvl.score || 95}
+                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-emerald-600 text-white font-mono text-[9px] font-bold shadow-xs flex items-center justify-center">
+                          <CheckCircle2 className="w-2.5 h-2.5" />
                         </span>
                       ) : isActive ? (
                         <>
@@ -1531,8 +1531,8 @@ export function LearnSandbox({
                           </span>
                         </>
                       ) : (
-                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-mono text-[9px] font-bold flex items-center gap-0.5 shadow-2xs">
-                          <Lock className="w-2.5 h-2.5" /> {lvl.reqXp || 300} XP
+                        <span className="absolute -top-2.5 px-1.5 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 font-mono text-[9px] font-bold flex items-center justify-center shadow-2xs">
+                          <Lock className="w-2.5 h-2.5" />
                         </span>
                       )}
 
@@ -1543,23 +1543,10 @@ export function LearnSandbox({
                     </button>
                   )}
 
-                  {/* Level Text Info Below Node */}
-                  <div className="mt-2 text-center pointer-events-none max-w-[150px] px-1">
-                    <div className="text-xs font-bold font-mono text-neutral-900 dark:text-neutral-100 truncate">
+                  {/* Level Text Info Below Node: Clean title and level only, no colliding explanations */}
+                  <div className="mt-1.5 text-center pointer-events-none max-w-[125px] sm:max-w-[150px] px-0.5">
+                    <div className="text-[11px] sm:text-xs font-bold font-mono text-neutral-900 dark:text-neutral-100 line-clamp-2 leading-tight">
                       {lvl.title}
-                    </div>
-                    <div
-                      className={`text-[10px] font-mono font-bold truncate mt-0.5 ${
-                        isCompleted
-                          ? "text-emerald-700 dark:text-emerald-400"
-                          : isActive
-                          ? gameRole === "victim_game"
-                            ? "text-amber-700 dark:text-amber-400"
-                            : "text-rose-600 dark:text-rose-400"
-                          : "text-neutral-600 dark:text-neutral-400"
-                      }`}
-                    >
-                      {lvl.xp} {isCompleted ? "• Selesai" : isLocked ? "• Terkunci" : "• Misi Aktif"}
                     </div>
                   </div>
                 </div>
