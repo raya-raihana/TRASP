@@ -180,6 +180,7 @@ export function RecognizeEngine({
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   // Initial Chat Generator with complete forensic breakdown of default sample
@@ -347,14 +348,29 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
   );
 
   const handleResetChat = useCallback(() => {
-    const initial = createInitialChat();
-    setChatHistory(initial);
+    setIsResetting(true);
+    const time = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const cleanGreeting: ChatMessage = {
+      id: "bot-reset-" + Date.now(),
+      sender: "bot",
+      text: `Sesi obrolan dan analisis forensik telah direset.\n\nSilakan masukkan bukti pesan atau tautan baru di sebelah kiri, lalu klik **"Pindai & Analisis"**, atau tanyakan langsung apa pun ke saya.`,
+      time,
+    };
+
+    setChatHistory([cleanGreeting]);
+    setChatInput("");
+    setIsBotTyping(false);
+
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("trasp_recognize_chat", JSON.stringify(initial));
+        localStorage.setItem("trasp_recognize_chat", JSON.stringify([cleanGreeting]));
       } catch {}
     }
-  }, [createInitialChat]);
+
+    setTimeout(() => {
+      setIsResetting(false);
+    }, 450);
+  }, []);
 
   // Restore persistent state from localStorage on mount
   useEffect(() => {
@@ -373,17 +389,17 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
           if (Array.isArray(parsed) && parsed.length > 0) {
             setChatHistory(parsed);
           } else {
-            handleResetChat();
+            setChatHistory(createInitialChat());
           }
         } else {
-          handleResetChat();
+          setChatHistory(createInitialChat());
         }
       } catch (e) {
         console.error("Failed to load recognized storage", e);
-        handleResetChat();
+        setChatHistory(createInitialChat());
       }
     }
-  }, [handleResetChat]);
+  }, [createInitialChat]);
 
   // Sync external preset changes
   useEffect(() => {
@@ -555,9 +571,32 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
                   <FileText className="w-4 h-4 text-primary" />
                   Input Bukti
                 </CardTitle>
-                <Badge variant="outline" className="text-[10px] py-0 px-1.5 uppercase font-mono bg-background">
-                  Scanner
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  {(inputText || inputUrl) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setInputText("");
+                        setInputUrl("");
+                        if (typeof window !== "undefined") {
+                          try {
+                            localStorage.removeItem("trasp_recognize_text");
+                            localStorage.removeItem("trasp_recognize_url");
+                          } catch {}
+                        }
+                      }}
+                      className="text-[10px] h-6 px-1.5 text-muted-foreground hover:text-foreground font-mono cursor-pointer"
+                      title="Kosongkan bidang input"
+                    >
+                      <RotateCcw className="w-2.5 h-2.5 mr-1" />
+                      Kosongkan
+                    </Button>
+                  )}
+                  <Badge variant="outline" className="text-[10px] py-0 px-1.5 uppercase font-mono bg-background">
+                    Scanner
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
 
@@ -692,11 +731,12 @@ Saya memverifikasi setiap bukti digital berdasarkan rujukan resmi Satgas PASTI O
               variant="ghost"
               size="sm"
               onClick={handleResetChat}
-              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground cursor-pointer font-mono"
-              title="Reset Chat Ras"
+              disabled={isResetting}
+              className="text-xs h-7 px-2 text-muted-foreground hover:text-foreground cursor-pointer font-mono transition-colors"
+              title="Reset Chat & Analisis Ras"
             >
-              <RotateCcw className="w-3 h-3 mr-1" />
-              Reset
+              <RotateCcw className={`w-3 h-3 mr-1 ${isResetting ? "animate-spin text-primary" : ""}`} />
+              {isResetting ? "Mereset..." : "Reset"}
             </Button>
           </div>
 
