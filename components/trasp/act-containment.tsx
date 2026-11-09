@@ -799,13 +799,13 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
         <button
           type="button"
           onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3.5 py-2.5 bg-primary text-primary-foreground border border-border rounded-full shadow-lg hover:bg-primary/90 transition-transform active:scale-95 cursor-pointer font-medium text-xs font-mono"
+          className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-30 flex items-center gap-2 px-3.5 py-2.5 bg-primary text-primary-foreground border border-border rounded-full shadow-lg hover:bg-primary/90 transition-transform active:scale-95 cursor-pointer font-medium text-xs font-mono"
         >
           <Bot className="w-4 h-4 animate-bounce" />
           <span>Tanya Ras</span>
         </button>
       ) : (
-        <div className="fixed bottom-6 right-6 z-50 w-80 sm:w-96 h-[460px] bg-card border-2 border-border shadow-2xl flex flex-col overflow-hidden text-xs animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 w-80 sm:w-96 h-[460px] bg-card border-2 border-border shadow-2xl flex flex-col overflow-hidden text-xs animate-in slide-in-from-bottom-5">
           {/* Header */}
           <div className="p-3 bg-primary text-primary-foreground flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">

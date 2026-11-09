@@ -79,47 +79,7 @@ export default function Home() {
           onNavigateTool={(tool) => setActiveTool(tool)}
         />
 
-        <div className="flex flex-1 flex-col p-4 md:p-6 space-y-5 max-w-6xl w-full mx-auto">
-
-          {/* Compact Mobile-Only Tool Switcher (3 Tools Only) */}
-          <div className="grid grid-cols-3 gap-1 p-1 rounded-none bg-muted/40 border border-border md:hidden text-xs">
-            <button
-              onClick={() => setActiveTool("recognize")}
-              className={`flex flex-col items-center justify-center py-2 px-2 rounded-none font-medium transition-colors ${
-                activeTool === "recognize"
-                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <IconSearch className="h-4 w-4 mb-0.5" />
-              <span>Recognize</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTool("learn")}
-              className={`flex flex-col items-center justify-center py-2 px-2 rounded-none font-medium transition-colors ${
-                activeTool === "learn"
-                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <IconTerminal2 className="h-4 w-4 mb-0.5" />
-              <span>Learn</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTool("act")}
-              className={`flex flex-col items-center justify-center py-2 px-2 rounded-none font-medium transition-colors ${
-                activeTool === "act"
-                  ? "bg-background text-foreground shadow-none font-semibold border border-border"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <IconAlertTriangle className="h-4 w-4 mb-0.5" />
-              <span>Act</span>
-            </button>
-          </div>
-
+        <div className="flex flex-1 flex-col p-4 md:p-6 space-y-5 max-w-6xl w-full mx-auto pb-20 md:pb-6">
           {/* Active Tool View */}
           <div className="space-y-5">
             {activeTool === "recognize" && (
@@ -143,6 +103,86 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Mobile Fixed Bottom Navigation Bar (Native App Style, Thumb-friendly) */}
+        <nav
+          aria-label="Navigasi Utama Mobile"
+          className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(0,0,0,0.06)] dark:shadow-[0_-2px_10px_rgba(0,0,0,0.4)]"
+        >
+          <div className="grid grid-cols-3 h-14 max-w-md mx-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool("recognize");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex flex-col items-center justify-center min-h-[44px] py-1 transition-all active:scale-95 cursor-pointer relative ${
+                activeTool === "recognize"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <div className="relative">
+                <IconSearch className="h-5 w-5 mb-0.5" />
+                {activeTool === "recognize" && (
+                  <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
+              </div>
+              <span className="text-[11px] font-mono leading-none tracking-tight">Recognize</span>
+              {activeTool === "recognize" && (
+                <span className="absolute bottom-0 w-8 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool("learn");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex flex-col items-center justify-center min-h-[44px] py-1 transition-all active:scale-95 cursor-pointer relative ${
+                activeTool === "learn"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <div className="relative">
+                <IconTerminal2 className="h-5 w-5 mb-0.5" />
+                {activeTool === "learn" && (
+                  <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
+              </div>
+              <span className="text-[11px] font-mono leading-none tracking-tight">Learn</span>
+              {activeTool === "learn" && (
+                <span className="absolute bottom-0 w-8 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTool("act");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex flex-col items-center justify-center min-h-[44px] py-1 transition-all active:scale-95 cursor-pointer relative ${
+                activeTool === "act"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <div className="relative">
+                <IconAlertTriangle className="h-5 w-5 mb-0.5" />
+                {activeTool === "act" && (
+                  <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
+              </div>
+              <span className="text-[11px] font-mono leading-none tracking-tight">Act</span>
+              {activeTool === "act" && (
+                <span className="absolute bottom-0 w-8 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+          </div>
+        </nav>
       </SidebarInset>
     </SidebarProvider>
   );
