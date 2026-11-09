@@ -7,6 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict%205.x-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS v4](https://img.shields.io/badge/TailwindCSS-v4-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
 [![Architecture](https://img.shields.io/badge/Architecture-Zero--Crash%20Client--First-emerald?style=flat-square)](https://github.com/raya-raihana/TRASP)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Video%20Demo%20Live-red?style=flat-square&logo=youtube)](https://youtu.be/4-OiCrQ8kHI)
 [![License](https://img.shields.io/badge/License-MIT-amber?style=flat-square)](LICENSE)
 
 ---
@@ -263,6 +264,7 @@ Bagi dewan juri yang ingin menguji keandalan sistem dalam waktu singkat tanpa pe
 
 ## 🎬 Naskah Video Demo 5 Menit (Presentasi Resmi)
 
+> 📺 **Tautan Video YouTube Resmi:** [https://youtu.be/4-OiCrQ8kHI](https://youtu.be/4-OiCrQ8kHI)  
 > **Format Video:** Durasi tepat 05:00 menit, resolusi minimal 1080p, audio jernih dengan visual live browser TRASP.
 
 ```
