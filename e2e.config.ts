@@ -27,6 +27,7 @@ export default {
           executable: process.platform === 'win32' ? 'cmd.exe' : 'npm',
           args: process.platform === 'win32' ? ['/c', 'npm', 'run', 'dev'] : ['run', 'dev'],
           log: '.e2e/logs/app.log',
+          reuseExisting: true,
         },
       },
     },

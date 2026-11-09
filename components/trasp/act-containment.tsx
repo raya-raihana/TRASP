@@ -713,6 +713,80 @@ export function ActContainment({ initialScenarioId = "apk-kurir" }: ActContainme
                 </div>
               </div>
             </section>
+
+            {/* Navigasi Antar Kasus (Kasus Sebelumnya & Kasus Berikutnya) */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-border">
+              {(() => {
+                const currentIndex = COMPENDIUM_CASES.findIndex((c) => c.id === activeCase.id);
+                const prevCase = currentIndex > 0 ? COMPENDIUM_CASES[currentIndex - 1] : null;
+                const nextCase = currentIndex < COMPENDIUM_CASES.length - 1 ? COMPENDIUM_CASES[currentIndex + 1] : null;
+
+                return (
+                  <>
+                    <div className="w-full sm:w-auto">
+                      {prevCase ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCaseId(prevCase.id);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="w-full sm:w-auto text-xs h-9 cursor-pointer font-mono font-medium gap-1.5"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <span>Kasus Sebelumnya: #{String(prevCase.number).padStart(2, "0")}</span>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleBackToCatalog}
+                          className="w-full sm:w-auto text-xs h-9 cursor-pointer font-mono font-medium gap-1.5"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <span>Kembali ke Katalog</span>
+                        </Button>
+                      )}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleBackToCatalog}
+                      className="hidden sm:inline-flex text-xs h-9 cursor-pointer font-mono font-medium"
+                    >
+                      Katalog Modus
+                    </Button>
+
+                    <div className="w-full sm:w-auto text-right">
+                      {nextCase ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCaseId(nextCase.id);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className="w-full sm:w-auto text-xs h-9 bg-primary text-primary-foreground font-mono font-bold cursor-pointer gap-1.5"
+                        >
+                          <span>Lanjut ke Kasus #{String(nextCase.number).padStart(2, "0")}: {nextCase.shortName}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={handleBackToCatalog}
+                          className="w-full sm:w-auto text-xs h-9 bg-primary text-primary-foreground font-mono font-bold cursor-pointer gap-1.5"
+                        >
+                          <span>Selesai — Kembali ke Katalog</span>
+                          <Check className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </article>
       )}

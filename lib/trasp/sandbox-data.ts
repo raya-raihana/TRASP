@@ -820,6 +820,18 @@ export const SANDBOX_SCENARIOS: Record<string, SandboxScenario> = {
   }
 };
 
+// Scenario Aliases & Red Team Mappings
+SANDBOX_SCENARIOS["sms-perbankan"] = SANDBOX_SCENARIOS["m-banking-palsu"];
+SANDBOX_SCENARIOS["task-scam"] = SANDBOX_SCENARIOS["loker-bumn"];
+SANDBOX_SCENARIOS["rt-kurir-apk"] = SANDBOX_SCENARIOS["apk-kurir"];
+SANDBOX_SCENARIOS["rt-undangan-nikah"] = SANDBOX_SCENARIOS["undangan-nikah"];
+SANDBOX_SCENARIOS["rt-tilang-etle"] = SANDBOX_SCENARIOS["tilang-etle"];
+SANDBOX_SCENARIOS["rt-task-scam"] = SANDBOX_SCENARIOS["loker-bumn"];
+SANDBOX_SCENARIOS["rt-phishing-pajak"] = SANDBOX_SCENARIOS["phishing-pajak"];
+SANDBOX_SCENARIOS["rt-sms-perbankan"] = SANDBOX_SCENARIOS["m-banking-palsu"];
+SANDBOX_SCENARIOS["rt-quishing-qris"] = SANDBOX_SCENARIOS["quishing-qris"];
+SANDBOX_SCENARIOS["rt-deepfake-bos"] = SANDBOX_SCENARIOS["deepfake-bos"];
+
 // Smart on-device semantic classifier for user-typed custom responses
 export function matchCustomUserReply(
   userText: string,

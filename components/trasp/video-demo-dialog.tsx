@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { IconVideo, IconPlayerPlay, IconExternalLink } from "@tabler/icons-react";
 import {
   Dialog,
@@ -75,10 +76,13 @@ export function VideoDemoDialog({
                 className="group relative w-full h-full flex flex-col items-center justify-center cursor-pointer bg-slate-950 transition-colors hover:bg-slate-900"
               >
                 {/* High-res YouTube thumbnail poster */}
-                <img
+                <Image
                   src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
                   alt="Thumbnail Video Demonstrasi TRASP"
-                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-95 transition-opacity"
+                  fill
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  className="object-cover opacity-80 group-hover:opacity-95 transition-opacity"
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
 

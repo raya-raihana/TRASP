@@ -905,7 +905,13 @@ export function LearnSandbox({
     (newScenarioKey?: string) => {
       const key = newScenarioKey || selectedScenarioKey;
       setSelectedScenarioKey(key);
-      const sc = SANDBOX_SCENARIOS[key] || SANDBOX_SCENARIOS["apk-kurir"];
+      const cleanKey = key.replace(/^rt-/, "");
+      const sc =
+        SANDBOX_SCENARIOS[key] ||
+        SANDBOX_SCENARIOS[cleanKey] ||
+        (cleanKey === "sms-perbankan" ? SANDBOX_SCENARIOS["m-banking-palsu"] : null) ||
+        (cleanKey === "task-scam" ? SANDBOX_SCENARIOS["loker-bumn"] : null) ||
+        SANDBOX_SCENARIOS["apk-kurir"];
 
       const initialVictimMsg: GameChatMessage = {
         id: "v-init-" + Date.now(),
@@ -951,11 +957,11 @@ export function LearnSandbox({
   );
 
   const handleStartLevel = (levelId: string) => {
-    if (levelId === "checkpoint-quiz-1") {
+    if (levelId === "checkpoint-quiz-1" || levelId === "rt-checkpoint-quiz-1") {
       setIsQuizOpen(true);
       return;
     }
-    if (levelId === "checkpoint-drill-2") {
+    if (levelId === "checkpoint-drill-2" || levelId === "rt-checkpoint-drill-2") {
       setIsDrillOpen(true);
       return;
     }
@@ -964,9 +970,7 @@ export function LearnSandbox({
       return;
     }
 
-    if (levelId !== selectedScenarioKey) {
-      resetAllGames(levelId);
-    }
+    resetAllGames(levelId);
     setGameView("arena");
     if (typeof window !== "undefined") {
       try {
@@ -1587,244 +1591,7 @@ export function LearnSandbox({
             </div>
           </div>
 
-{/* ========================================================= */}
-          {/* 3. MODAL CHECKPOINT 1: MINI-QUIZ FORENSIK                 */}
-          {/* ========================================================= */}
-          {isQuizOpen && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono text-xs font-bold">
-                      QUIZ
-                    </span>
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
-                      {gameRole === "victim_game" ? "Mini-Quiz: Izin Aksesibilitas Android" : "Red Team Drill: Evasion AV & Play Protect"}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setIsQuizOpen(false)}
-                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
 
-                <div className="space-y-3 text-xs">
-                  {/* Soal 1 */}
-                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
-                    <span className="font-mono font-bold text-primary block">
-                      1. Mengapa berkas foto berformat .APK sangat mencurigakan?
-                    </span>
-                    <div className="space-y-1 font-sans">
-                      {[
-                        "Karena .APK adalah format installer aplikasi, bukan format berkas gambar (JPG/PNG).",
-                        "Karena berkas .APK hanya bisa dibuka di komputer server ekspedisi.",
-                      ].map((opt, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setQuizAnswers({ ...quizAnswers, 1: i })}
-                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
-                            quizAnswers[1] === i
-                              ? "bg-primary/10 border-primary text-primary font-medium"
-                              : "bg-background border-border hover:bg-muted/40"
-                          }`}
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Soal 2 */}
-                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
-                    <span className="font-mono font-bold text-primary block">
-                      2. Izin apa yang disalahgunakan malware untuk menyadap kode OTP perbankan?
-                    </span>
-                    <div className="space-y-1 font-sans">
-                      {[
-                        "Accessibility Services & Read SMS",
-                        "Izin Akses Kamera dan Bluetooth",
-                      ].map((opt, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setQuizAnswers({ ...quizAnswers, 2: i })}
-                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
-                            quizAnswers[2] === i
-                              ? "bg-primary/10 border-primary text-primary font-medium"
-                              : "bg-background border-border hover:bg-muted/40"
-                          }`}
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsQuizOpen(false)}
-                    className="text-xs h-8"
-                  >
-                    Tutup
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      const quizId = gameRole === "victim_game" ? "checkpoint-quiz-1" : "rt-checkpoint-quiz-1";
-                      handleLevelFinished(quizId);
-                      setIsQuizOpen(false);
-                    }}
-                    disabled={quizAnswers[1] === undefined || quizAnswers[2] === undefined}
-                    className="text-xs h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-mono font-bold cursor-pointer"
-                  >
-                    Kirim &amp; Klaim +100 XP
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* 4. MODAL CHECKPOINT 2: TIMED INCIDENT DRILL (AIR-GAP)     */}
-          {/* ========================================================= */}
-          {isDrillOpen && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30 font-mono text-xs font-bold flex items-center gap-1">
-                      <Timer className="w-3.5 h-3.5" /> DRILL
-                    </span>
-                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
-                      {gameRole === "victim_game" ? "Timed Incident Drill: 15-Menit Air-Gap" : "Timed Drill: Pretexting & Credential Intercept"}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setIsDrillOpen(false)}
-                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  Simulasikan protokol tanggap darurat golden time saat mendeteksi ponsel telah mengklik berkas APK liar.
-                </p>
-
-                <div className="space-y-2 text-xs">
-                  {(gameRole === "victim_game"
-                    ? [
-                        "Aktifkan Mode Pesawat (Airplane Mode) seketika untuk memutus server C2.",
-                        "Matikan seluruh koneksi Wi-Fi, Bluetooth, dan cabut kartu SIM fisik.",
-                        "Masuk ke Pengaturan > Aksesibilitas > Cabut izin aplikasi mencurigakan.",
-                        "Lakukan pergantian kredensial m-Banking dari perangkat lain yang aman.",
-                      ]
-                    : [
-                        "Validasi form landing page pengujian dan pastikan payload tersanitasi aman.",
-                        "Kirimkan simulasi broadcast SMS spoofing ke nomor perangkat uji internal.",
-                        "Verifikasi penerimaan session token pada listener forensik terkontrol.",
-                        "Dokumentasikan resistensi target ke dalam laporan red team audit.",
-                      ]
-                  ).map((stepText, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setDrillChecks({ ...drillChecks, [idx]: !drillChecks[idx] })}
-                      className={`p-2.5 rounded border transition-colors cursor-pointer flex items-center gap-2.5 ${
-                        drillChecks[idx]
-                          ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
-                          : "bg-muted/30 border-border hover:bg-muted/50"
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${
-                          drillChecks[idx]
-                            ? "bg-emerald-600 border-emerald-600 text-white"
-                            : "border-border bg-background"
-                        }`}
-                      >
-                        {drillChecks[idx] && <Check className="w-3 h-3 stroke-[3]" />}
-                      </div>
-                      <span className={drillChecks[idx] ? "line-through text-muted-foreground" : ""}>
-                        {stepText}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsDrillOpen(false)}
-                    className="text-xs h-8"
-                  >
-                    Batal
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      const drillId = gameRole === "victim_game" ? "checkpoint-drill-2" : "rt-checkpoint-drill-2";
-                      handleLevelFinished(drillId);
-                      setIsDrillOpen(false);
-                    }}
-                    disabled={Object.values(drillChecks).filter(Boolean).length < 4}
-                    className="text-xs h-8 bg-amber-600 hover:bg-amber-700 text-white font-mono font-bold cursor-pointer"
-                  >
-                    Eksekusi Selesai (+150 XP)
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ========================================================= */}
-          {/* 5. MODAL REWARD: MASTER CYBER SENTINEL VAULT              */}
-          {/* ========================================================= */}
-          {isChestOpen && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-card border border-border max-w-sm w-full p-5 text-center space-y-3.5 rounded-lg shadow-2xl animate-in zoom-in-95 duration-150">
-                <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-inner">
-                  <Gift className="w-8 h-8 fill-amber-500/20 text-amber-500" />
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-base text-foreground">
-                    {gameRole === "victim_game" ? "Master Cyber Sentinel Vault" : "Master Ghost Operator Vault"}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {gameRole === "victim_game"
-                      ? "Lencana Kehormatan Cyber Guardian 2026 UNMUL terbuka untuk Anda."
-                      : "Lencana Kehormatan Apex Adversary 2026 UNMUL terbuka untuk Anda."}
-                  </p>
-                </div>
-                <div className="p-3 bg-muted/40 border border-border rounded text-xs font-mono text-foreground space-y-1.5 text-left">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Kampanye XP:</span>
-                    <span className="font-bold text-amber-500">+{currentProgress.xp} XP</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Peringkat Agen:</span>
-                    <span className="font-bold text-emerald-500">{gameRole === "victim_game" ? "Tier III (Elite Sentinel)" : "Tier III (Apex Ghost Operator)"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status Sertifikasi:</span>
-                    <span className="font-bold text-primary">Live Verified MIT-WEEK 2026</span>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => setIsChestOpen(false)}
-                  className="w-full text-xs h-8 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
-                >
-                  Klaim Lencana &amp; Lanjutkan Latihan
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       )}{gameView === "arena" && (
         <div className="space-y-3 animate-in fade-in duration-200">
@@ -2253,6 +2020,26 @@ export function LearnSandbox({
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                       <span>Level Selesai!</span>
                     </div>
+                    {(() => {
+                      const nextLvl = currentCampaignLevels.find((l) => l.levelNumber === activeLevel.levelNumber + 1);
+                      if (nextLvl) {
+                        const isCheckpoint = nextLvl.type === "quiz" || nextLvl.type === "drill";
+                        return (
+                          <Button
+                            size="sm"
+                            onClick={() => handleStartLevel(nextLvl.id)}
+                            className="w-full text-xs h-8 bg-primary text-primary-foreground cursor-pointer font-mono font-bold"
+                          >
+                            {isCheckpoint
+                              ? nextLvl.type === "quiz"
+                                ? "Lanjut ke Mini-Quiz Checkpoint →"
+                                : "Lanjut ke Incident Drill →"
+                              : "Lanjut ke Kasus Berikutnya →"}
+                          </Button>
+                        );
+                      }
+                      return null;
+                    })()}
                     <div className="flex items-center justify-center gap-2 pt-1">
                       <Button
                         size="sm"
@@ -2370,6 +2157,7 @@ export function LearnSandbox({
                   {(() => {
                     const nextLvl = currentCampaignLevels.find((l) => l.levelNumber === activeLevel.levelNumber + 1);
                     if (nextLvl) {
+                      const isCheckpoint = nextLvl.type === "quiz" || nextLvl.type === "drill";
                       return (
                         <Button
                           size="sm"
@@ -2379,7 +2167,11 @@ export function LearnSandbox({
                           }}
                           className="text-xs h-9 flex-1 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
                         >
-                          Lanjut ke Kasus Berikutnya &rarr;
+                          {isCheckpoint
+                            ? nextLvl.type === "quiz"
+                              ? "Lanjut ke Mini-Quiz Checkpoint →"
+                              : "Lanjut ke Incident Drill →"
+                            : "Lanjut ke Kasus Berikutnya →"}
                         </Button>
                       );
                     }
@@ -2402,6 +2194,258 @@ export function LearnSandbox({
           )}
         </div>
       )}
+
+      {/* Global Checkpoint & Vault Modals (Available from both Catalog and Arena) */}
+{/* ========================================================= */}
+          {/* 3. MODAL CHECKPOINT 1: MINI-QUIZ FORENSIK                 */}
+          {/* ========================================================= */}
+          {isQuizOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono text-xs font-bold">
+                      QUIZ
+                    </span>
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
+                      {gameRole === "victim_game" ? "Mini-Quiz: Izin Aksesibilitas Android" : "Red Team Drill: Evasion AV & Play Protect"}
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setIsQuizOpen(false)}
+                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {/* Soal 1 */}
+                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
+                    <span className="font-mono font-bold text-primary block">
+                      1. Mengapa berkas foto berformat .APK sangat mencurigakan?
+                    </span>
+                    <div className="space-y-1 font-sans">
+                      {[
+                        "Karena .APK adalah format installer aplikasi, bukan format berkas gambar (JPG/PNG).",
+                        "Karena berkas .APK hanya bisa dibuka di komputer server ekspedisi.",
+                      ].map((opt, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setQuizAnswers({ ...quizAnswers, 1: i })}
+                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
+                            quizAnswers[1] === i
+                              ? "bg-primary/10 border-primary text-primary font-medium"
+                              : "bg-background border-border hover:bg-muted/40"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Soal 2 */}
+                  <div className="p-3 bg-muted/30 border border-border rounded space-y-2">
+                    <span className="font-mono font-bold text-primary block">
+                      2. Izin apa yang disalahgunakan malware untuk menyadap kode OTP perbankan?
+                    </span>
+                    <div className="space-y-1 font-sans">
+                      {[
+                        "Accessibility Services & Read SMS",
+                        "Izin Akses Kamera dan Bluetooth",
+                      ].map((opt, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setQuizAnswers({ ...quizAnswers, 2: i })}
+                          className={`w-full text-left p-2 rounded border transition-colors cursor-pointer ${
+                            quizAnswers[2] === i
+                              ? "bg-primary/10 border-primary text-primary font-medium"
+                              : "bg-background border-border hover:bg-muted/40"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsQuizOpen(false)}
+                    className="text-xs h-8"
+                  >
+                    Tutup
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const quizId = gameRole === "victim_game" ? "checkpoint-quiz-1" : "rt-checkpoint-quiz-1";
+                      handleLevelFinished(quizId);
+                      setIsQuizOpen(false);
+                      const nextLvl = currentCampaignLevels.find((l) => l.levelNumber === 4);
+                      if (nextLvl) {
+                        handleStartLevel(nextLvl.id);
+                      } else {
+                        handleBackToCatalog();
+                      }
+                    }}
+                    disabled={quizAnswers[1] === undefined || quizAnswers[2] === undefined}
+                    className="text-xs h-8 bg-cyan-600 hover:bg-cyan-700 text-white font-mono font-bold cursor-pointer"
+                  >
+                    Kirim &amp; Klaim +100 XP
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 4. MODAL CHECKPOINT 2: TIMED INCIDENT DRILL (AIR-GAP)     */}
+          {/* ========================================================= */}
+          {isDrillOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-card border border-border max-w-md w-full p-5 space-y-4 rounded-lg shadow-xl animate-in zoom-in-95 duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30 font-mono text-xs font-bold flex items-center gap-1">
+                      <Timer className="w-3.5 h-3.5" /> DRILL
+                    </span>
+                    <h3 className="font-serif font-bold text-sm sm:text-base text-foreground">
+                      {gameRole === "victim_game" ? "Timed Incident Drill: 15-Menit Air-Gap" : "Timed Drill: Pretexting & Credential Intercept"}
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setIsDrillOpen(false)}
+                    className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Simulasikan protokol tanggap darurat golden time saat mendeteksi ponsel telah mengklik berkas APK liar.
+                </p>
+
+                <div className="space-y-2 text-xs">
+                  {(gameRole === "victim_game"
+                    ? [
+                        "Aktifkan Mode Pesawat (Airplane Mode) seketika untuk memutus server C2.",
+                        "Matikan seluruh koneksi Wi-Fi, Bluetooth, dan cabut kartu SIM fisik.",
+                        "Masuk ke Pengaturan > Aksesibilitas > Cabut izin aplikasi mencurigakan.",
+                        "Lakukan pergantian kredensial m-Banking dari perangkat lain yang aman.",
+                      ]
+                    : [
+                        "Validasi form landing page pengujian dan pastikan payload tersanitasi aman.",
+                        "Kirimkan simulasi broadcast SMS spoofing ke nomor perangkat uji internal.",
+                        "Verifikasi penerimaan session token pada listener forensik terkontrol.",
+                        "Dokumentasikan resistensi target ke dalam laporan red team audit.",
+                      ]
+                  ).map((stepText, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setDrillChecks({ ...drillChecks, [idx]: !drillChecks[idx] })}
+                      className={`p-2.5 rounded border transition-colors cursor-pointer flex items-center gap-2.5 ${
+                        drillChecks[idx]
+                          ? "bg-emerald-500/10 border-emerald-500/40 text-foreground"
+                          : "bg-muted/30 border-border hover:bg-muted/50"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded flex items-center justify-center border text-[10px] ${
+                          drillChecks[idx]
+                            ? "bg-emerald-600 border-emerald-600 text-white"
+                            : "border-border bg-background"
+                        }`}
+                      >
+                        {drillChecks[idx] && <Check className="w-3 h-3 stroke-[3]" />}
+                      </div>
+                      <span className={drillChecks[idx] ? "line-through text-muted-foreground" : ""}>
+                        {stepText}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsDrillOpen(false)}
+                    className="text-xs h-8"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const drillId = gameRole === "victim_game" ? "checkpoint-drill-2" : "rt-checkpoint-drill-2";
+                      handleLevelFinished(drillId);
+                      setIsDrillOpen(false);
+                      const nextLvl = currentCampaignLevels.find((l) => l.levelNumber === 8);
+                      if (nextLvl) {
+                        handleStartLevel(nextLvl.id);
+                      } else {
+                        handleBackToCatalog();
+                      }
+                    }}
+                    disabled={Object.values(drillChecks).filter(Boolean).length < 4}
+                    className="text-xs h-8 bg-amber-600 hover:bg-amber-700 text-white font-mono font-bold cursor-pointer"
+                  >
+                    Eksekusi Selesai (+150 XP)
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 5. MODAL REWARD: MASTER CYBER SENTINEL VAULT              */}
+          {/* ========================================================= */}
+          {isChestOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-card border border-border max-w-sm w-full p-5 text-center space-y-3.5 rounded-lg shadow-2xl animate-in zoom-in-95 duration-150">
+                <div className="w-16 h-16 mx-auto rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-inner">
+                  <Gift className="w-8 h-8 fill-amber-500/20 text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base text-foreground">
+                    {gameRole === "victim_game" ? "Master Cyber Sentinel Vault" : "Master Ghost Operator Vault"}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {gameRole === "victim_game"
+                      ? "Lencana Kehormatan Cyber Guardian 2026 UNMUL terbuka untuk Anda."
+                      : "Lencana Kehormatan Apex Adversary 2026 UNMUL terbuka untuk Anda."}
+                  </p>
+                </div>
+                <div className="p-3 bg-muted/40 border border-border rounded text-xs font-mono text-foreground space-y-1.5 text-left">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Kampanye XP:</span>
+                    <span className="font-bold text-amber-500">+{currentProgress.xp} XP</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Peringkat Agen:</span>
+                    <span className="font-bold text-emerald-500">{gameRole === "victim_game" ? "Tier III (Elite Sentinel)" : "Tier III (Apex Ghost Operator)"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Status Sertifikasi:</span>
+                    <span className="font-bold text-primary">Live Verified MIT-WEEK 2026</span>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setIsChestOpen(false)}
+                  className="w-full text-xs h-8 bg-primary text-primary-foreground font-mono font-bold cursor-pointer"
+                >
+                  Klaim Lencana &amp; Lanjutkan Latihan
+                </Button>
+              </div>
+            </div>
+          )}
     </div>
   );
 }
