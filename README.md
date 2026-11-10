@@ -231,10 +231,6 @@ npx e2e run tests/trasp-mitigasi-simplified.e2e.ts
 npx e2e run tests/trasp-sidebar-clean.e2e.ts
 ```
 
-### Kredensial Pengujian Otomatis Standar:
-* **Username / NIK:** `71261`
-* **Password:** `Chitra#71261`
-
 Setiap pengujian E2E otomatis mendokumentasikan bukti tangkapan layar antarmuka pada direktori `.e2e/artifacts/` dan mencatat hasil evaluasi pada `.e2e/report.json`.
 
 ---
