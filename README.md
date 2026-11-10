@@ -266,7 +266,7 @@ Bagi dewan juri yang ingin menguji keandalan fitur aplikasi secara langsung dala
 Video presentasi dan demonstrasi alur kerja sistem TRASP dapat disaksikan secara daring melalui YouTube:
 
 * **Tautan Video Resmi:** https://youtu.be/4-OiCrQ8kHI
-* **Durasi:** 05:00 Menit (Sesuai Ketentuan Juknis Lomba)
+* **Durasi:** 02:49 Menit
 * **Kualitas:** 1080p Full HD
 * **Materi yang Didemonstrasikan:**
   1. Identifikasi dini dan sensor privasi data pada modul **Recognize**.
