@@ -38,7 +38,7 @@
 6. [Panduan Menjalankan Aplikasi](#panduan-menjalankan-aplikasi)
 7. [Pengujian Otomatis (E2E Testing Suite)](#pengujian-otomatis-e2e-testing-suite)
 8. [Panduan Pengujian Singkat Dewan Juri](#panduan-pengujian-singkat-dewan-juri)
-9. [Naskah Video Demonstrasi 5 Menit](#naskah-video-demonstrasi-5-menit)
+9. [Video Demonstrasi](#video-demonstrasi)
 10. [Lisensi dan Atribusi Pihak Ketiga](#lisensi-dan-atribusi-pihak-ketiga)
 
 ---
@@ -261,51 +261,18 @@ Bagi dewan juri yang ingin menguji keandalan fitur aplikasi secara langsung dala
 
 ---
 
-## Naskah Video Demonstrasi 5 Menit
+## Video Demonstrasi
 
-Video demonstrasi berdurasi 05:00 menit dapat diakses pada tautan resmi: **https://youtu.be/4-OiCrQ8kHI**
+Video presentasi dan demonstrasi alur kerja sistem TRASP dapat disaksikan secara daring melalui YouTube:
 
-```
-Alokasi Waktu Presentasi:
-00:00 - 00:45 | Bagian 1: Pembukaan, Identitas Tim MIT-010, dan Urgensi Kejahatan Siber
-00:45 - 01:45 | Bagian 2: Demonstrasi Modul Recognize & Interactive Canvas Redactor
-01:45 - 03:00 | Bagian 3: Demonstrasi Modul Learn (Roadmap Quest, Telemetry X-Ray, & Scorecard)
-03:00 - 03:50 | Bagian 4: Demonstrasi Modul Act (SOP 15 Menit & Generator Draf Laporan)
-03:50 - 04:30 | Bagian 5: Demonstrasi Tinjauan Yuridis & Ergonomi Navigasi Mobile
-04:30 - 05:00 | Bagian 6: Arsitektur Zero-Crash, Kepatuhan Regulasi, dan Penutup
-```
-
-### Rincian Naskah Presentasi:
-
-#### 1. Pembukaan dan Urgensi Masalah (00:00 - 00:45)
-* **Visual:** Presenter membuka sesi dengan menampilkan kartu identitas tim `MIT-010` (Tiga Trio, SMK Negeri 6 Balikpapan) dan judul karya: *TRASP — Trust & Scam Protection Workbench*.
-* **Narasi:**  
-  *"Selamat datang dewan juri MIT-WEEK 2026 Universitas Mulawarman. Saya Raya Raihana Yasmin, mewakili Tim Tiga Trio dari SMK Negeri 6 Balikpapan. Di tengah maraknya serangan rekayasa sosial di Indonesia—mulai dari malware perbankan berkedok berkas APK hingga penipuan kerja paruh waktu—masyarakat kerap menjadi korban karena minimnya pemahaman taktik manipulasi psikologis penipu. Kami mengembangkan TRASP, platform perlindungan dan edukasi forensik digital terpadu yang memadukan tiga tahapan pertahanan: Recognize, Learn, dan Act, berlandaskan prinsip privasi mutlak on-device data redaction."*
-
-#### 2. Modul Recognize & Canvas Redactor (00:45 - 01:45)
-* **Visual:** Perekaman layar membuka modul Recognize, memilih preset kasus *Undangan & Resi Kurir .APK*, menjalankan pemindaian, lalu mendemonstrasikan alat sensor gambar di tab Canvas Redactor.
-* **Narasi:**  
-  *"Tahap pertama adalah Recognize. Pengguna dapat menempelkan pesan atau tautan mencurigakan. Fitur Linguistic Normalizer kami langsung mengurai teknik penyamaran leetspeak dan membedah pesan ke dalam tiga vektor ancaman: Urgensi Waktu, Permintaan Aset, dan Saluran Tidak Resmi. Mengacu pada amanat UU PDP No. 27/2022, pengguna dapat memanfaatkan Interactive Canvas Redactor kami untuk menyensor nomor telepon, NIK, dan nomor rekening secara instan langsung di peramban sebelum dianalisis, tanpa ada satu byte pun data pribadi yang tersimpan di peladen."*
-
-#### 3. Modul Learn: Cyber Quest & Telemetry X-Ray (01:45 - 03:00)
-* **Visual:** Berpindah ke tab Learn. Menampilkan diagram jalur Cyber Quest 10 level, membuka simulator percakapan WhatsApp, menunjukkan respons balasan chat, dan memperlihatkan panel Telemetry X-Ray yang bergerak dinamis.
-* **Narasi:**  
-  *"Berikutnya adalah modul Learn dengan Cyber Quest Roadmap dan Split-Screen Simulator. Di panel kiri, pengguna menghadapi simulasi obrolan WhatsApp yang realistis. Sementara di panel kanan, fitur Telemetry X-Ray menyingkap apa yang sebenarnya direncanakan penipu secara real-time—mulai dari taktik manipulasi aktif seperti manipulasi urgensi dan intimidasi otoritas, hingga monolog batin sindikat penipu. Saat simulasi selesai, sistem menampilkan Rapor Forensik Pasca-Simulasi lengkap dengan Indeks Ketahanan Siber dan audit evaluasi keputusan langkah demi langkah."*
-
-#### 4. Modul Act: SOP 15 Menit & Generator Laporan (03:00 - 03:50)
-* **Visual:** Menavigasi ke tab Act. Menampilkan katalog kasus, panduan tanggap darurat 4 langkah, tombol panggilan langsung bank, dan menekan tombol salin draf laporan resmi.
-* **Narasi:**  
-  *"Tahap ketiga adalah Act. Saat insiden terjadi, 15 menit pertama adalah masa paling krusial. Modul Act menyajikan protokol tanggap darurat: cara memutus koneksi data, mencabut izin aksesibilitas Android, dan menghubungi call center resmi perbankan nasional. Dilengkapi Generator Draf Laporan Resmi, TRASP secara otomatis merangkum kronologi kejadian ke dalam format formal yang siap disalin langsung ke portal IASC OJK 157, Patroli Siber Polri, dan CekRekening.id."*
-
-#### 5. Tinjauan Yuridis & Pengalaman Mobile (03:50 - 04:30)
-* **Visual:** Menampilkan babak tinjauan yuridis pasal UU ITE, lalu mendemonstrasikan tampilan responsif pada layar ponsel dengan navigasi bilah bawah (*bottom navigation bar*).
-* **Narasi:**  
-  *"Untuk memperkuat literasi hukum, TRASP menyertakan tinjauan yuridis komprehensif mengacu pada UU ITE No. 1/2024 dan regulasi pembekuan rekening penampung oleh OJK. Mengingat mayoritas masyarakat mengakses internet melalui gawai seluler, TRASP dirancang mobile-first dengan bilah navigasi bawah ergonomis yang memenuhi standar target sentuh jari 44 piksel."*
-
-#### 6. Arsitektur Zero-Crash & Penutup (04:30 - 05:00)
-* **Visual:** Menampilkan diagram arsitektur sistem, pembuktian uji coba offline, dan status build produksi. Presenter menutup presentasi.
-* **Narasi:**  
-  *"TRASP dibangun di atas arsitektur Zero-Crash Client-First: sistem tetap beroperasi normal di bawah 5 milidetik dengan mesin heuristik lokal meskipun koneksi jaringan terputus. Melalui TRASP, kami ingin memberdayakan generasi muda Indonesia agar tidak lagi menjadi korban manipulasi digital, melainkan benteng pertahanan digital yang kritis dan tangguh. Terima kasih dari Tim Tiga Trio SMK Negeri 6 Balikpapan!"*
+* **Tautan Video Resmi:** https://youtu.be/4-OiCrQ8kHI
+* **Durasi:** 05:00 Menit (Sesuai Ketentuan Juknis Lomba)
+* **Kualitas:** 1080p Full HD
+* **Materi yang Didemonstrasikan:**
+  1. Identifikasi dini dan sensor privasi data pada modul **Recognize**.
+  2. Simulasi percakapan WhatsApp, pantauan taktik penipu secara real-time (*Telemetry X-Ray*), dan evaluasi skor ketahanan siber pada modul **Learn**.
+  3. Protokol tanggap darurat 15 menit, panggilan cepat bank, dan generator draf laporan pada modul **Act**.
+  4. Pengujian keandalan arsitektur *Zero-Crash* secara offline.
 
 ---
 
